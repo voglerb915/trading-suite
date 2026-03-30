@@ -85,7 +85,6 @@ function renderJournalTable(trades) {
     const container = document.getElementById("col-2");
     if (!container) return;
 
-    // 7 Spalten Journal Layout
     const cols = "0.9fr 0.6fr 0.7fr 0.7fr 0.7fr 0.4fr 0.8fr";
 
     container.innerHTML = `
@@ -99,15 +98,31 @@ function renderJournalTable(trades) {
             </div>
             <div id="journal-rows">
                 ${trades.map(t => {
-                    const statusColor = t.order_status?.toLowerCase().includes('fill') ? '#00ff00' : '#ffa500';
+                    // 1. Status & Farbe (Mapping auf deine Konsolen-Keys)
+                    const status = (t.order_status || "").toLowerCase();
+                    const statusColor = status.includes('fill') || status.includes('exec') ? '#00ff00' : '#ffa500';
+
+                    // 2. Preise direkt aus den neuen Backend-Feldern ziehen
+                    const ePrice = Number(t.entry_price || 0);
+                    const xPrice = Number(t.exit_price || 0);
+
+                    // 3. Formatierung für die Anzeige
+                    const entryDisplay = ePrice > 0 ? ePrice.toFixed(2) + " $" : "---";
+                    const exitDisplay  = xPrice > 0 ? xPrice.toFixed(2) + " $" : "---";
+
                     return `
                     <div style="display:grid; grid-template-columns:${cols}; border-bottom:1px solid #222; padding:6px 5px; color:#fff; font-size: 0.9rem; align-items:center;">
-                        <div style="color:#aaa; font-size: 0.8rem;">${t.entry_date ? new Date(t.entry_date).toLocaleDateString('de-DE') : '---'}</div>
+                        <div style="color:#aaa; font-size: 0.8rem;">
+                            ${t.entry_date ? new Date(t.entry_date).toLocaleDateString('de-DE') : '---'}
+                        </div>
                         <div style="color:#555; font-size: 0.75rem;">${t.order_id || '---'}</div>
                         <div style="font-weight:bold; color:#fff;">${t.ticker || '---'}</div>
-                        <div style="text-align:right;">${t.entry_price ? Number(t.entry_price).toFixed(2) : '0.00'} $</div>
-                        <div style="text-align:right; color:#666;">---</div>
-                        <div style="text-align:right; color:#666;">-</div>
+
+                        <div style="text-align:right;">${entryDisplay}</div>
+                        <div style="text-align:right; color:#58a6ff;">${exitDisplay}</div>
+
+                        <div style="text-align:right; color:#666;">${t.r_multiple || '-'}</div>
+                        
                         <div style="text-align:right; color:${statusColor}; font-weight:bold; font-size: 0.8rem; text-transform: uppercase;">
                             ${t.order_status || 'N/A'}
                         </div>
