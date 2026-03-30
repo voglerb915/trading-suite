@@ -3,7 +3,8 @@
 ----------------------------------*/
 const GlobalState = {
     volumeData: [],
-    journalData: []
+    journalData: [],
+    sortConfig: { key: null, direction: 'desc' } // 'desc' für absteigend, 'asc' für aufsteigend
 };
 
 /*----------------------------------
@@ -35,9 +36,13 @@ function renderVolumeTable(list) {
     const container = document.getElementById("col-1");
     if (!container) return;
 
-    // Kompaktes Grid-Layout
     const cols = "0.5fr 0.8fr 0.8fr 0.8fr 1.5fr 1.1fr";
-    const filtered = list.filter(item => item.turnover >= 1000000);
+    
+    // Hilfsfunktion für das Pfeil-Symbol im Header
+    const getIcon = (key) => {
+        if (GlobalState.sortConfig.key !== key) return '↕';
+        return GlobalState.sortConfig.direction === 'desc' ? '↓' : '↑';
+    };
 
     container.innerHTML = `
         <h2 style="font-size: 1rem; color: #ffa500; margin-bottom: 12px; padding-left: 5px; font-family: sans-serif; text-transform: uppercase; letter-spacing: 1px;">
@@ -46,12 +51,23 @@ function renderVolumeTable(list) {
         
         <div id="volume-table" style="font-family: sans-serif;">
             <div style="display:grid; grid-template-columns:${cols}; font-weight:bold; color:#888; border-bottom:1px solid #444; padding:8px 5px; font-size: 0.85rem; text-transform: uppercase;">
-                <div>R#</div><div>Ticker</div><div style="text-align:right;">Preis</div><div style="text-align:right;">Ratio</div><div style="text-align:right;">Volumen</div><div style="text-align:right;">Umsatz</div>
+                <div>R#</div>
+                <div>Ticker</div>
+                <div style="text-align:right;">Preis</div>
+                <div style="text-align:right;">Ratio</div>
+                
+                <div style="text-align:right; cursor:pointer; color:#58a6ff;" onclick="handleSort('volume')">
+                    Volumen ${getIcon('volume')}
+                </div>
+                
+                <div style="text-align:right; cursor:pointer; color:#58a6ff;" onclick="handleSort('turnover')">
+                    Umsatz ${getIcon('turnover')}
+                </div>
             </div>
             <div id="volume-rows">
-                ${filtered.map((item, idx) => `
+                ${list.map((item, idx) => `
                     <div style="display:grid; grid-template-columns:${cols}; border-bottom:1px solid #222; padding:6px 5px; color:#fff; font-size: 0.9rem; align-items:center;">
-                        <div style="color:#ffa500; font-size: 0.8rem;">${idx + 1}.</div>
+                        <div style="color:#ffa500; font-size: 0.8rem;">${item.ratioRank || idx + 1}.</div>
                         <div style="font-weight:bold;">${item.ticker}</div>
                         <div style="text-align:right;">${item.close ? Number(item.close).toFixed(2) : '0.00'} $</div>
                         <div style="text-align:right; color: #00ff00;">${item.ratio ? item.ratio.toFixed(1) : '0'}x</div>
@@ -114,6 +130,32 @@ async function initDashboard() {
         console.error("Controller Error:", err);
     }
 }
+// Neue Funktion im Controller Bereich
+function handleSort(key) {
+    const config = GlobalState.sortConfig;
+
+    // Wenn bereits nach diesem Key sortiert wird, ändere die Richtung
+    if (config.key === key) {
+        config.direction = config.direction === 'desc' ? 'asc' : 'desc';
+    } else {
+        // Neuer Key gewählt -> starte immer mit absteigend (desc)
+        config.key = key;
+        config.direction = 'desc';
+    }
+
+    // Sortierung ausführen
+    GlobalState.volumeData.sort((a, b) => {
+        const valA = a[key] || 0;
+        const valB = b[key] || 0;
+        return config.direction === 'desc' ? valB - valA : valA - valB;
+    });
+
+    // Neu rendern
+    renderVolumeTable(GlobalState.volumeData);
+}
+
+// Damit die Funktion global für das onclick verfügbar ist:
+window.handleSort = handleSort;
 
 /*----------------------------------
 6. Event-Handler
