@@ -24,8 +24,12 @@ body {
 /* --- 3. GRID-LAYOUT (Schnittstelle zum Cockpit) --- */
 #lab-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 50vw; /* Die wichtige 50% Grenze zur rechten Seite */
+    /* Hier definierst du die exakten Breiten: 25vw für Col-1, 35vw für Col-2 */
+    grid-template-columns: 25vw 35vw; 
+    
+    /* Die Gesamtbreite ist jetzt 60vw (25 + 35) statt vorher 50vw */
+    width: 60vw; 
+    
     height: 100vh;
     border-right: 1px solid #333;
     box-sizing: border-box;

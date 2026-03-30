@@ -85,7 +85,8 @@ function renderJournalTable(trades) {
     const container = document.getElementById("col-2");
     if (!container) return;
 
-    const cols = "0.9fr 0.6fr 0.7fr 0.7fr 0.7fr 0.4fr 0.8fr";
+    // 1. Spalten-Layout auf 8 Spalten erweitert (0.5fr für die neue PID Spalte hinzugefügt)
+    const cols = "0.9fr 0.6fr 0.7fr 0.5fr 0.7fr 0.7fr 0.4fr 0.8fr";
 
     container.innerHTML = `
         <h2 style="font-size: 1rem; color: #ffa500; margin-bottom: 12px; padding-left: 5px; font-family: sans-serif; text-transform: uppercase; letter-spacing: 1px;">
@@ -94,19 +95,22 @@ function renderJournalTable(trades) {
 
         <div id="journal-table" style="font-family: sans-serif;">
             <div style="display:grid; grid-template-columns:${cols}; font-weight:bold; color:#888; border-bottom:1px solid #444; padding:8px 5px; font-size: 0.85rem; text-transform: uppercase; background: rgba(255,255,255,0.03);">
-                <div>Datum</div><div>ID</div><div>Ticker</div><div style="text-align:right;">Entry</div><div style="text-align:right;">Exit</div><div style="text-align:right;">R</div><div style="text-align:right;">Status</div>
+                <div>Datum</div>
+                <div>ID</div>
+                <div>Ticker</div>
+                <div>PID</div> <div style="text-align:right;">Entry</div>
+                <div style="text-align:right;">Exit</div>
+                <div style="text-align:right;">R</div>
+                <div style="text-align:right;">Status</div>
             </div>
             <div id="journal-rows">
                 ${trades.map(t => {
-                    // 1. Status & Farbe (Mapping auf deine Konsolen-Keys)
                     const status = (t.order_status || "").toLowerCase();
                     const statusColor = status.includes('fill') || status.includes('exec') ? '#00ff00' : '#ffa500';
 
-                    // 2. Preise direkt aus den neuen Backend-Feldern ziehen
                     const ePrice = Number(t.entry_price || 0);
                     const xPrice = Number(t.exit_price || 0);
 
-                    // 3. Formatierung für die Anzeige
                     const entryDisplay = ePrice > 0 ? ePrice.toFixed(2) + " $" : "---";
                     const exitDisplay  = xPrice > 0 ? xPrice.toFixed(2) + " $" : "---";
 
@@ -117,6 +121,8 @@ function renderJournalTable(trades) {
                         </div>
                         <div style="color:#555; font-size: 0.75rem;">${t.order_id || '---'}</div>
                         <div style="font-weight:bold; color:#fff;">${t.ticker || '---'}</div>
+                        
+                        <div style="color:#666; font-size: 0.75rem;">${t.pending_id || '---'}</div>
 
                         <div style="text-align:right;">${entryDisplay}</div>
                         <div style="text-align:right; color:#58a6ff;">${exitDisplay}</div>
