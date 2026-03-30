@@ -13,7 +13,7 @@ router.get('/executed', async (req, res) => {
                 E.ib_order_id AS order_id, 
                 E.avg_fill_price AS entry_price,
                 C.ticker AS ticker,
-                C.status AS order_status,      -- Hier von order_role auf status geändert
+                E.status AS order_status,      -- Geändert: E.status statt C.status
                 0 AS exit_price,
                 0 AS r_multiple
             FROM dbo.ExecutedOrders E

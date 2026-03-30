@@ -1,5 +1,5 @@
 /*----------------------------------
-1. Globaler State (Lab)
+1. Globaler State
 ----------------------------------*/
 const GlobalState = {
     volumeData: [],
@@ -7,125 +7,90 @@ const GlobalState = {
 };
 
 /*----------------------------------
-2. Data-Layer (API Abrufe)
+2. Data-Layer
 ----------------------------------*/
-
-// Spalte 1: Volumen-Daten
-async function loadVolumeData() {
-    try {
-        const res = await fetch("/api/volume-metrics");
-        if (!res.ok) throw new Error("Fehler beim Abruf der Volumen-Daten");
-        const data = await res.json();
-        GlobalState.volumeData = data;
-        renderTurnoverMetrics(data);
-    } catch (err) {
-        console.error("Fehler loadVolumeData:", err);
-    }
+async function fetchVolumeData() {
+    const res = await fetch("/api/volume-metrics");
+    if (!res.ok) throw new Error("Fehler Volume API");
+    return await res.json();
 }
 
-// Spalte 2: Journal-Daten (Executed Orders)
-async function loadExecutedOrders() {
-    try {
-        const res = await fetch("http://localhost:4000/api/journal/executed");
-        if (!res.ok) throw new Error("Fehler beim Abruf der Journal-Daten");
-        const data = await res.json();
-        GlobalState.journalData = data;
-        renderJournalInCol2(data);
-    } catch (err) {
-        console.error("Fehler loadExecutedOrders:", err);
-        document.getElementById("col-2").innerHTML = "<p style='padding:20px; color:red;'>Fehler beim Laden der Datenbank.</p>";
-    }
+async function fetchJournalData() {
+    // Falls 500er Fehler persistiert, prüfe im Backend E.status statt C.status
+    const res = await fetch("http://localhost:4000/api/journal/executed");
+    if (!res.ok) throw new Error("Fehler Journal API");
+    return await res.json();
 }
+
+/*----------------------------------
+3. Navigation (Dashboard-Interne Ansichten)
+----------------------------------*/
+// Aktuell keine internen Ansichten definiert
 
 /*----------------------------------
 4. UI-Layer (Rendering)
 ----------------------------------*/
 
-// Rendering Spalte 1 (Volumen)
-function renderTurnoverMetrics(list) {
+function renderVolumeTable(list) {
     const container = document.getElementById("col-1");
     if (!container) return;
 
-    const rankingList = [...list].sort((a, b) => b.ratio - a.ratio);
-    rankingList.forEach((item, index) => { item.ratioRank = index + 1; });
-
-    // ZURÜCK AUF DAS ORIGINAL-LAYOUT FÜR SPALTE 1 (6 Spalten)
+    // Kompaktes Grid-Layout
     const cols = "0.5fr 0.8fr 0.8fr 0.8fr 1.5fr 1.1fr";
-    
-    const filtered = list
-        .filter(item => item.turnover >= 1000000 && item.volume > 1000000)
-        .sort((a, b) => b.turnover - a.turnover);
+    const filtered = list.filter(item => item.turnover >= 1000000);
 
     container.innerHTML = `
-        <h2 style="font-size: 1.2rem; color: #ffa500; margin-bottom: 15px; padding-left: 5px;">
-            Huge Volume (Dashboard Lab)
+        <h2 style="font-size: 1rem; color: #ffa500; margin-bottom: 12px; padding-left: 5px; font-family: sans-serif; text-transform: uppercase; letter-spacing: 1px;">
+            Huge Volume
         </h2>
-
-        <div id="turnover-table">
-            <div class="vt-header" style="display:grid; grid-template-columns:${cols}; font-weight:bold; padding:10px 5px; border-bottom:2px solid #555; font-size: 1.1rem;">
-                <div>R#</div><div>Ticker</div><div style="text-align:right;">Preis</div><div style="text-align:right;">Ratio</div><div style="text-align:right;">Volumen</div><div style="text-align:right; padding-right:5px;">Umsatz</div>
+        
+        <div id="volume-table" style="font-family: sans-serif;">
+            <div style="display:grid; grid-template-columns:${cols}; font-weight:bold; color:#888; border-bottom:1px solid #444; padding:8px 5px; font-size: 0.85rem; text-transform: uppercase;">
+                <div>R#</div><div>Ticker</div><div style="text-align:right;">Preis</div><div style="text-align:right;">Ratio</div><div style="text-align:right;">Volumen</div><div style="text-align:right;">Umsatz</div>
             </div>
-            <div id="turnover-rows">
-                ${filtered.map(item => `
-                    <div class="vt-row" data-ticker="${item.ticker}" style="display:grid; grid-template-columns:${cols}; border-bottom:1px solid #333; padding:8px 5px; cursor:pointer;">
-                        <div style="color:#ffa500;">${item.ratioRank}.</div>
+            <div id="volume-rows">
+                ${filtered.map((item, idx) => `
+                    <div style="display:grid; grid-template-columns:${cols}; border-bottom:1px solid #222; padding:6px 5px; color:#fff; font-size: 0.9rem; align-items:center;">
+                        <div style="color:#ffa500; font-size: 0.8rem;">${idx + 1}.</div>
                         <div style="font-weight:bold;">${item.ticker}</div>
-                        <div style="text-align:right;">${item.close ? Number(item.close).toFixed(2) : '---'} $</div>
-                        <div style="text-align:right;">${item.ratio ? item.ratio.toFixed(1) : '0.0'}x</div>
-                        <div style="text-align:right;">${Number(item.volume).toLocaleString('de-DE')}</div>
+                        <div style="text-align:right;">${item.close ? Number(item.close).toFixed(2) : '0.00'} $</div>
+                        <div style="text-align:right; color: #00ff00;">${item.ratio ? item.ratio.toFixed(1) : '0'}x</div>
+                        <div style="text-align:right; color: #aaa;">${Number(item.volume).toLocaleString('de-DE')}</div>
                         <div style="text-align:right; color:#58a6ff;">${Math.round(item.turnover/1000000)}M $</div>
                     </div>`).join('')}
             </div>
         </div>`;
 }
 
-// Rendering Spalte 2 (Journal)
-function renderJournalInCol2(trades) {
+function renderJournalTable(trades) {
     const container = document.getElementById("col-2");
     if (!container) return;
 
-    // Grid auf 7 Spalten erweitert (letzte Spalte für Status)
-    const journalCols = "0.9fr 0.6fr 0.7fr 0.7fr 0.7fr 0.4fr 0.8fr";
+    // 7 Spalten Journal Layout
+    const cols = "0.9fr 0.6fr 0.7fr 0.7fr 0.7fr 0.4fr 0.8fr";
 
     container.innerHTML = `
-        <h2 style="font-size: 1.2rem; color: #ffa500; margin-bottom: 15px; padding-left: 5px;">
-            Executed Trades (Journal Lab)
+        <h2 style="font-size: 1rem; color: #ffa500; margin-bottom: 12px; padding-left: 5px; font-family: sans-serif; text-transform: uppercase; letter-spacing: 1px;">
+            Executed Trades
         </h2>
 
-        <div id="journal-table">
-            <div class="jt-header" style="display:grid; grid-template-columns:${journalCols}; font-weight:bold; padding:10px 5px; border-bottom:2px solid #555; font-size: 1.1rem; background: #1a1a1a;">
-                <div>Datum</div>
-                <div>ID</div>
-                <div>Ticker</div>
-                <div style="text-align:right;">Entry</div>
-                <div style="text-align:right;">Exit</div>
-                <div style="text-align:right;">R</div>
-                <div style="text-align:right; padding-right:5px;">Status</div>
+        <div id="journal-table" style="font-family: sans-serif;">
+            <div style="display:grid; grid-template-columns:${cols}; font-weight:bold; color:#888; border-bottom:1px solid #444; padding:8px 5px; font-size: 0.85rem; text-transform: uppercase; background: rgba(255,255,255,0.03);">
+                <div>Datum</div><div>ID</div><div>Ticker</div><div style="text-align:right;">Entry</div><div style="text-align:right;">Exit</div><div style="text-align:right;">R</div><div style="text-align:right;">Status</div>
             </div>
-
             <div id="journal-rows">
-                    ${trades.map(trade => {
-                    const dateStr = trade.entry_date ? new Date(trade.entry_date).toLocaleDateString('de-DE') : '---';
-                    const entryPrice = trade.entry_price ? Number(trade.entry_price).toFixed(2) : '0.00';
-                    
-                    // Wir nutzen jetzt trade.order_status (wie im SQL-Alias oben definiert)
-                    const currentStatus = trade.order_status || '---';
-                    
-                    // Optionale farbliche Hervorhebung
-                    let statusColor = '#aaa'; 
-                    if (currentStatus.toLowerCase().includes('filled')) statusColor = '#00ff00';
-                    if (currentStatus.toLowerCase().includes('entry')) statusColor = '#ffa500';
-
+                ${trades.map(t => {
+                    const statusColor = t.order_status?.toLowerCase().includes('fill') ? '#00ff00' : '#ffa500';
                     return `
-                    <div class="jt-row" style="display:grid; grid-template-columns:${journalCols}; border-bottom:1px solid #333; padding:8px 5px; align-items:center;">
-                        <div style="color:#aaa; font-size: 0.85rem;">${dateStr}</div>
-                        <div style="color:#666; font-size: 0.8rem;">${trade.order_id}</div>
-                        <div style="font-weight:bold; color:#fff;">${trade.ticker}</div>
-                        <div style="text-align:right;">${entryPrice} $</div>
-                        <div style="text-align:right; color:#888;">---</div>
-                        <div style="text-align:right; color:#888;">-</div>
-                        <div style="text-align:right; color:${statusColor}; font-weight:bold; padding-right:5px; font-size: 0.85rem;">
-                            ${currentStatus}
+                    <div style="display:grid; grid-template-columns:${cols}; border-bottom:1px solid #222; padding:6px 5px; color:#fff; font-size: 0.9rem; align-items:center;">
+                        <div style="color:#aaa; font-size: 0.8rem;">${t.entry_date ? new Date(t.entry_date).toLocaleDateString('de-DE') : '---'}</div>
+                        <div style="color:#555; font-size: 0.75rem;">${t.order_id || '---'}</div>
+                        <div style="font-weight:bold; color:#fff;">${t.ticker || '---'}</div>
+                        <div style="text-align:right;">${t.entry_price ? Number(t.entry_price).toFixed(2) : '0.00'} $</div>
+                        <div style="text-align:right; color:#666;">---</div>
+                        <div style="text-align:right; color:#666;">-</div>
+                        <div style="text-align:right; color:${statusColor}; font-weight:bold; font-size: 0.8rem; text-transform: uppercase;">
+                            ${t.order_status || 'N/A'}
                         </div>
                     </div>`;
                 }).join('')}
@@ -134,14 +99,31 @@ function renderJournalInCol2(trades) {
 }
 
 /*----------------------------------
+5. Controller
+----------------------------------*/
+async function initDashboard() {
+    try {
+        const vData = await fetchVolumeData();
+        GlobalState.volumeData = vData;
+        renderVolumeTable(vData);
+
+        const jData = await fetchJournalData();
+        GlobalState.journalData = jData;
+        renderJournalTable(jData);
+    } catch (err) {
+        console.error("Controller Error:", err);
+    }
+}
+
+/*----------------------------------
+6. Event-Handler
+----------------------------------*/
+// Hier können Klick-Events für Ticker etc. rein
+
+/*----------------------------------
 7. Initialisierung
 ----------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("LAB: Initialisierung gestartet...");
-    
-    // Daten laden
-    setTimeout(() => {
-        loadVolumeData();    // Spalte 1
-        loadExecutedOrders(); // Spalte 2
-    }, 500); 
+    console.log("LAB: Start...");
+    initDashboard();
 });
