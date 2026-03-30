@@ -17,8 +17,7 @@ async function fetchVolumeData() {
 }
 
 async function fetchJournalData() {
-    // Falls 500er Fehler persistiert, prüfe im Backend E.status statt C.status
-    const res = await fetch("http://localhost:4000/api/journal/executed");
+    const res = await fetch("/api/journal/executed");
     if (!res.ok) throw new Error("Fehler Journal API");
     return await res.json();
 }
@@ -50,11 +49,15 @@ function renderVolumeTable(list) {
         </h2>
         
         <div id="volume-table" style="font-family: sans-serif;">
+            <div id="volume-table" style="font-family: sans-serif;">
             <div style="display:grid; grid-template-columns:${cols}; font-weight:bold; color:#888; border-bottom:1px solid #444; padding:8px 5px; font-size: 0.85rem; text-transform: uppercase;">
                 <div>R#</div>
                 <div>Ticker</div>
                 <div style="text-align:right;">Preis</div>
-                <div style="text-align:right;">Ratio</div>
+                
+                <div style="text-align:right; cursor:pointer; color:#58a6ff;" onclick="handleSort('ratio')">
+                    Ratio ${getIcon('ratio')}
+                </div>
                 
                 <div style="text-align:right; cursor:pointer; color:#58a6ff;" onclick="handleSort('volume')">
                     Volumen ${getIcon('volume')}
