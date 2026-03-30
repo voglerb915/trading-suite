@@ -12,20 +12,24 @@ router.get('/executed', async (req, res) => {
             SELECT 
                 E.execution_time AS entry_date, 
                 E.ib_order_id AS order_id, 
-                E.order_role,                 -- NEU: Rolle für das Frontend mitgeben
-                
-                -- Wenn Rolle ENTRY, dann Preis hier rein, sonst 0
+                E.order_role,
                 CASE WHEN E.order_role = 'ENTRY' THEN E.avg_fill_price ELSE 0 END AS entry_price,
-                
-                -- Wenn Rolle EXIT, dann Preis hier rein, sonst 0
                 CASE WHEN E.order_role = 'EXIT' THEN E.avg_fill_price ELSE 0 END AS exit_price,
-                
                 C.ticker AS ticker,
+                E.pending_id,
                 E.status AS order_status,
                 0 AS r_multiple
             FROM dbo.ExecutedOrders E
             LEFT JOIN dbo.OrderCreation C ON E.pending_id = C.pending_id
-            ORDER BY E.execution_time DESC
+            
+            /* NEUE LOGIK: 
+               1. Wir finden für jede pending_id die NEUESTE Zeit (MAX) und sortieren danach (DESC).
+               2. Innerhalb der Gruppe sortieren wir die Ereignisse ebenfalls absteigend (DESC), 
+                  damit der EXIT über dem ENTRY steht.
+            */
+            ORDER BY 
+                MAX(E.execution_time) OVER (PARTITION BY E.pending_id) DESC, 
+                E.execution_time DESC
         `);
 
         res.json(result.recordset);
