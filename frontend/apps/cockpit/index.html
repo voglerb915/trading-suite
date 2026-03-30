@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Trading Cockpit</title>
+    <link rel="stylesheet" href="/apps/cockpit/css/style.css">
+</head>
+
+<body>
+
+<header id="topbar">
+    <div class="logo">Trading Cockpit</div>
+
+    <nav id="main-nav">
+        <a href="#" data-tool="cockpit">Cockpit</a>
+        <a href="#" data-tool="lab">Lab</a>
+        <a href="#" data-tool="dashboard">Dashboard (Current)</a> 
+        <a href="#" data-tool="new-dashboard">New Dashboard</a>
+        
+        <a href="#" data-tool="journal">Journal</a>
+        <a href="#" data-tool="charting">Charting</a>
+        <a href="#" data-tool="control">Control</a>
+    </nav>
+</header>
+
+<main id="content">
+
+    <div id="cockpit-ui" class="tool-view">
+        <div id="cockpit-grid">
+            </div>
+    </div>
+
+    <iframe id="iframe-lab" src="/apps/lab/index.html" class="tool-iframe"></iframe>
+    <iframe id="iframe-dashboard" src="http://localhost:3000" class="tool-iframe active"></iframe>
+    <iframe id="iframe-new-dashboard" src="/apps/dashboard/index.html" class="tool-iframe"></iframe>
+    <iframe id="iframe-journal" src="/apps/journal/index.html" class="tool-iframe"></iframe>
+    <iframe id="iframe-charting" src="/apps/charting-tool/index.html" class="tool-iframe"></iframe>
+    <iframe id="iframe-control" src="/apps/control-center/index.html" class="tool-iframe"></iframe>
+
+</main>
+
+<script type="module" src="/apps/cockpit/js/cockpit.js"></script>
+
+</body>
+</html>
