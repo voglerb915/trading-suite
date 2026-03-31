@@ -16,6 +16,7 @@ router.get('/executed', async (req, res) => {
                 CASE WHEN E.order_role = 'ENTRY' THEN E.avg_fill_price ELSE 0 END AS entry_price,
                 CASE WHEN E.order_role = 'EXIT' THEN E.avg_fill_price ELSE 0 END AS exit_price,
                 C.ticker AS ticker,
+                C.initial_sl AS stop_price,       -- Hier das Feld initial_sl
                 E.pending_id,
                 E.status AS order_status,
                 0 AS r_multiple
