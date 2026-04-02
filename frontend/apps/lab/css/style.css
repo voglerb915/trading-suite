@@ -25,10 +25,10 @@ body {
 #lab-grid {
     display: grid;
     /* Hier definierst du die exakten Breiten: 25vw für Col-1, 35vw für Col-2 */
-    grid-template-columns: 25vw 35vw; 
+    grid-template-columns: 25vw 40vw; 
     
-    /* Die Gesamtbreite ist jetzt 60vw (25 + 35) statt vorher 50vw */
-    width: 60vw; 
+    /* Die Gesamtbreite ist jetzt 60vw (25 + 40) statt vorher 50vw */
+    width: 65vw; 
     
     height: 100vh;
     border-right: 1px solid #333;
@@ -46,11 +46,12 @@ h2, h3, .column-title {
     line-height: 1.1;
 }
 
-/* Die Spalten-Container */
+/* --- Die Spalten-Container --- */
 #col-1, #col-2 {
     overflow-y: auto;
     height: 100vh;
-    padding: 30px; /* Viel Platz für die großen Titel */
+    /* Reduziert auf 10px (Oben 0 für Sticky-Effekt, Rest 10px) */
+    padding: 0px 20px 20px 20px; 
     border-right: 1px solid #252525;
     box-sizing: border-box;
 }
@@ -70,6 +71,15 @@ h2, h3, .column-title {
     border-bottom: 1px solid #252525;
     font-size: 0.9rem;
     padding: 10px 5px;
+}
+
+/* Fixiert die Kopfzeile beim Scrollen */
+#journal-table > div:first-child {
+    position: sticky;
+    top: 0;
+    z-index: 10; /* Bleibt über den Zeilen */
+    background: #181818; /* Etwas dunkler/massiver als der Rest, damit nichts durchscheint */
+    border-bottom: 1px solid #444;
 }
 
 /* Scrollbars für den Lab-Inhalt */

@@ -16,18 +16,13 @@ router.get('/executed', async (req, res) => {
                 CASE WHEN E.order_role = 'ENTRY' THEN E.avg_fill_price ELSE 0 END AS entry_price,
                 CASE WHEN E.order_role = 'EXIT' THEN E.avg_fill_price ELSE 0 END AS exit_price,
                 C.ticker AS ticker,
-                C.initial_sl AS stop_price,       -- Hier das Feld initial_sl
+                C.initial_sl AS stop_price,
+                E.executed_qty AS quantity,     -- Geändert auf executed_qty
+                C.strategy AS strategy,         -- Bleibt strategy
                 E.pending_id,
-                E.status AS order_status,
-                0 AS r_multiple
+                E.status AS order_status
             FROM dbo.ExecutedOrders E
             LEFT JOIN dbo.OrderCreation C ON E.pending_id = C.pending_id
-            
-            /* NEUE LOGIK: 
-               1. Wir finden für jede pending_id die NEUESTE Zeit (MAX) und sortieren danach (DESC).
-               2. Innerhalb der Gruppe sortieren wir die Ereignisse ebenfalls absteigend (DESC), 
-                  damit der EXIT über dem ENTRY steht.
-            */
             ORDER BY 
                 MAX(E.execution_time) OVER (PARTITION BY E.pending_id) DESC, 
                 E.execution_time DESC
