@@ -74,15 +74,50 @@ function showTool(toolId) {
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Cockpit Initialisierung gestartet...");
 
+    // --- NEU: Geräteerkennung beim Start ---
+    fetch('/api/device-info')
+        .then(res => res.json())
+        .then(data => {
+            const logoDiv = document.querySelector('.logo');
+            
+            if (logoDiv) {
+                // Wir erstellen ein kleines Container-Element für die Info
+                const deviceInfo = document.createElement('div');
+                deviceInfo.id = 'device-status-info';
+                
+                // Styling für die dezente Anzeige unter dem Logo
+                deviceInfo.style.fontSize = '9px'; // Sehr klein und dezent
+                deviceInfo.style.color = 'white';
+                deviceInfo.style.marginTop = '2px';
+                deviceInfo.style.opacity = '0.7';
+                deviceInfo.style.fontWeight = 'normal';
+                deviceInfo.style.textTransform = 'uppercase';
+                deviceInfo.style.letterSpacing = '1px';
+                deviceInfo.style.lineHeight = '1';
+                
+                // Text setzen
+                const mode = data.isLaptop ? 'Mobile Mode' : 'Stationary';
+                deviceInfo.innerText = `${data.deviceName} | ${mode}`;
+                
+                // Unter das Logo hängen
+                logoDiv.appendChild(deviceInfo);
+
+                // Optional: Falls du das Logo-Div vertikal ausrichten willst:
+                logoDiv.style.display = 'flex';
+                logoDiv.style.flexDirection = 'column';
+                logoDiv.style.justifyContent = 'center';
+            }
+        })
+        .catch(err => console.warn("Geräte-Info konnte nicht geladen werden:", err));
     // Navigation – EventListener für alle Menüpunkte
     document.querySelectorAll('#main-nav a').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            const tool = link.getAttribute('data-tool'); // Holt z.B. "new-dashboard"
+            const tool = link.getAttribute('data-tool');
             if (tool) showTool(tool);
         });
     });
 
     // Daten für das native Cockpit-UI laden
-    syncUI();
+    if (typeof syncUI === 'function') syncUI();
 });
