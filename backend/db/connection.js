@@ -1,5 +1,18 @@
 const sql = require('mssql');
 
+// --- ZENTRALE LAPTOP-EINSTELLUNGEN ---
+// Wir nutzen die IP und den festen Port, um Instanznamen-Probleme zu umgehen.
+const SERVER_IP = '127.0.0.1'; 
+const SQL_PORT = 1433; 
+
+const commonOptions = {
+  encrypt: false, // Auf dem Laptop lokal fast immer false
+  trustServerCertificate: true, 
+  requestTimeout: 60000,
+  // WICHTIG: Wenn wir über Port 1433 gehen, lassen wir den Instanznamen weg
+  // Falls es trotzdem nicht geht, füge hier wieder instanceName: 'SQLEXPRESS' hinzu
+};
+
 // -------------------------
 //   CONFIGS
 // -------------------------
@@ -7,77 +20,52 @@ const sql = require('mssql');
 const yahooConfig = {
   user: 'trading',
   password: 'trading',
-  server: 'localhost',
-  port: 1433,
+  server: SERVER_IP,
+  port: SQL_PORT, 
   database: 'yahoo',
-  options: {
-    encrypt: false,
-    trustServerCertificate: true,
-    requestTimeout: 60000
-  },
+  options: commonOptions,
   pool: { max: 10, min: 0, idleTimeoutMillis: 30000 }
 };
 
 const tradingConfig = {
   user: 'trading',
   password: 'trading',
-  server: 'localhost',
-  port: 1433,
+  server: SERVER_IP,
+  port: SQL_PORT,
   database: 'trading',
-  options: {
-    encrypt: false,
-    trustServerCertificate: true,
-    requestTimeout: 60000
-  },
+  options: commonOptions,
   pool: { max: 10, min: 0, idleTimeoutMillis: 30000 }
 };
 
-// NEU: Journal Config
 const journalConfig = {
   user: 'trading',
   password: 'trading',
-  server: 'localhost',
-  port: 1433,
-  database: 'TradingJournal', // Deine neue DB
-  options: {
-    encrypt: false,
-    trustServerCertificate: true,
-    requestTimeout: 60000
-  },
+  server: SERVER_IP,
+  port: SQL_PORT,
+  database: 'TradingJournal',
+  options: commonOptions,
   pool: { max: 10, min: 0, idleTimeoutMillis: 30000 }
 };
 
 // -------------------------
-//   POOLS
+//   POOLS & VERBINDUNGEN
 // -------------------------
 
 const yahooPool = new sql.ConnectionPool(yahooConfig);
 const tradingPool = new sql.ConnectionPool(tradingConfig);
-const journalPool = new sql.ConnectionPool(journalConfig); // Neuer Pool
+const journalPool = new sql.ConnectionPool(journalConfig);
 
-// -------------------------
-//   VERBINDUNGEN STARTEN
-// -------------------------
-
-const yahooConnect = yahooPool.connect();
-const tradingConnect = tradingPool.connect();
-const journalConnect = journalPool.connect(); // Verbindung starten
-
-// -------------------------
-//   EXPORTS
-// -------------------------
+const yahooConnect = yahooPool.connect().catch(err => console.error('❌ Fehler Yahoo-Pool:', err.message));
+const tradingConnect = tradingPool.connect().catch(err => console.error('❌ Fehler Trading-Pool:', err.message));
+const journalConnect = journalPool.connect().catch(err => console.error('❌ Fehler Journal-Pool:', err.message));
 
 module.exports = {
   sql,
-  yahooConfig,
-  tradingConfig,
-  journalConfig,
   yahooPool,
   tradingPool,
-  journalPool,      // Export für neue Journal-Routen
+  journalPool,
   yahooConnect,
   tradingConnect,
   journalConnect,
-  defaultConfig: tradingConfig
-
+  config: tradingConfig 
 };

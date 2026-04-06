@@ -2,40 +2,27 @@ const express = require('express');
 const compression = require('compression');
 const path = require('path');
 const cors = require('cors');
-const os = require('os'); // <--- NEU: Für die Geräte-Erkennung
 const logger = require('./utils/logger');
-const { getTradingDate } = require('./utils/dateHelper');
-
-// --- Datenbank-Verbindung importieren ---
-const { tradingConnect, yahooConnect, journalConnect } = require('./db/connection');
+const { getTradingDate, saveWithArchive } = require('./utils/dateHelper');
 
 const app = express();
 
-// --- Middleware ---
+// ---------------------------------------------
+// 1. Middleware
+// ---------------------------------------------
 app.use(compression());
+app.use(express.json({ limit: '5mb' }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use(express.json());
 
-// --- Datenbank-Check beim Start ---
-Promise.all([tradingConnect, yahooConnect, journalConnect])
-    .then(() => {
-        console.log('✅ Datenbanken erfolgreich verbunden (Pfad: ./db/connection.js)');
-    })
-    .catch(err => {
-        // Wir loggen den Fehler, lassen den Server aber laufen (hilfreich bei Teilausfällen)
-        console.error('❌ Datenbank-Verbindungsfehler:', err.message);
-    });
-
-// ---------------------------------------------
-// 1. NEU: Geräte-Info Endpunkt
-// ---------------------------------------------
-app.get('/api/device-info', (req, res) => {
-    const hostname = os.hostname();
-    res.json({ 
-        deviceName: hostname,
-        // Erkennt deinen Laptop anhand des Namens aus dem SSMS-Screenshot
-        isLaptop: hostname.toUpperCase().includes('TRADESMART') 
-    });
+// Logging Wrapper
+app.use((req, res, next) => {
+    const oldJson = res.json;
+    res.json = function (data) {
+        logger.info('RESPONSE', `${req.method} ${req.url}`);
+        return oldJson.call(this, data);
+    };
+    next();
 });
 
 // ---------------------------------------------
@@ -43,39 +30,56 @@ app.get('/api/device-info', (req, res) => {
 // ---------------------------------------------
 app.use('/api/volume-metrics', require('./routes/volumeMetrics'));
 app.use('/api/daily-history', require('./routes/dailyHistory'));
-app.use('/api/journal', require('./routes/journal')); 
+app.use('/api/journal', require('./routes/journal')); // <--- DIESE ZEILE HINZUFÜGEN
 
 // ---------------------------------------------
-// 3. STATIC FRONTEND SERVING
+// 3. STATIC FRONTEND SERVING (Multi-Tool)
 // ---------------------------------------------
+
+// Basis-Pfad zum Frontend
 const FRONTEND_ROOT = path.join(__dirname, '../frontend');
 
+// Cockpit
 app.use('/cockpit', express.static(path.join(FRONTEND_ROOT, 'apps/cockpit')));
+
+// Lab
 app.use('/lab', express.static(path.join(FRONTEND_ROOT, 'apps/lab')));
+
+// Dashboard
 app.use('/dashboard', express.static(path.join(FRONTEND_ROOT, 'apps/dashboard')));
+
+// Journal
 app.use('/journal', express.static(path.join(FRONTEND_ROOT, 'apps/journal')));
+
+// Charting-Tool
 app.use('/charting-tool', express.static(path.join(FRONTEND_ROOT, 'apps/charting-tool')));
+
+// Control-Center
 app.use('/control-center', express.static(path.join(FRONTEND_ROOT, 'apps/control-center')));
+
+// Shared
 app.use('/shared', express.static(path.join(FRONTEND_ROOT, 'shared')));
 
 // ---------------------------------------------
-// 4. Fallback & Error Handling
+// 4. Fallback: Root → Cockpit
 // ---------------------------------------------
 app.get('/', (req, res) => {
     res.redirect('/cockpit');
 });
 
+// ---------------------------------------------
+// 5. Error Handler
+// ---------------------------------------------
 app.use((err, req, res, next) => {
     logger.error('SERVER', `${req.method} ${req.url} → ${err.message}`);
     res.status(500).json({ error: 'Interner Serverfehler' });
 });
 
 // ---------------------------------------------
-// 5. Start Server
+// 6. Start Server
 // ---------------------------------------------
 const PORT = 4000;
 app.listen(PORT, () => {
-    console.log(`🚀 Trading-Suite Backend läuft auf Port ${PORT}`);
-    console.log(`📅 Trading-Date: ${getTradingDate()}`);
-    console.log(`💻 Device-Host: ${os.hostname()}`);
+    console.log(`Trading-Suite Backend läuft auf Port ${PORT}`);
+    console.log(`Trading-Date: ${getTradingDate()}`);
 });
