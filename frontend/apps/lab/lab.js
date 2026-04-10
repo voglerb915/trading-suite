@@ -1,19 +1,25 @@
-import { getVolumeMetrics, getExecutedTrades } from "../../shared/api/journal.js";
-import { globalState } from "../../shared/state/globalState.js";
-import { sortBy } from "../../shared/utils/sort.js";
-import { fmt } from "../../shared/utils/format.js";
+// apps/lab/lab.js
 
-import { renderVolumeTable } from "./render/renderVolumeTable.js";
+import { getVolumeMetrics } from "../../shared/api/volume.js";
+import { getExecutedTrades } from "../../shared/api/journal.js";
+
+import GlobalState from "../../shared/state/globalState.js";
+
+import { renderVolumeTable, handleSort } from "./render/renderVolumeTable.js";
 import { renderJournalTable } from "./render/renderJournalTable.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("LAB: Start...");
 
+    // Volume
     const volume = await getVolumeMetrics();
-    globalState.volumeData = volume.filter(v => v.turnover >= 10_000_000);
-    renderVolumeTable(globalState.volumeData);
+    const filtered = volume.filter(v => v.turnover >= 10_000_000);
 
+    GlobalState.set("volumeData", filtered);
+    renderVolumeTable(filtered);
+
+    // Journal
     const trades = await getExecutedTrades();
-    globalState.journalData = trades;
+    GlobalState.set("journalData", trades);
     renderJournalTable(trades);
 });

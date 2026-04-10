@@ -1,14 +1,38 @@
+// apps/lab/render/renderVolumeTable.js
+
+import GlobalState from "../../../shared/state/globalState.js";
+import { sortBy } from "../../../shared/utils/sort.js";
+import { fmt } from "../../../shared/utils/format.js";
+
+export function handleSort(key) {
+    const config = GlobalState.get("sortConfig");
+
+    const newDirection =
+        config.key === key && config.direction === "desc"
+            ? "asc"
+            : "desc";
+
+    const sorted = sortBy(GlobalState.get("volumeData"), key, newDirection);
+
+    GlobalState.update({
+        sortConfig: { key, direction: newDirection },
+        volumeData: sorted
+    });
+
+    renderVolumeTable(sorted);
+}
+
 export function renderVolumeTable(list) {
     const container = document.getElementById("col-1");
     if (!container) return;
 
     const cols = "0.5fr 0.8fr 0.8fr 0.8fr 1.5fr 1.1fr";
-    
-    // Hilfsfunktion für das Sortier-Icon
+
     const getIcon = (key) => {
-        if (GlobalState.sortConfig.key !== key) return '<span style="color:#444; margin-left:3px;">↕</span>';
-        return GlobalState.sortConfig.direction === 'desc' 
-            ? '<span style="color:#ffa500; margin-left:3px;">↓</span>' 
+        const cfg = GlobalState.get("sortConfig");
+        if (cfg.key !== key) return '<span style="color:#444; margin-left:3px;">↕</span>';
+        return cfg.direction === "desc"
+            ? '<span style="color:#ffa500; margin-left:3px;">↓</span>'
             : '<span style="color:#ffa500; margin-left:3px;">↑</span>';
     };
 
@@ -23,14 +47,17 @@ export function renderVolumeTable(list) {
                     <div>R#</div>
                     <div>Ticker</div>
                     <div style="text-align:right;">Preis</div>
-                    <div style="text-align:right; cursor:pointer; color:#58a6ff;" onclick="handleSort('ratio')">
-                        Ratio ${getIcon('ratio')}
+
+                    <div style="text-align:right; cursor:pointer; color:#58a6ff;" data-sort="ratio">
+                        Ratio ${getIcon("ratio")}
                     </div>
-                    <div style="text-align:right; cursor:pointer; color:#58a6ff;" onclick="handleSort('volume')">
-                        Volumen ${getIcon('volume')}
+
+                    <div style="text-align:right; cursor:pointer; color:#58a6ff;" data-sort="volume">
+                        Volumen ${getIcon("volume")}
                     </div>
-                    <div style="text-align:right; cursor:pointer; color:#58a6ff;" onclick="handleSort('turnover')">
-                        Umsatz ${getIcon('turnover')}
+
+                    <div style="text-align:right; cursor:pointer; color:#58a6ff;" data-sort="turnover">
+                        Umsatz ${getIcon("turnover")}
                     </div>
                 </div>
             </div>
@@ -40,12 +67,16 @@ export function renderVolumeTable(list) {
                     <div style="display:grid; grid-template-columns:${cols}; border-bottom:1px solid #222; padding:6px 5px; color:#fff; font-size: 0.9rem; align-items:center;">
                         <div style="color:#ffa500; font-size: 0.8rem;">${idx + 1}.</div>
                         <div style="font-weight:bold;">${item.ticker}</div>
-                        <div style="text-align:right;">${item.close ? Number(item.close).toFixed(2) : '0.00'} $</div>
-                        <div style="text-align:right; color: #00ff00;">${item.ratio ? item.ratio.toFixed(1) : '0'}x</div>
-                        <div style="text-align:right; color: #aaa;">${Number(item.volume).toLocaleString('de-DE')}</div>
-                        <div style="text-align:right; color:#58a6ff;">${Math.round(item.turnover/1000000)}M $</div>
+                        <div style="text-align:right;">${fmt.price(item.close)} $</div>
+                        <div style="text-align:right; color: #00ff00;">${item.ratio?.toFixed(1) || "0"}x</div>
+                        <div style="text-align:right; color: #aaa;">${fmt.num(item.volume)}</div>
+                        <div style="text-align:right; color:#58a6ff;">${Math.round(item.turnover/1_000_000)}M $</div>
                     </div>`).join('')}
             </div>
         </div>`;
-}
 
+    // Event Delegation für Sortierung
+    container.querySelectorAll("[data-sort]").forEach(el => {
+        el.addEventListener("click", () => handleSort(el.dataset.sort));
+    });
+}
