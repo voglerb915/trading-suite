@@ -4,7 +4,8 @@ import { fmt } from "../../../shared/utils/format.js";
 import GlobalState from "../../../shared/state/globalState.js";
 
 export function renderJournalTable(trades) {
-    const container = document.getElementById("col-2");
+    const container = document.getElementById("journal-root");
+
     if (!container) return;
 
     const cols = "1.1fr 0.5fr 0.7fr 0.5fr 0.7fr 0.7fr 0.5fr 0.5fr 1.2fr 1.2fr";

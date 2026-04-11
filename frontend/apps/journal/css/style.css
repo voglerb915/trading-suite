@@ -61,6 +61,12 @@ h2 {
     background: #1a1a1a; /* Dezenter Hover-Effekt für die Zeilen */
 }
 
+#journal-root {
+    width: 40vw;
+    margin: 0; /* auto; /* zentriert */
+}
+
+
 /* --- 6. SCROLLBARS (Custom Dark Look) --- */
 /* Damit die Scrollbar zum dunklen Cockpit-Design passt */
 ::-webkit-scrollbar {
