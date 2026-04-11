@@ -86,3 +86,200 @@ h2, h3, .column-title {
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: #121212; }
 ::-webkit-scrollbar-thumb { background: #444; border-radius: 5px; }
+
+/* --- 3‑Spalten‑Layout für LAB (NEU) --- */
+
+#lab-container {
+    display: grid;
+    grid-template-columns: 25vw 25vw 50vw;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Linke Spalte (Volume) */
+#col-1 {
+    width: 25vw;
+    overflow-y: auto;
+    padding: 0px 20px 20px 20px;
+    border-right: 1px solid #252525;
+    box-sizing: border-box;
+}
+
+/* Mittlere Spalte */
+#col-2 {
+    width: 25vw;
+    overflow-y: auto;
+    padding: 0px 20px 20px 20px;
+    border-right: 1px solid #252525;
+    box-sizing: border-box;
+}
+
+/* Rechte Spalte (Control Center Bereich) */
+#col-3 {
+    width: 50vw;
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+
+    /* Optional, aber visuell hilfreich */
+    background: #111;
+    border-left: 1px solid #222;
+}
+
+/* Scrollbars für alle drei Spalten */
+#col-1::-webkit-scrollbar,
+#col-2::-webkit-scrollbar,
+#col-3::-webkit-scrollbar {
+    width: 10px;
+}
+
+#col-1::-webkit-scrollbar-thumb,
+#col-2::-webkit-scrollbar-thumb,
+#col-3::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 5px;
+}
+
+/* --- Control Center Kachel-Grid --- */
+
+#control-center-root {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+    padding: 10px;
+}
+
+/* Kachel-Grunddesign */
+.control-tile {
+    background: #1b1b1b;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 18px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    box-sizing: border-box;
+}
+
+.control-tile:hover {
+    background: #222;
+    border-color: #555;
+}
+
+/* Titel + Icon */
+.tile-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.tile-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+/* Status */
+.tile-status {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+/* Fortschrittsbalken */
+.tile-progress {
+    width: 100%;
+    height: 6px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.tile-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #3498db;
+    transition: width 0.2s ease;
+}
+
+/* Meta-Infos */
+.tile-meta {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+/* Status-Farben */
+.control-tile.running { border-color: #3498db; }
+.control-tile.success { border-color: #2ecc71; }
+.control-tile.warning { border-color: #f1c40f; }
+.control-tile.error   { border-color: #e74c3c; }
+
+.log-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.log-modal.hidden {
+    display: none;
+}
+
+.log-modal-content {
+    background: #1b1b1b;
+    padding: 20px;
+    border-radius: 10px;
+    width: 500px;
+    max-height: 70vh;
+    overflow-y: auto;
+    border: 1px solid #333;
+}
+
+#log-title {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+#log-body {
+    white-space: pre-wrap;
+    font-size: 0.9rem;
+    background: #111;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #333;
+}
+
+#log-close {
+    margin-top: 15px;
+    padding: 8px 14px;
+    background: #333;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.tile-steps {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.tile-step {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    padding: 4px 0;
+    border-bottom: 1px solid #222;
+}
+
+.step-status {
+    opacity: 0.8;
+}
+

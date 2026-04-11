@@ -1,12 +1,9 @@
 // apps/lab/lab.js
 
 import { getVolumeMetrics } from "../../shared/api/volume.js";
-
-
 import GlobalState from "../../shared/state/globalState.js";
-
 import { renderVolumeTable, handleSort } from "./render/renderVolumeTable.js";
-
+import { renderControlTiles } from "./render/renderControlTiles.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("LAB: Start...");
@@ -18,6 +15,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     GlobalState.set("volumeData", filtered);
     renderVolumeTable(filtered);
 
-    // Journal
-    
+    // Control Center
+    renderControlTiles();   // <-- Korrekt, direkt hier ausführen
 });

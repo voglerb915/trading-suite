@@ -44,6 +44,8 @@ app.get('/api/device-info', (req, res) => {
 app.use('/api/volume-metrics', require('./routes/volumeMetrics'));
 app.use('/api/daily-history', require('./routes/dailyHistory'));
 app.use('/api/journal', require('./routes/journal')); 
+app.use('/api/calculations', require('./routes/calculations'));
+
 
 // ---------------------------------------------
 // 3. STATIC FRONTEND SERVING
