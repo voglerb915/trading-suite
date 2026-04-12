@@ -46,7 +46,7 @@ app.use('/api/daily-history', require('./routes/dailyHistory'));
 app.use('/api/journal', require('./routes/journal')); 
 app.use('/api/calculations', require('./routes/calculations'));
 app.use('/api/short-strategy-1', require('./routes/shortStrategy1'));
-
+app.use('/api/sectors', require('./routes/sectors'));
 
 // ---------------------------------------------
 // 3. STATIC FRONTEND SERVING

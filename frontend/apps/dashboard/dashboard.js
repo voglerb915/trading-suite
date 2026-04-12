@@ -1,4 +1,5 @@
 import { renderDashboardOverview } from "./render/renderDashboard.js";
+import { renderSectorsList } from "./render/renderSectorsList.js";
 
 /*----------------------------------
 1. Globaler State
@@ -6,53 +7,69 @@ import { renderDashboardOverview } from "./render/renderDashboard.js";
 const GlobalState = {
     data: [],
     selectedTicker: null,
-    view: 'overview'
+    view: 'overview',
+    sector: null   // <--- hinzufügen
 };
+
 
 /*----------------------------------
 2. Data-Layer
 ----------------------------------*/
 async function loadDashboardData() {
     try {
-        const res = await fetch("http://localhost:4000/api/volume-metrics");
-        if (!res.ok) throw new Error("Dashboard-Daten konnten nicht geladen werden");
+        const res = await fetch("http://localhost:4000/api/sectors/won-db");
+        if (!res.ok) throw new Error("Sektoren konnten nicht geladen werden");
 
-        const data = await res.json();
-        GlobalState.data = data;
+        const sectors = await res.json();
 
-        renderDashboardOverview(data);
-        return data;
+        GlobalState.data = sectors;
+
+        renderSectorsList(sectors, GlobalState);
+
+        return sectors;
     } catch (err) {
         console.error("Fehler im Dashboard Data-Layer:", err);
         return [];
     }
 }
 
+
 /*----------------------------------
-3. Navigation
+3. Navigation (Dashboard-Interne Ansichten)
 ----------------------------------*/
 function switchDashboardView(viewId) {
     GlobalState.view = viewId;
 }
 
 /*----------------------------------
-4. Controller
+4. UI-Layer (Rendering)
+----------------------------------*/
+// bleibt unverändert – Render-Funktionen kommen aus den Imports
+
+/*----------------------------------
+5. Controller
 ----------------------------------*/
 async function initDashboardSync() {
     await loadDashboardData();
 }
 
 /*----------------------------------
-5. Event-Handler
+6. Event-Handler
 ----------------------------------*/
 document.addEventListener("dashboard:cardClick", (e) => {
     const ticker = e.detail;
     GlobalState.selectedTicker = ticker;
     console.log("Dashboard-Detail für:", ticker);
 });
+document.addEventListener("dashboard:sectorClick", (e) => {
+  const sector = e.detail;
+  GlobalState.sector = sector;
+  console.log("Sector selected:", sector);
+  renderSectorsList(GlobalState.data, GlobalState);
+});
 
 /*----------------------------------
-6. Initialisierung
+7. Initialisierung
 ----------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
     console.log("New Dashboard initialisiert...");
