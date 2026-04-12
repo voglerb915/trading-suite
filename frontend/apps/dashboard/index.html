@@ -59,34 +59,27 @@
   <div class="dashboard-container">
 
     <div class="column" id="sectors-won-db">
-        <h2>Sektoren – William O’Neil RS (DB)</h2>
-        <table class="table table-sm"> 
-            <thead class="thead-light">
-                <tr>
-                    <th scope="col">Sector</th>
-                    <th scope="col" style="text-align: right; padding-right: 15px;">- ∑ - </th>
-                    <th scope="col">W</th>
-                    <th scope="col">M</th>
-                    <th scope="col">Q</th>
-                </tr>
-            </thead>
-            <tbody id="sector-list-container"></tbody>
-        </table>
+      <h2>Sektoren – William O’Neil RS (DB)</h2>
+      <div id="sector-list-container"></div>
     </div>
+
+
 
     <div class="column" id="rs-won-custom">
       <h2>Industries – William O’Neil RS (DB)</h2>
-      <ul></ul>
+      <div id="industry-list-container"></div>
     </div>
 
+
     <div class="column" id="stocks-won-db">
-        <div class="column-header">
-            <h2>Stocks</h2>
-            <div class="pill-container" id="stocks-pill-container"></div>
-            <div class="button-container" id="stocks-button-container"></div>
-        </div>
-        <ul id="stocks-list"></ul>
+      <div class="column-header">
+          <h2>Stocks</h2>
+          <div class="pill-container" id="stocks-pill-container"></div>
+          <div class="button-container" id="stocks-button-container"></div>
+      </div>
+      <div id="stocks-list-container"></div>
     </div>
+
 
     <div class="column" id="tools-tips-column">
         <div class="column-header"> 
@@ -123,7 +116,7 @@
       </div>
   </div>
   
-  <script src="/apps/dashboard/dashboard.js"></script>
+  <script type="module" src="/apps/dashboard/dashboard.js"></script>
   <button id="scrollTopBtn" title="Nach oben">↑</button>
   
 </body>

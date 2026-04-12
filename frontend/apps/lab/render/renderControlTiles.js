@@ -153,7 +153,7 @@ async function triggerCalculation() {
 async function runShortStrategy() {
     console.log("Short-Strategie gestartet...");
 
-    const res = await fetch("http://localhost:4000/api/calculations/short-strategy");
+    const res = await fetch("http://localhost:4000/api/short-strategy-1/update-short-strategy");
 
     if (!res.ok) {
         throw new Error(await res.text());
