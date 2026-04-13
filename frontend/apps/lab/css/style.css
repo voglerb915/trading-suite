@@ -282,4 +282,39 @@ h2, h3, .column-title {
 .step-status {
     opacity: 0.8;
 }
+.tile-results {
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+.check-db-block {
+    margin-bottom: 12px;
+    padding: 6px;
+    border-radius: 4px;
+    background: #f5f5f5;
+}
+
+.check-db-title {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.check-table-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+}
+
+.check-table-row.ok {
+    color: #0a8a0a;
+}
+
+.check-table-row.fail {
+    color: #c00000;
+}
+.check-table-details {
+    margin-left: 10px;
+    font-size: 0.85rem;
+    color: #444;
+}
 

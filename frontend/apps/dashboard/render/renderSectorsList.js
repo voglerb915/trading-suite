@@ -36,7 +36,7 @@ export function renderSectorsList(sectors, state) {
   container.innerHTML = `
     <div class="sectors-header">
       <div class="sectors-header-title">
-        Sektoren (${sortedSectors.length})
+        Sectors (${sortedSectors.length})
       </div>
       <div class="sectors-header-diffs">
         <div>∑ Stocks</div>

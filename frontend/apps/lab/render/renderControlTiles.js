@@ -45,6 +45,11 @@ function tile(key, icon, title) {
                 <div class="tile-progress-bar" id="progress-${key}"></div>
             </div>
 
+            <!-- 🔍 HIER KOMMT DER CHECKS-BLOCK REIN -->
+            ${key === "checks" ? `
+                <div class="tile-results" id="results-checks"></div>
+            ` : ""}
+
             ${isCalc ? `
                 <div class="tile-steps" id="steps-${key}">
                     ${CALC_STEPS.map(s => `
@@ -63,6 +68,7 @@ function tile(key, icon, title) {
         </div>
     `;
 }
+
 
 
 
@@ -96,6 +102,10 @@ async function runTileProcess(key) {
 
         if (key === "calculations") {
             response = await triggerCalculation();
+        }
+
+        if (key === "checks") {
+        response = await runChecks();
         }
 
         updateTile(key, {
@@ -177,7 +187,63 @@ async function runUpdateMetrics() {
     return await res.text();
 }
 
+async function runChecks() {
+    console.log("Prüfungen gestartet...");
 
+    const res = await fetch("http://localhost:4000/api/checks/all");
+
+    if (!res.ok) {
+        openLogModal("Prüfungen – Fehler", await res.text());
+        throw new Error("Fehler bei Prüfungen");
+    }
+
+    const json = await res.json();
+
+    // Ergebnisse direkt in der Kachel anzeigen
+    renderCheckResults(json);
+
+    // Popup nur bei Fehlern
+    if (!json.ok) {
+        openLogModal("Prüfungen – Fehler", JSON.stringify(json, null, 2));
+    }
+
+    return json;
+}
+
+
+function formatSqlDate(date) {
+    const d = new Date(date);
+    return d.getFullYear() + "-" +
+           String(d.getMonth() + 1).padStart(2, "0") + "-" +
+           String(d.getDate()).padStart(2, "0");
+}
+
+function renderCheckResults(data) {
+    const root = document.getElementById("results-checks");
+    if (!root) return;
+
+    root.innerHTML = data.results.map(db => `
+        <div class="check-db-block">
+            <div class="check-db-title">${db.database}</div>
+            <div class="check-table-list">
+                ${db.tables.map(t => `
+                    <div class="check-table-row ${t.ok ? "ok" : "fail"}">
+                        <span>${t.table}</span>
+                        <span>${t.ok ? "✔️" : "❌"}</span>
+                    </div>
+
+                    ${t.ok && t.lastDate ? `
+                        <div class="check-table-details">
+                            <div>Datum: ${t.lastDateStr ?? "–"}</div>
+                            <div>Gesamt: ${t.totalCount}</div>
+                            <div>Letzter Tag: ${t.countAtLastDate}</div>
+                        </div>
+                    ` : ""}
+                `).join("")}
+            </div>
+        </div>
+    `).join("");
+}
 
 
 function simulateProgress(key) {
