@@ -100,12 +100,16 @@ async function runTileProcess(key) {
     try {
         let response;
 
+        if (key === "downloads") {
+            response = await runDownloads();
+        }
+
         if (key === "calculations") {
             response = await triggerCalculation();
         }
 
         if (key === "checks") {
-        response = await runChecks();
+            response = await runChecks();
         }
 
         updateTile(key, {
@@ -124,6 +128,7 @@ async function runTileProcess(key) {
         });
     }
 }
+
 
 function updateStepStatus(stepKey, status) {
     const el = document.getElementById(`step-status-${stepKey}`);
@@ -187,6 +192,26 @@ async function runUpdateMetrics() {
     return await res.text();
 }
 
+// Downloads
+async function runDownloads() {
+    console.log("Downloads gestartet...");
+
+    const res = await fetch("http://localhost:4000/api/downloads/run");
+
+    if (!res.ok) {
+        openLogModal("Downloads – Fehler", await res.text());
+        throw new Error("Fehler bei Downloads");
+    }
+
+    const json = await res.json();
+
+    // Log anzeigen
+    openLogModal("Downloads – Log", json.logs.join("\n"));
+
+    return json;
+}
+
+// Prüfungen
 async function runChecks() {
     console.log("Prüfungen gestartet...");
 

@@ -84,6 +84,45 @@ async function getTableStats(pool, tableName) {
     };
 }
 
+async function getYahooStats(pool, tableName) {
+    const lastDateResult = await pool.request().query(`
+        SELECT 
+            MAX([date]) AS lastDate,
+            CONVERT(varchar(19), MAX([date]), 120) AS lastDateStr
+        FROM dbo.${tableName};
+    `);
+
+    const row = lastDateResult.recordset[0];
+    const lastDate = row.lastDate;
+    const lastDateStr = row.lastDateStr;
+
+    if (!lastDate) {
+        return {
+            lastDate: null,
+            lastDateStr: null,
+            totalCount: 0,
+            countAtLastDate: 0
+        };
+    }
+
+    const request = pool.request();
+    request.input("lastDate", sql.Date, lastDate);
+
+    const countResult = await request.query(`
+        SELECT 
+            COUNT(*) AS totalCount,
+            SUM(CASE WHEN [date] = @lastDate THEN 1 ELSE 0 END) AS countAtLastDate
+        FROM dbo.${tableName};
+    `);
+
+    return {
+        lastDate,
+        lastDateStr,
+        totalCount: countResult.recordset[0].totalCount,
+        countAtLastDate: countResult.recordset[0].countAtLastDate
+    };
+}
+
 
 
 // ------------------------------------------------------
@@ -124,16 +163,65 @@ router.get("/all", async (req, res) => {
         }
 
 
-        const yahoo = await checkDatabase(yahooPool, "yahoo", [
+        // ------------------------------------------------------
+        // YAHOO – IndexHistory + Stammdaten
+        // ------------------------------------------------------
+        const yahoo = {
+            database: "yahoo",
+            tables: []
+        };
+
+        // 1) IndexHistory → im Cockpit als "Indexes"
+        {
+            const table = "IndexHistory";
+            const displayName = "Indexes";
+
+            const exists = await tableExists(yahooPool, table);
+
+            if (!exists) {
+                yahoo.tables.push({
+                    table: displayName,
+                    ok: false,
+                    message: "FEHLT"
+                });
+            } else {
+                const stats = await getYahooStats(yahooPool, table);
+
+                yahoo.tables.push({
+                    table: displayName,
+                    ok: true,
+                    message: "OK",
+                    lastDate: stats.lastDate,
+                    lastDateStr: stats.lastDateStr,
+                    totalCount: stats.totalCount,
+                    countAtLastDate: stats.countAtLastDate
+                });
+            }
+        }
+
+        // 2) Stammdaten: indices, countries, regions
+        for (const table of ["indices", "countries", "regions"]) {
+            const exists = await tableExists(yahooPool, table);
+
+            yahoo.tables.push({
+                table,
+                ok: exists,
+                message: exists ? "OK" : "FEHLT"
+            });
+        }
+
+
+        /*const yahoo = await checkDatabase(yahooPool, "yahoo", [
             "DailyHistory",
             "DailySignals",
-            "IndexHistory",
+            "Indexes",
             "StockMetrics",
             "countries",
             "indices",
             "regions",
             "strategies"
         ]);
+        */
 
         const journal = await checkDatabase(journalPool, "TradingJournal", [
             "ExecutedOrders",
