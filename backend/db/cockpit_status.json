@@ -1,0 +1,54 @@
+{
+  "downloads": {
+    "status": "success",
+    "lastRun": "2026-04-17T07:32:11.000Z",
+    "duration": "12s",
+    "details": {
+      "tickersDownloaded": 512,
+      "errors": []
+    }
+  },
+
+  "calculations": {
+    "status": "success",
+    "lastRun": "2026-04-17T07:35:44.000Z",
+    "duration": "4s",
+    "details": {
+      "tablesUpdated": ["sectors", "industries", "indexes"],
+      "errors": []
+    }
+  },
+
+  "checks": {
+    "status": "error",
+    "lastRun": "2026-04-17T07:40:12.000Z",
+    "duration": "3s",
+
+    "sections": {
+      "finviz": {
+        "title": "Finviz-Daten",
+        "status": "success",
+        "items": [
+          { "name": "finviz", "status": "success" },
+          { "name": "finviz_groups", "status": "success" }
+        ]
+      },
+
+      "yahoo": {
+        "title": "Yahoo-Daten + Berechnungen",
+        "status": "error",
+        "items": [
+          { "name": "indexes", "status": "error", "message": "Fehlende Werte" }
+        ]
+      },
+
+      "journal": {
+        "title": "Trading-Journal",
+        "status": "success",
+        "items": [
+          { "name": "journal_entries", "status": "success" }
+        ]
+      }
+    }
+  }
+}

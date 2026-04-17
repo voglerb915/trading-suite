@@ -48,7 +48,10 @@ app.use('/api/calculations', require('./routes/calculations'));
 app.use('/api/short-strategy-1', require('./routes/shortStrategy1'));
 app.use('/api/sectors', require('./routes/sectors'));
 app.use("/api/checks", require("./routes/checks"));
-app.use("/api/downloads", require("./routes/downloads"));
+//app.use("/api/downloads", require("./routes/downloads"));
+app.use("/api/downloads", require("./routes/downloads_stream"));
+app.use("/api/cockpit", require("./routes/cockpitStatusRoutes"));
+
 
 // ---------------------------------------------
 // 3. STATIC FRONTEND SERVING

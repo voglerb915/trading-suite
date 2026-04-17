@@ -287,34 +287,55 @@ h2, h3, .column-title {
     font-size: 0.9rem;
 }
 
-.check-db-block {
-    margin-bottom: 12px;
-    padding: 6px;
-    border-radius: 4px;
-    background: #f5f5f5;
+/* --- Prüfungen: Option C (optimiert) --- */
+
+.check-section {
+    margin-bottom: 20px;
 }
 
-.check-db-title {
-    font-weight: bold;
-    margin-bottom: 4px;
+.check-section-title {
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
 }
 
-.check-table-row {
+.check-icon {
+    font-size: 1.3rem;
+}
+
+.check-section-box {
+    border: 1px solid #333;
+    background: #181818;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.check-section-box.success {
+    border-color: #2ecc71;
+}
+
+.check-section-box.error {
+    border-color: #e74c3c;
+}
+
+.check-row {
     display: flex;
     justify-content: space-between;
-    padding: 2px 0;
+    padding: 6px 0;
+    border-bottom: 1px solid #222;
 }
 
-.check-table-row.ok {
-    color: #0a8a0a;
+.check-row:last-child {
+    border-bottom: none;
 }
 
-.check-table-row.fail {
-    color: #c00000;
-}
-.check-table-details {
-    margin-left: 10px;
-    font-size: 0.85rem;
-    color: #444;
-}
 
+.check-section { margin-bottom: 16px; }
+.check-section-title { font-weight: bold; margin-bottom: 6px; display: flex; gap: 6px; }
+.check-section-box { border: 1px solid #ccc; padding: 8px; border-radius: 6px; }
+.check-section-box.success { border-color: #2ecc71; }
+.check-section-box.error   { border-color: #e74c3c; }
+.check-row { display: flex; justify-content: space-between; padding: 4px 0; }

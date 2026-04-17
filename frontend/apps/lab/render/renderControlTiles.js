@@ -6,10 +6,9 @@ const CALC_STEPS = [
 ];
 
 
-export function renderControlTiles() {
+export async function renderControlTiles() {
     const root = document.getElementById("control-center-root");
 
-    // Modal direkt hier einfügen – root existiert sicher
     root.insertAdjacentHTML("beforebegin", `
         <div id="log-modal" class="log-modal hidden">
             <div class="log-modal-content">
@@ -20,7 +19,6 @@ export function renderControlTiles() {
         </div>
     `);
 
-    // Jetzt die Kacheln rendern
     root.innerHTML = `
         ${tile("downloads", "📥", "Downloads")}
         ${tile("calculations", "🧮", "Berechnungen")}
@@ -28,6 +26,9 @@ export function renderControlTiles() {
     `;
 
     setupTileEvents();
+
+    // 🔥 Persistenten Status laden
+    await loadPersistedStatus();
 }
 
 
@@ -95,13 +96,19 @@ document.addEventListener("click", (e) => {
 
 async function runTileProcess(key) {
     updateTile(key, { status: "running", progress: 0 });
-    simulateProgress(key);
+
+    // simulateProgress nur für calculations & checks
+    if (key !== "downloads") {
+        simulateProgress(key);
+    }
+
+    const startTime = Date.now();   // ⏱️ Startzeit für ALLE Tiles
 
     try {
         let response;
 
         if (key === "downloads") {
-            response = await runDownloads();
+            response = await runDownloads();   // SSE übernimmt Fortschritt
         }
 
         if (key === "calculations") {
@@ -112,12 +119,27 @@ async function runTileProcess(key) {
             response = await runChecks();
         }
 
-        updateTile(key, {
+        // Falls die Funktion keine Dauer liefert → selbst berechnen
+        const endTime = Date.now();
+        const durationMs = endTime - startTime;
+        const duration = response?.duration ?? formatDuration(durationMs);
+
+                updateTile(key, {
             status: "success",
             progress: 100,
             lastRun: new Date(),
-            duration: response?.duration ?? "–"
+            duration
         });
+
+        // 🔥 Status speichern
+        await saveTileStatus(key, {
+            status: "success",
+            lastRun: new Date(),
+            duration,
+            ...(key === "checks" ? { sections: response.sections } : {}),
+            ...(key !== "checks" ? { details: response.details ?? {} } : {})
+        });
+
 
     } catch (err) {
         updateTile(key, {
@@ -126,8 +148,25 @@ async function runTileProcess(key) {
             lastRun: new Date(),
             duration: "Fehler"
         });
+
+        await saveTileStatus(key, {
+            status: "error",
+            lastRun: new Date(),
+            duration: "Fehler"
+        });
+
     }
 }
+
+function formatDuration(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    if (minutes > 0) return `${minutes}m ${seconds}s`;
+    return `${seconds}s`;
+}
+
 
 
 function updateStepStatus(stepKey, status) {
@@ -194,22 +233,34 @@ async function runUpdateMetrics() {
 
 // Downloads
 async function runDownloads() {
-    console.log("Downloads gestartet...");
+    return new Promise((resolve, reject) => {
+        const evtSource = new EventSource("/api/downloads/stream");
 
-    const res = await fetch("http://localhost:4000/api/downloads/run");
+        evtSource.addEventListener("progress", (e) => {
+            const data = JSON.parse(e.data);
+            const percent = Math.round((data.current / data.total) * 100);
 
-    if (!res.ok) {
-        openLogModal("Downloads – Fehler", await res.text());
-        throw new Error("Fehler bei Downloads");
-    }
+            updateTile("downloads", {
+                progress: percent,
+                status: `Lade ${data.current}/${data.total} (${data.ticker})`
+            });
+        });
 
-    const json = await res.json();
+        // ❗ Fehler NICHT als Abbruch behandeln
+        evtSource.addEventListener("error", (e) => {
+            console.warn("SSE warning:", e);
+            // NICHT parsen, NICHT abbrechen, NICHT anzeigen
+            // EventSource bleibt offen und läuft weiter
+        });
 
-    // Log anzeigen
-    openLogModal("Downloads – Log", json.logs.join("\n"));
-
-    return json;
+        evtSource.addEventListener("done", (e) => {
+            evtSource.close();
+            resolve({ duration: "–" });
+        });
+    });
 }
+
+
 
 // Prüfungen
 async function runChecks() {
@@ -224,15 +275,68 @@ async function runChecks() {
 
     const json = await res.json();
 
-    // Ergebnisse direkt in der Kachel anzeigen
-    renderCheckResults(json);
+    // ----------------------------------------------------
+    // 1) Alte Struktur (json.results) → neue Struktur (sections)
+    // ----------------------------------------------------
+    const sections = {
+        finviz: {
+            title: "Finviz-Daten",
+            status: "success",
+            items: []
+        },
+        yahoo: {
+            title: "Yahoo-Daten + Berechnungen",
+            status: "success",
+            items: []
+        },
+        journal: {
+            title: "Trading-Journal",
+            status: "success",
+            items: []
+        }
+    };
 
-    // Popup nur bei Fehlern
+    for (const db of json.results) {
+        const dbName = db.database.toLowerCase();
+
+        let target = null;
+        if (dbName.includes("finviz")) target = sections.finviz;
+        if (dbName.includes("yahoo")) target = sections.yahoo;
+        if (dbName.includes("journal")) target = sections.journal;
+
+        if (!target) continue;
+
+        for (const t of db.tables) {
+            target.items.push({
+                name: t.table,
+                status: t.ok ? "success" : "error",
+                lastDate: t.lastDateStr ?? null,
+                totalCount: t.totalCount ?? null,
+                countAtLastDate: t.countAtLastDate ?? null
+            });
+
+            if (!t.ok) {
+                target.status = "error";
+            }
+        }
+    }
+
+    // ----------------------------------------------------
+    // 2) Ergebnisse in der Kachel anzeigen (Option C)
+    // ----------------------------------------------------
+    renderCheckSections(sections);
+
+    // ----------------------------------------------------
+    // 3) Fehler-Popup nur bei Fehlern
+    // ----------------------------------------------------
     if (!json.ok) {
         openLogModal("Prüfungen – Fehler", JSON.stringify(json, null, 2));
     }
 
-    return json;
+    // ----------------------------------------------------
+    // 4) sections zurückgeben → wird in saveTileStatus gespeichert
+    // ----------------------------------------------------
+    return { sections };
 }
 
 
@@ -303,4 +407,77 @@ function updateTile(key, data) {
         document.getElementById(`duration-${key}`).textContent =
             "Dauer: " + data.duration;
     }
+}
+
+async function loadPersistedStatus() {
+    try {
+        const res = await fetch("/api/cockpit/status");
+        if (!res.ok) return;
+
+        const status = await res.json();
+
+        // Downloads
+        if (status.downloads) {
+            updateTile("downloads", status.downloads);
+        }
+
+        // Calculations
+        if (status.calculations) {
+            updateTile("calculations", status.calculations);
+        }
+
+        // Checks
+        if (status.checks) {
+            updateTile("checks", status.checks);
+
+            if (status.checks.sections) {
+                renderCheckSections(status.checks.sections);
+            }
+        }
+
+    } catch (err) {
+        console.warn("Status konnte nicht geladen werden:", err);
+    }
+}
+
+
+async function saveTileStatus(tile, payload) {
+    try {
+        await fetch(`/api/cockpit/status/${tile}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+    } catch (err) {
+        console.warn("Status konnte nicht gespeichert werden:", err);
+    }
+}
+
+function renderCheckSections(sections) {
+    const root = document.getElementById("results-checks");
+    if (!root) return;
+
+    const ICONS = {
+        finviz: "📊",
+        yahoo: "📈",
+        journal: "📘"
+    };
+
+    root.innerHTML = Object.entries(sections).map(([key, sec]) => `
+        <div class="check-section">
+            <div class="check-section-title">
+                <span class="check-icon">${ICONS[key]}</span>
+                <span>${sec.title}</span>
+            </div>
+
+            <div class="check-section-box ${sec.status}">
+                ${sec.items.map(item => `
+                    <div class="check-row ${item.status}">
+                        <span>${item.name}</span>
+                        <span>${item.status === "success" ? "✔️" : "❌"}</span>
+                    </div>
+                `).join("")}
+            </div>
+        </div>
+    `).join("");
 }
