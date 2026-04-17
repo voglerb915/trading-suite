@@ -91,7 +91,7 @@ h2, h3, .column-title {
 
 #lab-container {
     display: grid;
-    grid-template-columns: 25vw 25vw 50vw;
+    grid-template-columns: 25vw 10vw 65vw;
     height: 100vh;
     width: 100vw;
     overflow: hidden;
@@ -109,7 +109,7 @@ h2, h3, .column-title {
 
 /* Mittlere Spalte */
 #col-2 {
-    width: 25vw;
+    width: 10vw;
     overflow-y: auto;
     padding: 0px 20px 20px 20px;
     border-right: 1px solid #252525;
@@ -118,7 +118,7 @@ h2, h3, .column-title {
 
 /* Rechte Spalte (Control Center Bereich) */
 #col-3 {
-    width: 50vw;
+    width: 65vw;
     overflow-y: auto;
     padding: 20px;
     box-sizing: border-box;
@@ -146,7 +146,7 @@ h2, h3, .column-title {
 
 #control-center-root {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     padding: 10px;
 }
@@ -332,6 +332,46 @@ h2, h3, .column-title {
     border-bottom: none;
 }
 
+.check-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* WICHTIG: sorgt für konsistente Spalten */
+    font-size: 0.85rem;
+}
+
+.check-table th,
+.check-table td {
+    padding: 6px 4px;
+    border-bottom: 1px solid #222;
+    overflow: hidden;       /* verhindert Umbrüche */
+    text-overflow: ellipsis; /* ... bei langen Texten */
+    white-space: nowrap;     /* keine Zeilenumbrüche */
+}
+
+/* Spaltenbreiten definieren */
+.check-table th:nth-child(1),
+.check-table td:nth-child(1) {
+    width: 33%; /* Tabellenname */
+    text-align: left;
+}
+
+.check-table th:nth-child(2),
+.check-table td:nth-child(2) {
+    width: 15%; /* Status */
+    text-align: center;
+}
+
+.check-table th:nth-child(3),
+.check-table td:nth-child(3) {
+    width: 38%; /* Letztes Datum */
+}
+
+.check-table th:nth-child(4),
+.check-table td:nth-child(4) {
+    width: 14%; /* Letzter Tag */
+    text-align: right;
+}
+
 
 .check-section { margin-bottom: 16px; }
 .check-section-title { font-weight: bold; margin-bottom: 6px; display: flex; gap: 6px; }
@@ -339,3 +379,4 @@ h2, h3, .column-title {
 .check-section-box.success { border-color: #2ecc71; }
 .check-section-box.error   { border-color: #e74c3c; }
 .check-row { display: flex; justify-content: space-between; padding: 4px 0; }
+

@@ -16,80 +16,48 @@ async function tableExists(pool, tableName) {
 }
 
 // ------------------------------------------------------
-// Prüft eine komplette Datenbank
+// Mapping: Tabellen → Datumsspalte + Typ
 // ------------------------------------------------------
-async function checkDatabase(pool, dbName, tables) {
-    const results = [];
+const DATE_COLUMNS = {
+    // Finviz
+    finviz: { column: "anl_datum", type: "datetime" },
+    finviz_groups: { column: "anl_datum", type: "datetime" },
 
-    for (const table of tables) {
-        try {
-            const exists = await tableExists(pool, table);
-            results.push({
-                table,
-                ok: exists,
-                message: exists ? "OK" : "FEHLT"
-            });
-        } catch (err) {
-            results.push({
-                table,
-                ok: false,
-                message: "Fehler: " + err.message
-            });
-        }
-    }
+    // Yahoo
+    IndexHistory: { column: "date", type: "date" },
 
-    return {
-        database: dbName,
-        tables: results
-    };
-}
-async function getTableStats(pool, tableName) {
-    // 1. Letztes Datum holen – inkl. String
-    const lastDateResult = await pool.request().query(`
-        SELECT 
-            MAX(anl_datum) AS lastDate,
-            CONVERT(varchar(19), MAX(anl_datum), 120) AS lastDateStr
-        FROM dbo.${tableName};
-    `);
+    // TradingJournal
+    ExecutedOrders: { column: "execution_time", type: "datetime" },
+    MarketContext: { column: "captured_at", type: "datetime" },
+    OrderCreation: { column: "created_at", type: "datetime" },
+    watchlist: { column: "date", type: "date" }
+};
 
-    const row = lastDateResult.recordset[0];
-    const lastDate = row.lastDate;
-    const lastDateStr = row.lastDateStr; // z.B. "2026-04-10 22:15:46"
+// ------------------------------------------------------
+// Universelle Stats-Funktion für Tabellen mit Datum
+// ------------------------------------------------------
+async function getTableStatsGeneric(pool, tableName) {
+    const cfg = DATE_COLUMNS[tableName];
 
-    if (!lastDate) {
+    if (!cfg) {
+        // Tabelle hat laut Mapping kein Datum → bewusst kein Datum zurückgeben
         return {
             lastDate: null,
             lastDateStr: null,
-            totalCount: 0,
-            countAtLastDate: 0
+            totalCount: null,
+            countAtLastDate: null
         };
     }
 
-    const request = pool.request();
-    request.input("lastDate", sql.DateTime, lastDate);
+    const col = cfg.column;
+    const isDateOnly = cfg.type === "date";
 
-    const countResult = await request.query(`
-        SELECT 
-            COUNT(*) AS totalCount,
-            SUM(CASE WHEN CAST(anl_datum AS DATE) = CAST(@lastDate AS DATE) THEN 1 ELSE 0 END) AS countAtLastDate
-        FROM dbo.${tableName};
-    `);
-
-
-    return {
-        lastDate,
-        lastDateStr,
-        totalCount: countResult.recordset[0].totalCount,
-        countAtLastDate: countResult.recordset[0].countAtLastDate
-    };
-}
-
-async function getYahooStats(pool, tableName) {
+    // 1. Letztes Datum holen – inkl. String
     const lastDateResult = await pool.request().query(`
         SELECT 
-            MAX([date]) AS lastDate,
-            CONVERT(varchar(19), MAX([date]), 120) AS lastDateStr
-        FROM dbo.${tableName};
+            MAX([${col}]) AS lastDate,
+            CONVERT(varchar(19), MAX([${col}]), 120) AS lastDateStr
+        FROM dbo.[${tableName}];
     `);
 
     const row = lastDateResult.recordset[0];
@@ -106,14 +74,29 @@ async function getYahooStats(pool, tableName) {
     }
 
     const request = pool.request();
-    request.input("lastDate", sql.Date, lastDate);
 
-    const countResult = await request.query(`
-        SELECT 
-            COUNT(*) AS totalCount,
-            SUM(CASE WHEN [date] = @lastDate THEN 1 ELSE 0 END) AS countAtLastDate
-        FROM dbo.${tableName};
-    `);
+    if (isDateOnly) {
+        request.input("lastDate", sql.Date, lastDate);
+    } else {
+        request.input("lastDate", sql.DateTime, lastDate);
+    }
+
+    // 2. Counts ermitteln
+    const countQuery = isDateOnly
+        ? `
+            SELECT 
+                COUNT(*) AS totalCount,
+                SUM(CASE WHEN [${col}] = @lastDate THEN 1 ELSE 0 END) AS countAtLastDate
+            FROM dbo.[${tableName}];
+        `
+        : `
+            SELECT 
+                COUNT(*) AS totalCount,
+                SUM(CASE WHEN CAST([${col}] AS DATE) = CAST(@lastDate AS DATE) THEN 1 ELSE 0 END) AS countAtLastDate
+            FROM dbo.[${tableName}];
+        `;
+
+    const countResult = await request.query(countQuery);
 
     return {
         lastDate,
@@ -123,8 +106,6 @@ async function getYahooStats(pool, tableName) {
     };
 }
 
-
-
 // ------------------------------------------------------
 // GET /api/checks/all
 // ------------------------------------------------------
@@ -132,8 +113,11 @@ router.get("/all", async (req, res) => {
     const start = performance.now();
 
     try {
+        // ------------------------------------------------------
+        // FINVIZ (trading-DB, aber logischer Block "finviz")
+// ------------------------------------------------------
         const trading = {
-            database: "trading",
+            database: "finviz",
             tables: []
         };
 
@@ -149,7 +133,7 @@ router.get("/all", async (req, res) => {
                 continue;
             }
 
-            const stats = await getTableStats(tradingPool, table);
+            const stats = await getTableStatsGeneric(tradingPool, table);
 
             trading.tables.push({
                 table,
@@ -162,16 +146,15 @@ router.get("/all", async (req, res) => {
             });
         }
 
-
         // ------------------------------------------------------
-        // YAHOO – IndexHistory + Stammdaten
+        // YAHOO – nur IndexHistory (Indexes) in der Prüfungsanzeige
+        // Stammdaten (indices, countries, regions) bewusst NICHT hier
         // ------------------------------------------------------
         const yahoo = {
             database: "yahoo",
             tables: []
         };
 
-        // 1) IndexHistory → im Cockpit als "Indexes"
         {
             const table = "IndexHistory";
             const displayName = "Indexes";
@@ -185,7 +168,7 @@ router.get("/all", async (req, res) => {
                     message: "FEHLT"
                 });
             } else {
-                const stats = await getYahooStats(yahooPool, table);
+                const stats = await getTableStatsGeneric(yahooPool, table);
 
                 yahoo.tables.push({
                     table: displayName,
@@ -199,36 +182,38 @@ router.get("/all", async (req, res) => {
             }
         }
 
-        // 2) Stammdaten: indices, countries, regions
-        for (const table of ["indices", "countries", "regions"]) {
-            const exists = await tableExists(yahooPool, table);
+        // ------------------------------------------------------
+        // TRADING JOURNAL
+        // ------------------------------------------------------
+        const journal = {
+            database: "TradingJournal",
+            tables: []
+        };
 
-            yahoo.tables.push({
+        for (const table of ["ExecutedOrders", "MarketContext", "OrderCreation", "watchlist"]) {
+            const exists = await tableExists(journalPool, table);
+
+            if (!exists) {
+                journal.tables.push({
+                    table,
+                    ok: false,
+                    message: "FEHLT"
+                });
+                continue;
+            }
+
+            const stats = await getTableStatsGeneric(journalPool, table);
+
+            journal.tables.push({
                 table,
-                ok: exists,
-                message: exists ? "OK" : "FEHLT"
+                ok: true,
+                message: "OK",
+                lastDate: stats.lastDate,
+                lastDateStr: stats.lastDateStr,
+                totalCount: stats.totalCount,
+                countAtLastDate: stats.countAtLastDate
             });
         }
-
-
-        /*const yahoo = await checkDatabase(yahooPool, "yahoo", [
-            "DailyHistory",
-            "DailySignals",
-            "Indexes",
-            "StockMetrics",
-            "countries",
-            "indices",
-            "regions",
-            "strategies"
-        ]);
-        */
-
-        const journal = await checkDatabase(journalPool, "TradingJournal", [
-            "ExecutedOrders",
-            "MarketContext",
-            "OrderCreation",
-            "watchlist"
-        ]);
 
         const end = performance.now();
 

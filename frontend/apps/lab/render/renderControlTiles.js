@@ -276,7 +276,7 @@ async function runChecks() {
     const json = await res.json();
 
     // ----------------------------------------------------
-    // 1) Alte Struktur (json.results) → neue Struktur (sections)
+    // 1) Neue Struktur (sections)
     // ----------------------------------------------------
     const sections = {
         finviz: {
@@ -310,9 +310,10 @@ async function runChecks() {
             target.items.push({
                 name: t.table,
                 status: t.ok ? "success" : "error",
-                lastDate: t.lastDateStr ?? null,
-                totalCount: t.totalCount ?? null,
-                countAtLastDate: t.countAtLastDate ?? null
+                lastDateStr: t.lastDateStr ?? null,
+                countAtLastDate: t.countAtLastDate ?? null,
+                isValidation: t.details !== undefined,
+                details: t.details ?? null
             });
 
             if (!t.ok) {
@@ -322,7 +323,7 @@ async function runChecks() {
     }
 
     // ----------------------------------------------------
-    // 2) Ergebnisse in der Kachel anzeigen (Option C)
+    // 2) Ergebnisse anzeigen
     // ----------------------------------------------------
     renderCheckSections(sections);
 
@@ -333,9 +334,6 @@ async function runChecks() {
         openLogModal("Prüfungen – Fehler", JSON.stringify(json, null, 2));
     }
 
-    // ----------------------------------------------------
-    // 4) sections zurückgeben → wird in saveTileStatus gespeichert
-    // ----------------------------------------------------
     return { sections };
 }
 
@@ -440,7 +438,6 @@ async function loadPersistedStatus() {
     }
 }
 
-
 async function saveTileStatus(tile, payload) {
     try {
         await fetch(`/api/cockpit/status/${tile}`, {
@@ -451,6 +448,16 @@ async function saveTileStatus(tile, payload) {
     } catch (err) {
         console.warn("Status konnte nicht gespeichert werden:", err);
     }
+}
+function formatDateTimeShort(str) {
+    if (!str) return "–";
+
+    // Beispiel: "2026-04-17 20:17:11"
+    const [date, time] = str.split(" ");
+    if (!time) return date;
+
+    const [hh, mm] = time.split(":");
+    return `${date} ${hh}:${mm}`;
 }
 
 function renderCheckSections(sections) {
@@ -471,13 +478,33 @@ function renderCheckSections(sections) {
             </div>
 
             <div class="check-section-box ${sec.status}">
-                ${sec.items.map(item => `
-                    <div class="check-row ${item.status}">
-                        <span>${item.name}</span>
-                        <span>${item.status === "success" ? "✔️" : "❌"}</span>
-                    </div>
-                `).join("")}
+                <table class="check-table">
+                    <thead>
+                        <tr>
+                            <th>Tabelle</th>
+                            <th>Status</th>
+                            <th>Letztes Datum</th>
+                            <th>Daten</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${sec.items.map(item => `
+                            <tr class="${item.status}">
+                                <td>${item.name}</td>
+                                <td>${item.status === "success" ? "✔️" : "❌"}</td>
+                                <td>${item.isValidation ? "–" : formatDateTimeShort(item.lastDateStr)}</td>
+                                <td>
+                                    ${item.isValidation
+                                        ? (item.details ? item.details.join(", ") : "–")
+                                        : (item.countAtLastDate ?? "–")
+                                    }
+                                </td>
+                            </tr>
+                        `).join("")}
+                    </tbody>
+                </table>
             </div>
         </div>
     `).join("");
 }
+

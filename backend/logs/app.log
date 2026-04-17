@@ -1384,3 +1384,14 @@
 [2026-04-17T19:49:08.132Z] [COCKPIT-METRICS] [INFO] Erfolgreich 263 Zeilen für Cockpit geladen.
 [2026-04-17T19:49:08.128Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
 [2026-04-17T19:53:04.078Z] [COCKPIT-METRICS] [INFO] Erfolgreich 262 Zeilen für Cockpit geladen.
+[2026-04-17T20:22:51.574Z] [COCKPIT-METRICS] [INFO] Erfolgreich 263 Zeilen für Cockpit geladen.
+[2026-04-17T20:28:35.754Z] [COCKPIT-METRICS] [INFO] Erfolgreich 263 Zeilen für Cockpit geladen.
+[2026-04-17T20:36:55.969Z] [COCKPIT-METRICS] [INFO] Erfolgreich 263 Zeilen für Cockpit geladen.
+[2026-04-17T20:36:57.534Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
+[2026-04-17T21:04:03.443Z] [COCKPIT-METRICS] [INFO] Erfolgreich 263 Zeilen für Cockpit geladen.
+[2026-04-17T21:09:51.922Z] [COCKPIT-METRICS] [INFO] Erfolgreich 263 Zeilen für Cockpit geladen.
+[2026-04-17T21:09:52.472Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
+[2026-04-17T21:16:28.615Z] [COCKPIT-METRICS] [INFO] Erfolgreich 263 Zeilen für Cockpit geladen.
+[2026-04-17T21:39:18.859Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
+[2026-04-17T21:39:31.742Z] [COCKPIT-METRICS] [INFO] Erfolgreich 262 Zeilen für Cockpit geladen.
+[2026-04-17T21:41:19.723Z] [COCKPIT-METRICS] [INFO] Erfolgreich 262 Zeilen für Cockpit geladen.
