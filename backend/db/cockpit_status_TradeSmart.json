@@ -1,27 +1,8 @@
 {
-  "downloads": {
-    "status": "success",
-    "lastRun": "2026-04-17T23:55:01.051Z",
-    "duration": "–",
-    "details": {}
-  },
-  "calculations": {
-    "status": "success",
-    "lastRun": "2026-04-17T07:35:44.000Z",
-    "duration": "4s",
-    "details": {
-      "tablesUpdated": [
-        "sectors",
-        "industries",
-        "indexes"
-      ],
-      "errors": []
-    }
-  },
   "checks": {
     "status": "success",
-    "lastRun": "2026-04-18T16:29:26.794Z",
-    "duration": "1s",
+    "lastRun": "2026-04-18T19:24:41.682Z",
+    "duration": "2s",
     "sections": {
       "finviz": {
         "title": "Finviz-Daten",
@@ -30,15 +11,15 @@
           {
             "name": "finviz",
             "status": "success",
-            "lastDateStr": "2026-04-17 22:15:34",
-            "countAtLastDate": 11028,
+            "lastDateStr": "2026-04-16 22:15:34",
+            "countAtLastDate": 11022,
             "isValidation": false,
             "details": null
           },
           {
             "name": "finviz_groups",
             "status": "success",
-            "lastDateStr": "2026-04-17 22:15:29",
+            "lastDateStr": "2026-04-16 22:15:26",
             "countAtLastDate": 155,
             "isValidation": false,
             "details": null
@@ -56,6 +37,30 @@
             "countAtLastDate": 28,
             "isValidation": false,
             "details": null
+          },
+          {
+            "name": "DailyHistory",
+            "status": "success",
+            "lastDateStr": "2026-04-17",
+            "countAtLastDate": 10741,
+            "isValidation": false,
+            "details": null
+          },
+          {
+            "name": "DailySignals",
+            "status": "success",
+            "lastDateStr": "2026-04-17",
+            "countAtLastDate": 4634,
+            "isValidation": false,
+            "details": null
+          },
+          {
+            "name": "StockMetrics",
+            "status": "success",
+            "lastDateStr": "2026-04-17",
+            "countAtLastDate": 10741,
+            "isValidation": false,
+            "details": null
           }
         ]
       },
@@ -66,8 +71,8 @@
           {
             "name": "ExecutedOrders",
             "status": "success",
-            "lastDateStr": "2026-04-10 15:42:55",
-            "countAtLastDate": 9,
+            "lastDateStr": "2026-04-01 17:11:05",
+            "countAtLastDate": 7,
             "isValidation": false,
             "details": null
           },
@@ -82,16 +87,16 @@
           {
             "name": "OrderCreation",
             "status": "success",
-            "lastDateStr": "2026-04-10 15:23:14",
-            "countAtLastDate": 3,
+            "lastDateStr": "2026-04-01 15:28:06",
+            "countAtLastDate": 4,
             "isValidation": false,
             "details": null
           },
           {
             "name": "watchlist",
             "status": "success",
-            "lastDateStr": "2026-04-09",
-            "countAtLastDate": 3,
+            "lastDateStr": "2026-03-31",
+            "countAtLastDate": 4,
             "isValidation": false,
             "details": null
           }

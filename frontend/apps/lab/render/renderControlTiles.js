@@ -20,7 +20,7 @@ export async function renderControlTiles() {
     `);
 
     root.innerHTML = `
-        ${tile("downloads", "📥", "Downloads")}
+        ${tile("downloads", "📥", "Yahoo-Downloads")}
         ${tile("calculations", "🧮", "Berechnungen")}
         ${tile("checks", "🔍", "Prüfungen")}
     `;
@@ -35,6 +35,7 @@ export async function renderControlTiles() {
 
 function tile(key, icon, title) {
     const isCalc = key === "calculations";
+    const isDownloads = key === "downloads";
 
     return `
         <div class="control-tile" id="tile-${key}">
@@ -46,7 +47,6 @@ function tile(key, icon, title) {
                 <div class="tile-progress-bar" id="progress-${key}"></div>
             </div>
 
-            <!-- 🔍 HIER KOMMT DER CHECKS-BLOCK REIN -->
             ${key === "checks" ? `
                 <div class="tile-results" id="results-checks"></div>
             ` : ""}
@@ -62,6 +62,15 @@ function tile(key, icon, title) {
                 </div>
             ` : ""}
 
+            ${isDownloads ? `
+                <div class="tile-results" id="results-downloads"></div>
+
+                <div class="download-buttons">
+                    <button id="btn-indexhistory">IndexHistory laden</button>
+                    <button id="btn-dailyhistory">DailyHistory laden</button>
+                </div>
+            ` : ""}
+
             <div class="tile-meta">
                 <div id="last-${key}">Letzter Lauf: –</div>
                 <div id="duration-${key}">Dauer: –</div>
@@ -71,15 +80,25 @@ function tile(key, icon, title) {
 }
 
 
-
-
 function setupTileEvents() {
     ["downloads", "calculations", "checks"].forEach(key => {
         document.getElementById(`tile-${key}`).addEventListener("click", () => {
-            runTileProcess(key);
+            if (key !== "downloads") {
+                runTileProcess(key);
+            }
         });
     });
+
+    // 🔥 Downloads haben eigene Buttons
+    document.getElementById("btn-indexhistory").addEventListener("click", () => {
+        runIndexHistory();
+    });
+
+    document.getElementById("btn-dailyhistory").addEventListener("click", () => {
+        runDailyHistory();
+    });
 }
+
 
 function openLogModal(title, body) {
     document.getElementById("log-title").textContent = title;
@@ -107,9 +126,9 @@ async function runTileProcess(key) {
     try {
         let response;
 
-        if (key === "downloads") {
-            response = await runDownloads();   // SSE übernimmt Fortschritt
-        }
+        //if (key === "downloads") {
+        //    response = await runDownloads();   // SSE übernimmt Fortschritt
+        //}
 
         if (key === "calculations") {
             response = await triggerCalculation();
@@ -132,13 +151,15 @@ async function runTileProcess(key) {
         });
 
         // 🔥 Status speichern
-        await saveTileStatus(key, {
-            status: "success",
-            lastRun: new Date(),
-            duration,
-            ...(key === "checks" ? { sections: response.sections } : {}),
-            ...(key !== "checks" ? { details: response.details ?? {} } : {})
-        });
+        if (key !== "downloads") {
+            await saveTileStatus(key, {
+                status: "success",
+                lastRun: new Date(),
+                duration,
+                ...(key === "checks" ? { sections: response.sections } : {}),
+                ...(key !== "checks" ? { details: response.details ?? {} } : {})
+            });
+        }
 
 
     } catch (err) {
@@ -149,11 +170,13 @@ async function runTileProcess(key) {
             duration: "Fehler"
         });
 
-        await saveTileStatus(key, {
-            status: "error",
-            lastRun: new Date(),
-            duration: "Fehler"
-        });
+        if (key !== "downloads") {
+            await saveTileStatus(key, {
+                status: "error",
+                lastRun: new Date(),
+                duration: "Fehler"
+            });
+        }
 
     }
 }
@@ -217,8 +240,6 @@ async function runShortStrategy() {
 }
 
 
-
-
 async function runUpdateMetrics() {
     console.log("Update-Metrics gestartet...");
 
@@ -238,7 +259,9 @@ async function runDownloads() {
 
         evtSource.addEventListener("progress", (e) => {
             const data = JSON.parse(e.data);
-            const percent = Math.round((data.current / data.total) * 100);
+            const percent = data.total > 0
+                ? Math.round((data.current / data.total) * 100)
+                : 0;
 
             updateTile("downloads", {
                 progress: percent,
@@ -246,20 +269,90 @@ async function runDownloads() {
             });
         });
 
-        // ❗ Fehler NICHT als Abbruch behandeln
         evtSource.addEventListener("error", (e) => {
             console.warn("SSE warning:", e);
-            // NICHT parsen, NICHT abbrechen, NICHT anzeigen
-            // EventSource bleibt offen und läuft weiter
         });
 
-        evtSource.addEventListener("done", (e) => {
+        evtSource.addEventListener("done", async (e) => {
             evtSource.close();
-            resolve({ duration: "–" });
+
+            try {
+                // DailyHistory nach IndexHistory laden
+                const res = await fetch("/api/downloads/loadYahooStocks");
+                const json = await res.json().catch(() => ({}));
+
+                // Status neu laden
+                await loadPersistedStatus();
+
+                resolve({ duration: json.duration ?? "–" });
+            } catch (err) {
+                console.warn("Fehler bei DailyHistory:", err);
+                resolve({ duration: "Fehler" });
+            }
         });
     });
 }
+async function runIndexHistory() {
+    updateTile("downloads", { status: "running", progress: 0 });
 
+    await runDownloads(); // nutzt SSE + DailyHistory
+    
+}
+
+async function runDailyHistory() {
+    updateTile("downloads", { status: "running", progress: 0 });
+
+    const res = await fetch("/api/downloads/loadYahooStocks");
+    const json = await res.json().catch(() => ({}));
+
+    await loadPersistedStatus();
+
+    updateTile("downloads", {
+        status: "success",
+        progress: 100,
+        duration: json.duration ?? "–",
+        lastRun: new Date()
+    });
+}
+
+
+function renderDownloadsStatus(downloads) {
+    const root = document.getElementById("results-downloads");
+    if (!root) return;
+
+    const rows = [
+        { key: "IndexHistory", label: "IndexHistory" },
+        { key: "DailyHistory", label: "DailyHistory" }
+    ];
+
+    root.innerHTML = `
+        <table class="check-table">
+            <thead>
+                <tr>
+                    <th>Tabelle</th>
+                    <th>Status</th>
+                    <th>Letzter Lauf</th>
+                    <th>Dauer</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${rows.map(r => {
+                    const s = downloads[r.key] || {};
+                    const ok = s.ok === true;
+
+                    return `
+                        <tr class="${ok ? "success" : (s.ok === false ? "error" : "")}">
+                            <td>${r.label}</td>
+                            <td>${s.ok === undefined ? "–" : (ok ? "✔️" : "❌")}</td>
+                            <td>${s.lastRun ? formatDateTimeShort(s.lastRun.replace("T", " ").slice(0,16)) : "–"}</td>
+                            <td>${s.duration || "–"}</td>
+                        </tr>
+                    `;
+                }).join("")}
+            </tbody>
+        </table>
+    `;
+}
 
 
 // Prüfungen
@@ -416,8 +509,9 @@ async function loadPersistedStatus() {
 
         // Downloads
         if (status.downloads) {
-            updateTile("downloads", status.downloads);
+            renderDownloadsStatus(status.downloads);
         }
+
 
         // Calculations
         if (status.calculations) {

@@ -1,27 +1,8 @@
 {
-  "downloads": {
-    "status": "success",
-    "lastRun": "2026-04-17T23:55:01.051Z",
-    "duration": "–",
-    "details": {}
-  },
-  "calculations": {
-    "status": "success",
-    "lastRun": "2026-04-17T07:35:44.000Z",
-    "duration": "4s",
-    "details": {
-      "tablesUpdated": [
-        "sectors",
-        "industries",
-        "indexes"
-      ],
-      "errors": []
-    }
-  },
   "checks": {
     "status": "success",
-    "lastRun": "2026-04-18T16:29:26.794Z",
-    "duration": "1s",
+    "lastRun": "2026-04-18T18:36:22.132Z",
+    "duration": "5s",
     "sections": {
       "finviz": {
         "title": "Finviz-Daten",
@@ -54,6 +35,30 @@
             "status": "success",
             "lastDateStr": "2026-04-17",
             "countAtLastDate": 28,
+            "isValidation": false,
+            "details": null
+          },
+          {
+            "name": "DailyHistory",
+            "status": "success",
+            "lastDateStr": "2026-04-17",
+            "countAtLastDate": 10748,
+            "isValidation": false,
+            "details": null
+          },
+          {
+            "name": "DailySignals",
+            "status": "success",
+            "lastDateStr": "2026-04-16",
+            "countAtLastDate": 4635,
+            "isValidation": false,
+            "details": null
+          },
+          {
+            "name": "StockMetrics",
+            "status": "success",
+            "lastDateStr": "2026-04-16",
+            "countAtLastDate": 10719,
             "isValidation": false,
             "details": null
           }
@@ -98,5 +103,11 @@
         ]
       }
     }
+  },
+  "calculations": {
+    "status": "success",
+    "lastRun": "2026-04-18T18:30:39.157Z",
+    "duration": "0.11s",
+    "details": {}
   }
 }

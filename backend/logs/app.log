@@ -1395,3 +1395,6 @@
 [2026-04-17T21:39:18.859Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
 [2026-04-17T21:39:31.742Z] [COCKPIT-METRICS] [INFO] Erfolgreich 262 Zeilen für Cockpit geladen.
 [2026-04-17T21:41:19.723Z] [COCKPIT-METRICS] [INFO] Erfolgreich 262 Zeilen für Cockpit geladen.
+[2026-04-18T18:30:39.073Z] [UPDATE-SHORT] [UPDATE] JSON-Export gestartet
+[2026-04-18T18:30:39.094Z] [UPDATE-SHORT] [UPDATE] JSON erfolgreich geschrieben
+[2026-04-18T20:08:53.472Z] [COCKPIT-METRICS] [INFO] Erfolgreich 400 Zeilen für Cockpit geladen.

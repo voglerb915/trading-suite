@@ -25,6 +25,9 @@ const DATE_COLUMNS = {
 
     // Yahoo
     IndexHistory: { column: "date", type: "date" },
+    DailyHistory: { column: "date", type: "date" },
+    DailySignals: { column: "date", type: "date" },
+    StockMetrics: { column: "date", type: "date" },
 
     // TradingJournal
     ExecutedOrders: { column: "execution_time", type: "datetime" },
@@ -32,6 +35,7 @@ const DATE_COLUMNS = {
     OrderCreation: { column: "created_at", type: "datetime" },
     watchlist: { column: "date", type: "date" }
 };
+
 
 // ------------------------------------------------------
 // Universelle Stats-Funktion für Tabellen mit Datum
@@ -115,7 +119,7 @@ router.get("/all", async (req, res) => {
     try {
         // ------------------------------------------------------
         // FINVIZ (trading-DB, aber logischer Block "finviz")
-// ------------------------------------------------------
+        // ------------------------------------------------------
         const trading = {
             database: "finviz",
             tables: []
@@ -147,40 +151,45 @@ router.get("/all", async (req, res) => {
         }
 
         // ------------------------------------------------------
-        // YAHOO – nur IndexHistory (Indexes) in der Prüfungsanzeige
-        // Stammdaten (indices, countries, regions) bewusst NICHT hier
-        // ------------------------------------------------------
-        const yahoo = {
-            database: "yahoo",
-            tables: []
-        };
+// YAHOO – alle Zeitreihen-Tabellen
+// ------------------------------------------------------
+const yahoo = {
+    database: "yahoo",
+    tables: []
+};
 
-        {
-            const table = "IndexHistory";
-            const displayName = "Indexes";
+const yahooTables = [
+    { table: "IndexHistory", display: "Indexes" },
+    { table: "DailyHistory", display: "DailyHistory" },
+    { table: "DailySignals", display: "DailySignals" },
+    { table: "StockMetrics", display: "StockMetrics" }
+];
 
-            const exists = await tableExists(yahooPool, table);
+for (const { table, display } of yahooTables) {
+    const exists = await tableExists(yahooPool, table);
 
-            if (!exists) {
-                yahoo.tables.push({
-                    table: displayName,
-                    ok: false,
-                    message: "FEHLT"
-                });
-            } else {
-                const stats = await getTableStatsGeneric(yahooPool, table);
+    if (!exists) {
+        yahoo.tables.push({
+            table: display,
+            ok: false,
+            message: "FEHLT"
+        });
+        continue;
+    }
 
-                yahoo.tables.push({
-                    table: displayName,
-                    ok: true,
-                    message: "OK",
-                    lastDate: stats.lastDate,
-                    lastDateStr: stats.lastDateStr,
-                    totalCount: stats.totalCount,
-                    countAtLastDate: stats.countAtLastDate
-                });
-            }
-        }
+    const stats = await getTableStatsGeneric(yahooPool, table);
+
+    yahoo.tables.push({
+        table: display,
+        ok: true,
+        message: "OK",
+        lastDate: stats.lastDate,
+        lastDateStr: stats.lastDateStr,
+        totalCount: stats.totalCount,
+        countAtLastDate: stats.countAtLastDate
+    });
+}
+
 
         // ------------------------------------------------------
         // TRADING JOURNAL
