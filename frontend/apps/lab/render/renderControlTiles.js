@@ -66,11 +66,6 @@ function tile(key, icon, title) {
 
             ${isDownloads ? `
                 <div class="tile-results" id="results-downloads"></div>
-
-                <div class="download-buttons">
-                    <button id="btn-indexhistory">IndexHistory laden</button>
-                    <button id="btn-dailyhistory">DailyHistory laden</button>
-                </div>
             ` : ""}
 
             <div class="tile-meta">
@@ -82,6 +77,7 @@ function tile(key, icon, title) {
 }
 
 
+
 function setupTileEvents() {
     ["downloads", "calculations", "checks"].forEach(key => {
         document.getElementById(`tile-${key}`).addEventListener("click", () => {
@@ -91,14 +87,7 @@ function setupTileEvents() {
         });
     });
 
-    // 🔥 Downloads haben eigene Buttons
-    document.getElementById("btn-indexhistory").addEventListener("click", () => {
-        runIndexHistory();
-    });
-
-    document.getElementById("btn-dailyhistory").addEventListener("click", () => {
-        runDailyHistory();
-    });
+    
 }
 
 
@@ -254,7 +243,10 @@ async function runUpdateMetrics() {
 }
 
 // Downloads
-async function runDownloads() {
+
+async function runIndexHistory() {
+    updateTile("downloads", { status: "running", progress: 0 });
+
     return new Promise((resolve, reject) => {
         const evtSource = new EventSource("/api/downloads/stream");
 
@@ -270,34 +262,21 @@ async function runDownloads() {
             });
         });
 
-        evtSource.addEventListener("error", (e) => {
-            console.warn("SSE warning:", e);
-        });
-
-        evtSource.addEventListener("done", async (e) => {
+        evtSource.addEventListener("done", async () => {
             evtSource.close();
 
-            try {
-                // DailyHistory nach IndexHistory laden
-                const res = await fetch("/api/downloads/loadYahooStocks");
-                const json = await res.json().catch(() => ({}));
+            await saveTileStatus("downloads", {
+                IndexHistory: {
+                    ok: true,
+                    lastRun: new Date(),
+                    duration: "–"
+                }
+            });
 
-                // Status neu laden
-                await loadPersistedStatus();
-
-                resolve({ duration: json.duration ?? "–" });
-            } catch (err) {
-                console.warn("Fehler bei DailyHistory:", err);
-                resolve({ duration: "Fehler" });
-            }
+            await loadPersistedStatus();
+            resolve();
         });
     });
-}
-async function runIndexHistory() {
-    updateTile("downloads", { status: "running", progress: 0 });
-
-    await runDownloads(); // nutzt SSE + DailyHistory
-    
 }
 
 async function runDailyHistory() {
@@ -305,6 +284,15 @@ async function runDailyHistory() {
 
     const res = await fetch("/api/downloads/loadYahooStocks");
     const json = await res.json().catch(() => ({}));
+
+    // 🔥 Status speichern
+    await saveTileStatus("downloads", {
+        DailyHistory: {
+            ok: true,
+            lastRun: new Date(),
+            duration: json.duration ?? "–"
+        }
+    });
 
     await loadPersistedStatus();
 
@@ -334,6 +322,7 @@ function renderDownloadsStatus(downloads) {
                     <th>Status</th>
                     <th>Letzter Lauf</th>
                     <th>Dauer</th>
+                    <th>Aktion</th>
                 </tr>
             </thead>
             <tbody>
@@ -347,14 +336,25 @@ function renderDownloadsStatus(downloads) {
                             <td>${s.ok === undefined ? "–" : (ok ? "✔️" : "❌")}</td>
                             <td>${s.lastRun ? formatDateTimeShort(s.lastRun.replace("T", " ").slice(0,16)) : "–"}</td>
                             <td>${s.duration || "–"}</td>
+                            <td class="download-action" data-key="${r.key}">📥</td>
                         </tr>
                     `;
                 }).join("")}
             </tbody>
         </table>
     `;
-}
 
+    // 🔥 HIER MUSS DEIN BLOCK HIN
+    document.querySelectorAll(".download-action").forEach(el => {
+        el.addEventListener("click", (e) => {
+            e.stopPropagation(); // verhindert Tile-Klick
+            const key = el.dataset.key;
+
+            if (key === "IndexHistory") runIndexHistory();
+            if (key === "DailyHistory") runDailyHistory();
+        });
+    });
+}
 
 // Prüfungen
 async function runChecks() {
@@ -483,8 +483,13 @@ function updateTile(key, data) {
 
     if (data.status) {
         tile.className = `control-tile ${data.status}`;
-        status.textContent = data.status;
+
+        // ❗ Checks-Kachel NICHT überschreiben
+        if (key !== "checks") {
+            status.textContent = data.status;
+        }
     }
+
 
     if (data.progress !== undefined) {
         progress.style.width = data.progress + "%";
@@ -556,6 +561,11 @@ function formatDateTimeShort(str) {
 }
 
 function renderCheckSections(sections) {
+    const overall = computeOverallCheckStatus(sections);
+    updateOverallCheckStatus(overall, sections);
+    renderMiniHeatmap(sections);   // 🔥 HIER MUSS ES HIN
+
+
     const root = document.getElementById("results-checks");
     if (!root) return;
 
@@ -601,4 +611,91 @@ function renderCheckSections(sections) {
         </div>
     `).join("");
 }
+function normalizeDateStr(str) {
+    if (!str) return null;
+    // reicht hier, weil deine Strings mit Datum anfangen
+    return str.slice(0, 10); // "2026-04-17"
+}
+
+function updateOverallCheckStatus(status, sections) {
+    const tile = document.getElementById("tile-checks");
+    tile.dataset.overall = status;
+
+    const statusEl = document.getElementById("status-checks");
+    if (!statusEl) return;
+
+    // Badge-Klasse bestimmen
+    const badgeClass =
+        status === "green" ? "badge-green" :
+        status === "yellow" ? "badge-yellow" :
+        "badge-red";
+
+    // Badge + Heatmap einfügen
+    statusEl.innerHTML = `
+        <span class="badge ${badgeClass}">
+            ${status === "green" ? "OK" : status === "yellow" ? "WARN" : "ERROR"}
+        </span>
+        <span class="mini-heatmap"></span>
+    `;
+
+    renderMiniHeatmap(sections);
+}
+
+function computeOverallCheckStatus(sections) {
+    const relevant = [
+        ...sections.finviz.items,
+        ...sections.yahoo.items
+    ];
+
+    let errors = 0;
+    let dateSet = new Set();
+
+    for (const item of relevant) {
+        if (item.status !== "success") {
+            errors++;
+        }
+        const norm = normalizeDateStr(item.lastDateStr);
+        if (norm) {
+            dateSet.add(norm);
+        }
+    }
+
+    const dateMismatch = dateSet.size > 1 ? dateSet.size - 1 : 0;
+
+    if (errors >= 2 || dateMismatch >= 2) return "red";
+    if (errors >= 1 || dateMismatch >= 1) return "yellow";
+    return "green";
+}
+
+function renderMiniHeatmap(sections) {
+    const root = document.querySelector("#tile-checks .mini-heatmap");
+    if (!root) return;
+
+    const relevant = [
+        ...sections.finviz.items,
+        ...sections.yahoo.items
+    ];
+
+    const dates = relevant
+        .map(i => normalizeDateStr(i.lastDateStr))
+        .filter(Boolean);
+
+    const mostCommonDate = dates.sort((a, b) =>
+        dates.filter(v => v === a).length - dates.filter(v => v === b).length
+    ).pop();
+
+    root.innerHTML = relevant.map(item => {
+        let cls = "hm-success";
+
+        if (item.status !== "success") {
+            cls = "hm-error";
+        } else if (normalizeDateStr(item.lastDateStr) !== mostCommonDate) {
+            cls = "hm-warning";
+        }
+
+        return `<span class="hm ${cls}"></span>`;
+    }).join("");
+}
+
+
 

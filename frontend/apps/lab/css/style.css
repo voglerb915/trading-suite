@@ -377,3 +377,88 @@ h2, h3, .column-title {
     overflow-y: auto;
 }
 
+.download-action {
+    cursor: pointer;
+    text-align: center;
+    font-size: 1.2rem;
+    opacity: 0.8;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.download-action:hover {
+    opacity: 1;
+    transform: scale(1.35);
+}
+
+#results-downloads table.check-table th:last-child,
+#results-downloads table.check-table td:last-child {
+    width: 60px;
+    min-width: 60px;
+    text-align: center;
+}
+.tile-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.header-row-1 {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.header-row-2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-status {
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+.mini-heatmap {
+    display: flex;
+    gap: 4px;
+}
+
+.hm {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+.hm-success { background: #2ecc71; }
+.hm-warning { background: #f1c40f; }
+.hm-error   { background: #e74c3c; }
+
+#status-checks {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.badge-green {
+    background: #2ecc71;
+}
+
+.badge-yellow {
+    background: #f1c40f;
+    color: #000;
+}
+
+.badge-red {
+    background: #e74c3c;
+}
+
+

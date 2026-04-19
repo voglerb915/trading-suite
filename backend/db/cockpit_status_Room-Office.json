@@ -1,8 +1,8 @@
 {
   "checks": {
     "status": "success",
-    "lastRun": "2026-04-19T12:08:25.078Z",
-    "duration": "5s",
+    "lastRun": "2026-04-19T19:23:39.863Z",
+    "duration": "7s",
     "sections": {
       "finviz": {
         "title": "Finviz-Daten",
@@ -34,7 +34,7 @@
             "name": "Indexes",
             "status": "success",
             "lastDateStr": "2026-04-17",
-            "countAtLastDate": 28,
+            "countAtLastDate": 39,
             "isValidation": false,
             "details": null
           },
@@ -117,5 +117,17 @@
     "lastRun": "2026-04-18T18:30:39.157Z",
     "duration": "0.11s",
     "details": {}
+  },
+  "downloads": {
+    "IndexHistory": {
+      "ok": true,
+      "lastRun": "2026-04-19T17:19:38.805Z",
+      "duration": "–"
+    },
+    "DailyHistory": {
+      "ok": true,
+      "lastRun": "2026-04-17T17:19:38.805Z",
+      "duration": "0.00s"
+    }
   }
 }
