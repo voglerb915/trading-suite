@@ -372,11 +372,8 @@ h2, h3, .column-title {
     text-align: right;
 }
 
-
-.check-section { margin-bottom: 16px; }
-.check-section-title { font-weight: bold; margin-bottom: 6px; display: flex; gap: 6px; }
-.check-section-box { border: 1px solid #ccc; padding: 8px; border-radius: 6px; }
-.check-section-box.success { border-color: #2ecc71; }
-.check-section-box.error   { border-color: #e74c3c; }
-.check-row { display: flex; justify-content: space-between; padding: 4px 0; }
+.tile-results {
+    max-height: 70vh;
+    overflow-y: auto;
+}
 

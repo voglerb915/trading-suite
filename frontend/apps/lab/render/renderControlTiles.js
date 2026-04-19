@@ -32,15 +32,17 @@ export async function renderControlTiles() {
 }
 
 
-
 function tile(key, icon, title) {
     const isCalc = key === "calculations";
     const isDownloads = key === "downloads";
 
     return `
         <div class="control-tile" id="tile-${key}">
-            <div class="tile-icon">${icon}</div>
-            <div class="tile-title">${title}</div>
+            <div class="tile-header">
+                <span class="tile-icon">${icon}</span>
+                <span class="tile-title">${title}</span>
+            </div>
+
             <div class="tile-status" id="status-${key}">Bereit</div>
 
             <div class="tile-progress">
@@ -189,7 +191,6 @@ function formatDuration(ms) {
     if (minutes > 0) return `${minutes}m ${seconds}s`;
     return `${seconds}s`;
 }
-
 
 
 function updateStepStatus(stepKey, status) {
@@ -567,9 +568,8 @@ function renderCheckSections(sections) {
     root.innerHTML = Object.entries(sections).map(([key, sec]) => `
         <div class="check-section">
             <div class="check-section-title">
-                <span class="check-icon">${ICONS[key]}</span>
-                <span>${sec.title}</span>
-            </div>
+            <span class="check-icon">${ICONS[key]}</span> ${sec.title}
+        </div>
 
             <div class="check-section-box ${sec.status}">
                 <table class="check-table">

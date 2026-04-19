@@ -28,6 +28,7 @@ const DATE_COLUMNS = {
     DailyHistory: { column: "date", type: "date" },
     DailySignals: { column: "date", type: "date" },
     StockMetrics: { column: "date", type: "date" },
+    strategies: { column: "date", type: "date" },   // ← NEU
 
     // TradingJournal
     ExecutedOrders: { column: "execution_time", type: "datetime" },
@@ -162,7 +163,8 @@ const yahooTables = [
     { table: "IndexHistory", display: "Indexes" },
     { table: "DailyHistory", display: "DailyHistory" },
     { table: "DailySignals", display: "DailySignals" },
-    { table: "StockMetrics", display: "StockMetrics" }
+    { table: "StockMetrics", display: "StockMetrics" },
+    { table: "strategies", display: "Strategies" },   // ← NEU
 ];
 
 for (const { table, display } of yahooTables) {
