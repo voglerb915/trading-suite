@@ -282,25 +282,33 @@ async function runIndexHistory() {
 async function runDailyHistory() {
     updateTile("downloads", { status: "running", progress: 0 });
 
-    const res = await fetch("/api/downloads/loadYahooStocks");
-    const json = await res.json().catch(() => ({}));
+    return new Promise((resolve) => {
+        const evtSource = new EventSource("/api/downloads/stream-daily");
 
-    // 🔥 Status speichern
-    await saveTileStatus("downloads", {
-        DailyHistory: {
-            ok: true,
-            lastRun: new Date(),
-            duration: json.duration ?? "–"
-        }
-    });
+        evtSource.addEventListener("progress", (e) => {
+            const data = JSON.parse(e.data);
+            const percent = Math.round((data.current / data.total) * 100);
 
-    await loadPersistedStatus();
+            updateTile("downloads", {
+                progress: percent,
+                status: `Lade ${data.current}/${data.total} (${data.ticker})`
+            });
+        });
 
-    updateTile("downloads", {
-        status: "success",
-        progress: 100,
-        duration: json.duration ?? "–",
-        lastRun: new Date()
+        evtSource.addEventListener("done", async () => {
+            evtSource.close();
+
+            await saveTileStatus("downloads", {
+                DailyHistory: {
+                    ok: true,
+                    lastRun: new Date(),
+                    duration: "–"
+                }
+            });
+
+            await loadPersistedStatus();
+            resolve();
+        });
     });
 }
 

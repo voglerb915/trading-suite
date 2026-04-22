@@ -8,12 +8,17 @@ export default defineConfig({
                 target: 'http://localhost:4000',
                 changeOrigin: true,
                 secure: false,
-                ws: true, // Erlaubt WebSocket/Streaming
-                // Falls dein Backend das /api im Pfad hat (wie du sagtest), 
-                // darf hier KEIN rewrite stehen!
+                ws: true
             }
         },
-        hmr: { overlay: false }
+        hmr: { overlay: false },
+
+        // 🟩 WICHTIG: Vite darf backend/db NICHT beobachten!
+        watch: {
+            ignored: [
+                '**/backend/db/**'
+            ]
+        }
     },
     appType: 'mpa'
 });

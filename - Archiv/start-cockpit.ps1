@@ -1,14 +1,3 @@
-# Automatische OneDrive- und Benutzerpfaderkennung
-$UserProfile = [Environment]::GetFolderPath("UserProfile")
-$OneDrivePath = Join-Path $UserProfile "OneDrive"
-$TradingSuitePath = Join-Path $OneDrivePath "Boerse/trading-suite"
-
-# Pfade für Backend, Frontend, Dashboard
-$BackendPath = Join-Path $TradingSuitePath "backend"
-$FrontendPath = Join-Path $TradingSuitePath "frontend"
-$DashboardPath = Join-Path $OneDrivePath "Boerse/mein-dashboard"
-
-# Windows Terminal finden
 $wt = (Get-Command wt.exe -ErrorAction SilentlyContinue).Source
 
 if (-not $wt) {
@@ -16,14 +5,12 @@ if (-not $wt) {
     exit
 }
 
-
 # BACKEND TAB
 & $wt -w 0 new-tab --title "Backend" --tabColor "#00C853" powershell -NoExit -Command "
 while (`$true) {
     try {
-        cd $BackendPath
+        cd 'C:/Users/Nutzer/OneDrive/Boerse/trading-suite/backend'
         node server.js
-
     }
     catch {
         Write-Host 'Backend abgestuerzt - Neustart in 2 Sekunden...' -ForegroundColor Red
@@ -46,9 +33,7 @@ $host.UI.RawUI.WindowTitle = 'Frontend'
 
 while (`$true) {
     try {
-        cd $FrontendPath
         npx vite
-
     }
     catch {
         Write-Host 'Frontend abgestuerzt - Neustart in 2 Sekunden...' -ForegroundColor Red
@@ -64,9 +49,8 @@ Start-Sleep -Milliseconds 500
 & $wt -w 0 new-tab --title "Dashboard" --tabColor "#FF8F00" powershell -NoExit -Command "
 while (`$true) {
     try {
-        cd $DashboardPath
+        cd 'C:/Users/Nutzer/OneDrive/Boerse/mein-dashboard'
         node server.js
-
     }
     catch {
         Write-Host 'Dashboard abgestuerzt - Neustart in 2 Sekunden...' -ForegroundColor Red
