@@ -1465,3 +1465,113 @@
 [2026-04-21T22:54:34.479Z] [COCKPIT-METRICS] [INFO] Erfolgreich 294 Zeilen für Cockpit geladen.
 [2026-04-22T09:59:13.470Z] [COCKPIT-METRICS] [INFO] Erfolgreich 277 Zeilen für Cockpit geladen.
 [2026-04-22T13:11:17.602Z] [COCKPIT-METRICS] [INFO] Erfolgreich 277 Zeilen für Cockpit geladen.
+[2026-04-22T19:22:35.760Z] [COCKPIT-METRICS] [INFO] Erfolgreich 280 Zeilen für Cockpit geladen.
+[2026-04-22T20:21:01.508Z] [COCKPIT-METRICS] [INFO] Erfolgreich 280 Zeilen für Cockpit geladen.
+[2026-04-22T21:15:29.518Z] [COCKPIT-METRICS] [INFO] Erfolgreich 280 Zeilen für Cockpit geladen.
+[2026-04-22T21:15:31.079Z] [COCKPIT-METRICS] [INFO] Erfolgreich 280 Zeilen für Cockpit geladen.
+[2026-04-22T21:20:21.132Z] [COCKPIT-METRICS] [INFO] Erfolgreich 280 Zeilen für Cockpit geladen.
+[2026-04-22T21:24:53.428Z] [COCKPIT-METRICS] [INFO] Erfolgreich 280 Zeilen für Cockpit geladen.
+[2026-04-22T21:26:23.525Z] [COCKPIT-METRICS] [INFO] Erfolgreich 280 Zeilen für Cockpit geladen.
+[2026-04-22T21:26:24.948Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
+[2026-04-22T21:30:24.760Z] [COCKPIT-METRICS] [INFO] Erfolgreich 277 Zeilen für Cockpit geladen.
+[2026-04-22T21:30:39.739Z] [COCKPIT-METRICS] [INFO] Erfolgreich 280 Zeilen für Cockpit geladen.
+[2026-04-22T21:52:22.103Z] [COCKPIT-METRICS] [INFO] Erfolgreich 277 Zeilen für Cockpit geladen.
+[2026-04-22T21:53:36.775Z] [COCKPIT-METRICS] [INFO] Erfolgreich 280 Zeilen für Cockpit geladen.
+[2026-04-22T21:58:22.539Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Connection is closed.
+[2026-04-22T21:59:29.108Z] [COCKPIT-METRICS] [INFO] Erfolgreich 277 Zeilen für Cockpit geladen.
+[2026-04-22T22:00:03.304Z] [COCKPIT-METRICS] [INFO] Erfolgreich 280 Zeilen für Cockpit geladen.
+[2026-04-22T22:00:38.517Z] [COCKPIT-METRICS] [INFO] Erfolgreich 280 Zeilen für Cockpit geladen.
+[2026-04-22T22:10:22.277Z] [COCKPIT-METRICS] [INFO] Erfolgreich 2 Zeilen für Cockpit geladen.
+[2026-04-22T22:15:23.819Z] [COCKPIT-METRICS] [INFO] Erfolgreich 2 Zeilen für Cockpit geladen.
+[2026-04-22T22:16:23.852Z] [COCKPIT-METRICS] [INFO] Erfolgreich 277 Zeilen für Cockpit geladen.
+[2026-04-22T22:17:49.349Z] [COCKPIT-METRICS] [INFO] Erfolgreich 3 Zeilen für Cockpit geladen.
+[2026-04-22T22:18:09.625Z] [COCKPIT-METRICS] [INFO] Erfolgreich 3 Zeilen für Cockpit geladen.
+[2026-04-22T22:37:38.364Z] [COCKPIT-METRICS] [INFO] Erfolgreich 12 Zeilen für Cockpit geladen.
+[2026-04-22T22:44:25.687Z] [COCKPIT-METRICS] [INFO] Erfolgreich 12 Zeilen für Cockpit geladen.
+[2026-04-22T22:49:21.703Z] [COCKPIT-METRICS] [INFO] Erfolgreich 12 Zeilen für Cockpit geladen.
+[2026-04-22T22:53:32.329Z] [COCKPIT-METRICS] [INFO] Erfolgreich 12 Zeilen für Cockpit geladen.
+[2026-04-22T23:11:00.291Z] [COCKPIT-METRICS] [INFO] Erfolgreich 277 Zeilen für Cockpit geladen.
+[2026-04-22T23:11:52.806Z] [COCKPIT-METRICS] [INFO] Erfolgreich 277 Zeilen für Cockpit geladen.
+[2026-04-23T11:11:05.982Z] [COCKPIT-METRICS] [INFO] Erfolgreich 322 Zeilen für Cockpit geladen.
+[2026-04-23T11:11:31.257Z] [COCKPIT-METRICS] [INFO] Erfolgreich 325 Zeilen für Cockpit geladen.
+[2026-04-23T11:12:16.572Z] [COCKPIT-METRICS] [INFO] Erfolgreich 322 Zeilen für Cockpit geladen.
+[2026-04-23T13:17:41.271Z] [COCKPIT-METRICS] [INFO] Erfolgreich 304 Zeilen für Cockpit geladen.
+[2026-04-23T19:54:05.603Z] [COCKPIT-METRICS] [INFO] Erfolgreich 304 Zeilen für Cockpit geladen.
+[2026-04-23T20:43:11.804Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:14.840Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:17.866Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:20.883Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:23.905Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:26.938Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:29.959Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:33.007Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:36.083Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:39.114Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:42.134Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:45.152Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:48.170Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:51.546Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:54.583Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:43:57.612Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:00.680Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:03.775Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:06.934Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:09.976Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:13.042Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:16.100Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:19.165Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:22.234Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:25.303Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:28.402Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:31.463Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:34.512Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:37.657Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:40.720Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:43.822Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:46.846Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:49.878Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:52.909Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:55.977Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:44:59.013Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:02.034Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:05.068Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:08.100Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:11.133Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:14.170Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:17.243Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:20.267Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:23.316Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:26.345Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:29.364Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:32.392Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:35.450Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:38.491Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:41.540Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:44.614Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:47.670Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:50.699Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:53.748Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:56.781Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:45:59.838Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:02.884Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:05.939Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:08.972Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:11.995Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:15.013Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:18.041Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:21.131Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:24.201Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:27.359Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:30.440Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:33.482Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:36.540Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:39.583Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:42.682Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:45.814Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:48.857Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:51.913Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:54.941Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:46:57.970Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:47:01.171Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:47:04.218Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T20:47:07.259Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined

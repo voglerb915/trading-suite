@@ -2,97 +2,173 @@ const express = require("express");
 const router = express.Router();
 const { sql, yahooPool, tradingPool } = require("../db/connection");
 const axios = require("axios");
+const { readStatusFile, writeStatusFile } = require("../utils/cockpitStatus");
+
+let isDailySyncing = false;
 
 router.get("/stream-daily", async (req, res) => {
-    console.log("SSE DAILY STREAM AUFGERUFEN");
+    if (isDailySyncing) return res.status(429).send("Sync läuft bereits.");
+    isDailySyncing = true;
 
+    // SSE Setup
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache, no-transform");
     res.setHeader("Connection", "keep-alive");
     res.setHeader("X-Accel-Buffering", "no");
+    res.write(":\n\n");
 
-    if (res.flushHeaders) res.flushHeaders();
-
-    function send(event, data) {
-        res.write(`event: ${event}\n`);
-        res.write(`data: ${JSON.stringify(data)}\n\n`);
-    }
+    const send = (event, data) => {
+        try {
+            res.write(`event: ${event}\n`);
+            res.write(`data: ${JSON.stringify(data)}\n\n`);
+        } catch {}
+    };
 
     send("progress", { current: 0, total: 0, ticker: null });
 
+    // Status Start (stabil, überschreibt duration NICHT)
+    let status = readStatusFile();
+    status.downloads = status.downloads || {};
+    status.downloads.DailyHistory = status.downloads.DailyHistory || {};
+
+    status.downloads.DailyHistory.ok = true;
+    status.downloads.DailyHistory.lastRun = new Date().toISOString();
+    // ❗ duration NICHT setzen – Endblock macht das
+
+    writeStatusFile(status);
+
+    const startTime = Date.now();
+
     try {
-        // ✔ Ticker aus Finviz holen (wie du es jetzt brauchst)
+        // Ticker + Indizes
         const result = await tradingPool.request().query(`
-            SELECT DISTINCT Ticker AS ticker 
-            FROM trading.dbo.finviz
+            SELECT DISTINCT Ticker AS ticker FROM trading.dbo.finviz
         `);
 
-        const tickers = result.recordset;
+        let tickers = result.recordset.map(r => r.ticker);
+        const indices = ['^GSPC', '^IXIC', '^RUT', '^GDAXI', '^MDAXI', '^SDAXI'];
+        tickers = [...new Set([...tickers, ...indices])];
+
         const total = tickers.length;
         let current = 0;
+        const BATCH_SIZE = 10;
 
-        for (const row of tickers) {
-            current++;
+        for (let i = 0; i < tickers.length; i += BATCH_SIZE) {
+            const batch = tickers.slice(i, i + BATCH_SIZE);
 
-            send("progress", {
-                current,
-                total,
-                ticker: row.ticker
-            });
+            await Promise.all(batch.map(async (symbol) => {
+                try {
+                    // Prüfen ob Daten existieren → 30 Tage oder 2 Jahre
+                    const exists = await yahooPool.request()
+                        .input("t", sql.VarChar, symbol)
+                        .query(`SELECT TOP 1 1 FROM DailyHistory WHERE ticker = @t`);
 
-            try {
-                const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(row.ticker)}?range=2y&interval=1d`;
-                const response = await axios.get(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+                    const range = exists.recordset.length > 0 ? "30d" : "2y";
 
-                if (!response.data.chart.result) continue;
+                    // Yahoo Request
+                    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=1d`;
+                    const response = await axios.get(url, {
+                        headers: { "User-Agent": "Mozilla/5.0" },
+                        timeout: 10000
+                    });
 
-                const resData = response.data.chart.result[0];
-                const timestamps = resData.timestamp;
-                const quote = resData.indicators.quote[0];
+                    if (!response.data.chart.result) return;
 
-                if (!timestamps) continue;
+                    const data = response.data.chart.result[0];
+                    const timestamps = data.timestamp;
+                    const quote = data.indicators.quote[0];
+                    const meta = data.meta;
 
-                for (let i = 0; i < timestamps.length; i++) {
-                    if (quote.close[i] === null) continue;
+                    if (!timestamps) return;
 
-                    const dateVal = new Date(timestamps[i] * 1000).toISOString().split("T")[0];
+                    // Bulk Insert
+                    const reqBulk = yahooPool.request();
+                    let sqlValues = [];
 
-                    await yahooPool.request()
-                        .input("ticker", sql.VarChar, row.ticker)
-                        .input("dat", sql.Date, dateVal)
-                        .input("cls", sql.Decimal(18, 4), quote.close[i])
-                        .input("opn", sql.Decimal(18, 4), quote.open[i])
-                        .input("hi", sql.Decimal(18, 4), quote.high[i])
-                        .input("lo", sql.Decimal(18, 4), quote.low[i])
-                        .input("vol", sql.BigInt, quote.volume[i] || 0)
-                        .query(`
-                            MERGE INTO DailyHistory AS target
-                            USING (SELECT @ticker AS ticker, @dat AS [date]) AS source
-                            ON (target.ticker = source.ticker AND target.[date] = source.[date])
-                            WHEN MATCHED THEN
-                                UPDATE SET 
-                                    [close] = @cls, 
-                                    [open] = @opn, 
-                                    high = @hi, 
-                                    low = @lo, 
-                                    volume = @vol
-                            WHEN NOT MATCHED THEN
-                                INSERT (ticker, [date], [close], [open], high, low, volume)
-                                VALUES (@ticker, @dat, @cls, @opn, @hi, @lo, @vol);
+                    for (let j = 0; j < timestamps.length; j++) {
+                        if (quote.close[j] === null) continue;
+
+                        const dateVal = new Date(timestamps[j] * 1000).toISOString().split("T")[0];
+
+                        reqBulk.input(`dat${j}`, sql.Date, dateVal);
+                        reqBulk.input(`cls${j}`, sql.Decimal(18, 4), quote.close[j]);
+                        reqBulk.input(`opn${j}`, sql.Decimal(18, 4), quote.open[j]);
+                        reqBulk.input(`hi${j}`, sql.Decimal(18, 4), quote.high[j]);
+                        reqBulk.input(`lo${j}`, sql.Decimal(18, 4), quote.low[j]);
+                        reqBulk.input(`vol${j}`, sql.BigInt, quote.volume[j] || 0);
+
+                        sqlValues.push(`(@ticker, @dat${j}, @cls${j}, @opn${j}, @hi${j}, @lo${j}, @vol${j}, @name, GETDATE())`);
+                    }
+
+                    if (sqlValues.length > 0) {
+                        reqBulk.input("ticker", sql.VarChar, symbol);
+                        reqBulk.input("name", sql.NVarChar, meta.longName || symbol);
+
+                        await reqBulk.query(`
+                            INSERT INTO DailyHistory (ticker, [date], [close], [open], high, low, volume, name, created_at)
+                            SELECT v.t, v.d, v.c, v.o, v.h, v.l, v.vol, v.n, v.cr
+                            FROM (VALUES ${sqlValues.join(",")}) AS v(t, d, c, o, h, l, vol, n, cr)
+                            WHERE NOT EXISTS (
+                                SELECT 1 FROM DailyHistory h 
+                                WHERE h.ticker = v.t AND h.[date] = v.d
+                            )
                         `);
-                }
+                    }
 
-            } catch (err) {
-                send("error", { ticker: row.ticker, message: err.message });
-            }
+                } catch (err) {
+                    console.error(`Fehler bei ${symbol}:`, err.message);
+                }
+            }));
+
+            current += batch.length;
+            send("progress", { current, total, ticker: batch[batch.length - 1] });
+
+            await new Promise(r => setTimeout(r, 100));
         }
 
-        send("done", { message: "DailyHistory abgeschlossen." });
+        // Fertig
+        send("done", { message: "Fertig." });
+
+        const endTime = Date.now();
+        const duration = Math.round((endTime - startTime) / 1000);
+
+        // Status-Datei NEU einlesen
+        const statusEnd = readStatusFile();
+
+        // Sicherstellen, dass der Block existiert
+        statusEnd.downloads = statusEnd.downloads || {};
+        statusEnd.downloads.DailyHistory = statusEnd.downloads.DailyHistory || {};
+
+        // Dauer + Metadaten setzen
+        statusEnd.downloads.DailyHistory.ok = true;
+        statusEnd.downloads.DailyHistory.lastRun = new Date().toISOString();
+        statusEnd.downloads.DailyHistory.duration = `${duration}s`;
+        statusEnd.downloads.DailyHistory.info =
+            errorCount > 0 ? `${errorCount} Fehler übersprungen` : "Erfolgreich";
+
+        // Speichern
+        writeStatusFile(statusEnd);
+
         res.end();
 
+
+
     } catch (err) {
+        console.error("GLOBALER FEHLER:", err.message);
         send("error", { message: err.message });
+
+        const duration = Math.round((Date.now() - startTime) / 1000);
+        status.downloads.DailyHistory = {
+            ok: false,
+            lastRun: new Date().toISOString(),
+            duration: `${duration}s`,
+            error: err.message
+        };
+        writeStatusFile(status);
+
         res.end();
+    } finally {
+        isDailySyncing = false;
     }
 });
 

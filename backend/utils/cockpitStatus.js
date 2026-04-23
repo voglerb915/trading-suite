@@ -55,9 +55,16 @@ function writeStatusFile(data) {
 // ------------------------------------------------------
 function updateTileStatus(tile, payload) {
     const status = readStatusFile();
-    status[tile] = payload;
+
+    status.downloads = status.downloads || {};
+    status.downloads[tile] = status.downloads[tile] || {};
+
+    Object.assign(status.downloads[tile], payload);
+
     writeStatusFile(status);
 }
+
+
 
 module.exports = {
     readStatusFile,

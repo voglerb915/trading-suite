@@ -22,11 +22,11 @@ if (-not $wt) {
 while (`$true) {
     try {
         cd $BackendPath
-        node server.js
-
+        # Wir ignorieren den kompletten db-Ordner für den Watcher
+        npx nodemon server.js --ignore db/
     }
     catch {
-        Write-Host 'Backend abgestuerzt - Neustart in 2 Sekunden...' -ForegroundColor Red
+        Write-Host 'Backend abgestuerzt...' -ForegroundColor Red
         Start-Sleep -Seconds 2
     }
 }

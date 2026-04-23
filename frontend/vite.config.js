@@ -12,8 +12,6 @@ export default defineConfig({
             }
         },
         hmr: { overlay: false },
-
-        // 🟩 WICHTIG: Vite darf backend/db NICHT beobachten!
         watch: {
             ignored: [
                 '**/backend/db/**'

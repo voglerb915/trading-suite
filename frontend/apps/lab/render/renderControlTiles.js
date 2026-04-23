@@ -248,7 +248,7 @@ async function runIndexHistory() {
     updateTile("downloads", { status: "running", progress: 0 });
 
     return new Promise((resolve, reject) => {
-        const evtSource = new EventSource("/api/downloads/stream");
+        const evtSource = new EventSource("http://localhost:4000/api/downloads/stream");
 
         evtSource.addEventListener("progress", (e) => {
             const data = JSON.parse(e.data);
@@ -283,7 +283,7 @@ async function runDailyHistory() {
     updateTile("downloads", { status: "running", progress: 0 });
 
     return new Promise((resolve) => {
-        const evtSource = new EventSource("/api/downloads/stream-daily");
+        const evtSource = new EventSource("http://localhost:4000/api/downloads/stream-daily");
 
         evtSource.addEventListener("progress", (e) => {
             const data = JSON.parse(e.data);
@@ -344,7 +344,7 @@ function renderDownloadsStatus(downloads) {
                             <td>${s.ok === undefined ? "–" : (ok ? "✔️" : "❌")}</td>
                             <td>${s.lastRun ? formatDateTimeShort(s.lastRun.replace("T", " ").slice(0,16)) : "–"}</td>
                             <td>${s.duration || "–"}</td>
-                            <td class="download-action" data-key="${r.key}">📥</td>
+                            <td class="download-action" data-key="${r.key}" style="cursor: pointer;">📥</td>
                         </tr>
                     `;
                 }).join("")}
@@ -352,18 +352,27 @@ function renderDownloadsStatus(downloads) {
         </table>
     `;
 
-    // 🔥 HIER MUSS DEIN BLOCK HIN
-    document.querySelectorAll(".download-action").forEach(el => {
-        el.addEventListener("click", (e) => {
-            e.stopPropagation(); // verhindert Tile-Klick
-            const key = el.dataset.key;
+    // 🔥 Korrigierter Block mit Event-Delegation am Root-Element
+    // Entfernt alte Listener implizit und verhindert den "Dauerschleifen-Effekt"
+    root.onclick = (e) => {
+        const el = e.target.closest(".download-action");
+        if (!el) return;
 
-            if (key === "IndexHistory") runIndexHistory();
-            if (key === "DailyHistory") runDailyHistory();
-        });
-    });
+        e.stopPropagation(); // Verhindert Klick auf die dahinterliegende Kachel
+        const key = el.dataset.key;
+
+        // Visuelle Sperre: Verhindert, dass der Stream 4-fach gestartet wird
+        if (el.style.opacity === "0.5") return; 
+        el.style.opacity = "0.5";
+
+        if (key === "IndexHistory") {
+            runIndexHistory().finally(() => el.style.opacity = "1");
+        }
+        if (key === "DailyHistory") {
+            runDailyHistory().finally(() => el.style.opacity = "1");
+        }
+    };
 }
-
 // Prüfungen
 async function runChecks() {
     console.log("Prüfungen gestartet...");
