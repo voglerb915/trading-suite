@@ -6,7 +6,9 @@ const {
     updateTileStatus
 } = require("../utils/cockpitStatus");
 
-// GET: gesamten Status liefern – aber transformiert für das Cockpit
+// ------------------------------------------------------
+// GET: gesamten Status liefern
+// ------------------------------------------------------
 router.get("/status", (req, res) => {
     const raw = readStatusFile();
 
@@ -19,7 +21,9 @@ router.get("/status", (req, res) => {
     res.json(status);
 });
 
-// POST: Status einer Kachel aktualisieren (nur für calculations + checks)
+// ------------------------------------------------------
+// POST: Status einer Kachel aktualisieren
+// ------------------------------------------------------
 router.post("/status/:tile", (req, res) => {
     const tile = req.params.tile;
     const payload = req.body;

@@ -1575,3 +1575,18 @@
 [2026-04-23T20:47:01.171Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
 [2026-04-23T20:47:04.218Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
 [2026-04-23T20:47:07.259Z] [SERVER] [ERROR] GET /api/downloads/stream → status is not defined
+[2026-04-23T22:37:50.727Z] [COCKPIT-METRICS] [INFO] Erfolgreich 336 Zeilen für Cockpit geladen.
+[2026-04-23T22:39:32.587Z] [COCKPIT-METRICS] [INFO] Erfolgreich 336 Zeilen für Cockpit geladen.
+[2026-04-23T22:44:54.022Z] [COCKPIT-METRICS] [INFO] Erfolgreich 336 Zeilen für Cockpit geladen.
+[2026-04-23T22:47:50.590Z] [COCKPIT-METRICS] [INFO] Erfolgreich 336 Zeilen für Cockpit geladen.
+[2026-04-23T22:48:04.362Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
+[2026-04-23T22:49:47.724Z] [COCKPIT-METRICS] [INFO] Erfolgreich 332 Zeilen für Cockpit geladen.
+[2026-04-23T22:51:34.765Z] [COCKPIT-METRICS] [INFO] Erfolgreich 332 Zeilen für Cockpit geladen.
+[2026-04-23T22:51:57.722Z] [COCKPIT-METRICS] [INFO] Erfolgreich 336 Zeilen für Cockpit geladen.
+[2026-04-23T22:55:51.092Z] [COCKPIT-METRICS] [INFO] Erfolgreich 336 Zeilen für Cockpit geladen.
+[2026-04-23T22:56:07.914Z] [COCKPIT-METRICS] [INFO] Erfolgreich 336 Zeilen für Cockpit geladen.
+[2026-04-23T22:59:58.093Z] [COCKPIT-METRICS] [INFO] Erfolgreich 336 Zeilen für Cockpit geladen.
+[2026-04-23T23:02:50.508Z] [COCKPIT-METRICS] [INFO] Erfolgreich 336 Zeilen für Cockpit geladen.
+[2026-04-23T23:06:41.558Z] [COCKPIT-METRICS] [INFO] Erfolgreich 332 Zeilen für Cockpit geladen.
+[2026-04-24T11:32:39.174Z] [COCKPIT-METRICS] [INFO] Erfolgreich 332 Zeilen für Cockpit geladen.
+[2026-04-25T15:04:54.940Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.

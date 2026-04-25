@@ -6,9 +6,6 @@ const os = require("os");
 const HOST = os.hostname();
 
 // 🔥 Jede Maschine bekommt ihre eigene Datei
-// Beispiel:
-//   cockpit_status_DESKTOP-1234.json
-//   cockpit_status_LAPTOP-5678.json
 const STATUS_FILE = path.join(
     __dirname,
     "../db",
@@ -40,7 +37,6 @@ function writeStatusFile(data) {
     try {
         const json = JSON.stringify(data, null, 2);
 
-        // Atomisches Schreiben: erst .tmp, dann rename
         const tmpFile = STATUS_FILE + ".tmp";
         fs.writeFileSync(tmpFile, json, "utf8");
         fs.renameSync(tmpFile, STATUS_FILE);
@@ -56,15 +52,36 @@ function writeStatusFile(data) {
 function updateTileStatus(tile, payload) {
     const status = readStatusFile();
 
+    // Root-Objekte sicherstellen
     status.downloads = status.downloads || {};
-    status.downloads[tile] = status.downloads[tile] || {};
+    status.calculations = status.calculations || {};
+    status.checks = status.checks || {};
 
-    Object.assign(status.downloads[tile], payload);
+    // 🟥 Downloads selbst darf NICHT überschrieben werden
+    if (tile === "downloads") {
+        console.trace("❌ ILLEGALER updateTileStatus('downloads') AUFRUF");
+        return;
+    }
+
+    // 🟩 ABER: IndexHistory & DailyHistory gehören UNTER downloads
+    if (tile === "IndexHistory" || tile === "DailyHistory") {
+        status.downloads[tile] = {
+            ...(status.downloads[tile] || {}),
+            ...payload
+        };
+
+        writeStatusFile(status);
+        return;
+    }
+
+    // 🟩 Alle anderen Tiles normal speichern
+    status[tile] = {
+        ...(status[tile] || {}),
+        ...payload
+    };
 
     writeStatusFile(status);
 }
-
-
 
 module.exports = {
     readStatusFile,

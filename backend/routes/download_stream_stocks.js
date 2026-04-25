@@ -143,8 +143,7 @@ router.get("/stream-daily", async (req, res) => {
         statusEnd.downloads.DailyHistory.ok = true;
         statusEnd.downloads.DailyHistory.lastRun = new Date().toISOString();
         statusEnd.downloads.DailyHistory.duration = `${duration}s`;
-        statusEnd.downloads.DailyHistory.info =
-            errorCount > 0 ? `${errorCount} Fehler übersprungen` : "Erfolgreich";
+        statusEnd.downloads.DailyHistory.info = "Erfolgreich";
 
         // Speichern
         writeStatusFile(statusEnd);

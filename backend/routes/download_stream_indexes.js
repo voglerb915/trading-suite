@@ -52,53 +52,82 @@ router.get("/stream", async (req, res) => {
         const total = indices.length;
         let current = 0;
 
-        for (const row of indices) {
-            current++;
-            sendEvent("progress", { current, total, ticker: row.ticker });
+        const BATCH_SIZE = 10;
 
-            try {
-                const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(row.ticker)}?range=2y&interval=1d`;
-                const response = await axios.get(url, { headers: { "User-Agent": "Mozilla/5.0" }, timeout: 10000 });
+        for (let i = 0; i < indices.length; i += BATCH_SIZE) {
+            const batch = indices.slice(i, i + BATCH_SIZE);
 
-                if (!response.data.chart.result) continue;
+            await Promise.all(batch.map(async (row) => {
+                try {
+                    // Prüfen ob Daten existieren → 30 Tage oder 2 Jahre
+                    const exists = await yahooPool.request()
+                        .input("idx", sql.Int, row.index_id)
+                        .query(`SELECT TOP 1 1 FROM IndexHistory WHERE index_id = @idx`);
 
-                const resData = response.data.chart.result[0];
-                const timestamps = resData.timestamp;
-                const quote = resData.indicators.quote[0];
-                const adjClose = resData.indicators.adjclose ? resData.indicators.adjclose[0].adjclose : quote.close;
+                    const range = exists.recordset.length > 0 ? "30d" : "2y";
 
-                if (!timestamps) continue;
+                    // Yahoo Request
+                    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(row.ticker)}?range=${range}&interval=1d`;
+                    const response = await axios.get(url, {
+                        headers: { "User-Agent": "Mozilla/5.0" },
+                        timeout: 10000
+                    });
 
-                for (let i = 0; i < timestamps.length; i++) {
-                    if (quote.close[i] === null) continue;
 
-                    const dateVal = new Date(timestamps[i] * 1000).toISOString().split("T")[0];
+                    if (!response.data.chart.result) return;
 
-                    await yahooPool.request()
-                        .input("idxId", sql.Int, row.index_id)
-                        .input("dat", sql.Date, dateVal)
-                        .input("cls", sql.Decimal(18, 4), quote.close[i])
-                        .input("adj", sql.Decimal(18, 4), adjClose[i])
-                        .input("opn", sql.Decimal(18, 4), quote.open[i])
-                        .input("hi", sql.Decimal(18, 4), quote.high[i])
-                        .input("lo", sql.Decimal(18, 4), quote.low[i])
-                        .input("vol", sql.BigInt, quote.volume[i] || 0)
-                        .query(`
-                            MERGE INTO IndexHistory AS target
-                            USING (SELECT @idxId AS index_id, @dat AS [date]) AS source
-                            ON (target.index_id = source.index_id AND target.[date] = source.[date])
-                            WHEN MATCHED THEN
-                                UPDATE SET [close] = @cls, adj_close = @adj, [open] = @opn, high = @hi, low = @lo, volume = @vol
-                            WHEN NOT MATCHED THEN
-                                INSERT (index_id, [date], [close], adj_close, [open], high, low, volume)
-                                VALUES (@idxId, @dat, @cls, @adj, @opn, @hi, @lo, @vol);
+                    const resData = response.data.chart.result[0];
+                    const timestamps = resData.timestamp;
+                    const quote = resData.indicators.quote[0];
+                    const adjClose = resData.indicators.adjclose
+                        ? resData.indicators.adjclose[0].adjclose
+                        : quote.close;
+
+                    if (!timestamps) return;
+
+                    // BULK-INSERT statt 500 MERGEs
+                    const reqBulk = yahooPool.request();
+                    let sqlValues = [];
+
+                    for (let j = 0; j < timestamps.length; j++) {
+                        if (quote.close[j] === null) continue;
+
+                        const dateVal = new Date(timestamps[j] * 1000).toISOString().split("T")[0];
+
+                        reqBulk.input(`dat${j}`, sql.Date, dateVal);
+                        reqBulk.input(`cls${j}`, sql.Decimal(18, 4), quote.close[j]);
+                        reqBulk.input(`adj${j}`, sql.Decimal(18, 4), adjClose[j]);
+                        reqBulk.input(`opn${j}`, sql.Decimal(18, 4), quote.open[j]);
+                        reqBulk.input(`hi${j}`, sql.Decimal(18, 4), quote.high[j]);
+                        reqBulk.input(`lo${j}`, sql.Decimal(18, 4), quote.low[j]);
+                        reqBulk.input(`vol${j}`, sql.BigInt, quote.volume[j] || 0);
+
+                        sqlValues.push(`(@idx, @dat${j}, @cls${j}, @adj${j}, @opn${j}, @hi${j}, @lo${j}, @vol${j})`);
+                    }
+
+                    if (sqlValues.length > 0) {
+                        reqBulk.input("idx", sql.Int, row.index_id);
+
+                        await reqBulk.query(`
+                            INSERT INTO IndexHistory (index_id, [date], [close], adj_close, [open], high, low, volume)
+                            SELECT v.idx, v.d, v.c, v.a, v.o, v.h, v.l, v.v
+                            FROM (VALUES ${sqlValues.join(",")}) AS v(idx, d, c, a, o, h, l, v)
+                            WHERE NOT EXISTS (
+                                SELECT 1 FROM IndexHistory h
+                                WHERE h.index_id = v.idx AND h.[date] = v.d
+                            )
                         `);
+                    }
+
+                } catch (err) {
+                    errorCount++;
+                    console.error(`Fehler bei ${row.ticker}:`, err.message);
+                    sendEvent("error", { ticker: row.ticker, message: err.message });
                 }
-            } catch (err) {
-                errorCount++;
-                console.error(`Fehler bei ${row.ticker}:`, err.message);
-                sendEvent("error", { ticker: row.ticker, message: err.message });
-            }
+            }));
+
+            current += batch.length;
+            sendEvent("progress", { current, total, ticker: batch[batch.length - 1].ticker });
         }
 
         sendEvent("done", { message: "Download abgeschlossen." });
@@ -123,7 +152,7 @@ router.get("/stream", async (req, res) => {
     finalStatus.downloads.IndexHistory.lastRun = new Date().toISOString();
     finalStatus.downloads.IndexHistory.duration = `${finalDuration}s`;
     finalStatus.downloads.IndexHistory.info =
-        errorCount > 0 ? `${errorCount} Fehler (404) übersprungen` : "Erfolgreich";
+        errorCount > 0 ? `${errorCount} Fehler übersprungen` : "Erfolgreich";
 
     writeStatusFile(finalStatus);
 

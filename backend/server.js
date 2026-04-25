@@ -51,7 +51,7 @@ app.use("/api/checks", require("./routes/checks"));
 app.use("/api/downloads", require("./routes/download_stream_indexes"));
 app.use("/api/downloads", require("./routes/download_stream_stocks"));
 app.use("/api/cockpit", require("./routes/cockpitStatusRoutes"));
-app.use("/api/downloads", require("./routes/loadIndexes"));
+//app.use("/api/downloads", require("./routes/loadIndexes"));
 app.use("/api/downloads", require("./routes/loadYahooStocks"));
 
 

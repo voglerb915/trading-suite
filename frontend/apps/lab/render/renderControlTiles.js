@@ -279,6 +279,7 @@ async function runIndexHistory() {
     });
 }
 
+
 async function runDailyHistory() {
     updateTile("downloads", { status: "running", progress: 0 });
 
@@ -311,6 +312,7 @@ async function runDailyHistory() {
         });
     });
 }
+
 
 
 function renderDownloadsStatus(downloads) {
@@ -535,7 +537,6 @@ async function loadPersistedStatus() {
             renderDownloadsStatus(status.downloads);
         }
 
-
         // Calculations
         if (status.calculations) {
             updateTile("calculations", status.calculations);
@@ -554,6 +555,7 @@ async function loadPersistedStatus() {
         console.warn("Status konnte nicht geladen werden:", err);
     }
 }
+
 
 async function saveTileStatus(tile, payload) {
     try {
