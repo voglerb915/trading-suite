@@ -5,6 +5,7 @@ const cors = require('cors');
 const os = require('os'); // <--- NEU: Für die Geräte-Erkennung
 const logger = require('./utils/logger');
 const { getTradingDate } = require('./utils/dateHelper');
+const systemStatusRoutes = require("./routes/systemStatus.js");
 
 // --- Datenbank-Verbindung importieren ---
 const { tradingConnect, yahooConnect, journalConnect } = require('./db/connection');
@@ -53,7 +54,7 @@ app.use("/api/downloads", require("./routes/download_stream_stocks"));
 app.use("/api/cockpit", require("./routes/cockpitStatusRoutes"));
 //app.use("/api/downloads", require("./routes/loadIndexes"));
 app.use("/api/downloads", require("./routes/loadYahooStocks"));
-
+app.use("/api/system", systemStatusRoutes);
 
 // ---------------------------------------------
 // 3. STATIC FRONTEND SERVING

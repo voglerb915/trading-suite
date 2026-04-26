@@ -1,0 +1,120 @@
+/* ======================================================
+   LAB.CSS – Strukturelles Fundament der LAB
+   Enthält NUR Basis-Layout, Typografie, Grid & Tabellen
+====================================================== */
+
+
+/* ----------------------------------------------
+   1) BASIS & TYPOGRAFIE
+---------------------------------------------- */
+body {
+    margin: 0;
+    padding: 0;
+    background: #121212;
+    color: #ffffff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 14px;
+    overflow: hidden; /* LAB scrollt über Spalten, nicht über body */
+}
+
+
+/* ----------------------------------------------
+   2) TOOL-VIEW (LAB-spezifisch)
+---------------------------------------------- */
+.tool-view {
+    display: block !important;
+    width: 100vw;
+    height: 100vh;
+}
+
+
+/* ----------------------------------------------
+   3) LAB-CONTAINER (3-Spalten-Layout fixiert)
+---------------------------------------------- */
+#lab-container {
+    display: grid;
+    /* Definiert alle 3 Spalten: 25vw, 40vw und der Rest (35vw) */
+    grid-template-columns: 25vw 40vw 1fr; 
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+/* ----------------------------------------------
+   4) ÜBERSCHRIFTEN
+---------------------------------------------- */
+h2, h3, .column-title {
+    font-size: 2.8rem;
+    color: #ffffff;
+    margin-top: 15px;
+    margin-bottom: 30px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.1;
+}
+
+
+/* ----------------------------------------------
+   5) SPALTEN-CONTAINER
+---------------------------------------------- */
+#col-1, #col-2 {
+    overflow-y: auto;
+    height: 100vh;
+    padding: 0px 20px 20px 20px;
+    border-right: 1px solid #252525;
+    box-sizing: border-box;
+}
+#col-3 {
+    overflow-y: auto;
+    height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ----------------------------------------------
+   6) TABELLEN-GRUNDOPTIK
+---------------------------------------------- */
+.vt-header {
+    background: #1e1e1e;
+    color: #ffffff;
+    text-transform: uppercase;
+    font-size: 1.0rem;
+    font-weight: bold;
+    padding: 15px 5px;
+    border-bottom: 2px solid #444;
+}
+
+.vt-row {
+    border-bottom: 1px solid #252525;
+    font-size: 0.9rem;
+    padding: 10px 5px;
+}
+
+
+/* Sticky Header für Journal-Tabellen */
+#journal-table > div:first-child {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #181818;
+    border-bottom: 1px solid #444;
+}
+
+
+/* ----------------------------------------------
+   7) SCROLLBARS (LAB-weit)
+---------------------------------------------- */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #121212;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 5px;
+}

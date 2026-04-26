@@ -1590,3 +1590,39 @@
 [2026-04-23T23:06:41.558Z] [COCKPIT-METRICS] [INFO] Erfolgreich 332 Zeilen für Cockpit geladen.
 [2026-04-24T11:32:39.174Z] [COCKPIT-METRICS] [INFO] Erfolgreich 332 Zeilen für Cockpit geladen.
 [2026-04-25T15:04:54.940Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-25T16:05:45.988Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-25T16:07:30.950Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-25T16:08:08.068Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-25T16:08:25.846Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-25T16:08:48.097Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-25T16:11:56.345Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-25T16:14:45.992Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-25T16:26:45.485Z] [UPDATE-SHORT] [UPDATE] JSON-Export gestartet
+[2026-04-25T16:26:45.590Z] [UPDATE-SHORT] [UPDATE] JSON erfolgreich geschrieben
+[2026-04-25T16:38:51.519Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-25T16:41:40.881Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-25T16:45:01.666Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-25T16:59:40.390Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-25T17:19:54.355Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T08:14:38.777Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T15:18:43.921Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Failed to connect to 127.0.0.1:1433 in 15000ms
+[2026-04-26T17:20:43.493Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Failed to connect to 127.0.0.1:1433 - Could not connect (sequence)
+[2026-04-26T17:22:06.793Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Connection is closed.
+[2026-04-26T17:23:13.711Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Connection is closed.
+[2026-04-26T17:34:52.265Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T17:43:49.841Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T17:47:09.881Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T17:56:26.330Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T17:59:29.184Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T18:02:57.012Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T18:16:12.359Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T18:20:29.680Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T19:15:05.624Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T19:17:54.841Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T19:21:48.533Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T19:33:13.470Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T19:37:02.428Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T19:39:48.135Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T20:02:53.452Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T20:04:23.123Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.
+[2026-04-26T20:10:42.509Z] [COCKPIT-METRICS] [INFO] Erfolgreich 251 Zeilen für Cockpit geladen.

@@ -3,7 +3,8 @@
 import { getVolumeMetrics } from "../../shared/api/volume.js";
 import GlobalState from "../../shared/state/globalState.js";
 import { renderVolumeTable, handleSort } from "./render/renderVolumeTable.js";
-import { renderControlTiles } from "./render/renderControlTiles.js";
+import { initSqlStatus } from "./render/sql-status.js";
+
 
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("LAB: Start...");
@@ -15,6 +16,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     GlobalState.set("volumeData", filtered);
     renderVolumeTable(filtered);
 
-    // Control Center
-    renderControlTiles();   // <-- Korrekt, direkt hier ausführen
+    // SQL-Status erst NACHDEM das DOM existiert
+    initSqlStatus();
 });
