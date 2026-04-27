@@ -4,6 +4,7 @@
 // ======================================================
 
 import { loadPersistedStatus, simulateProgress, updateTile } from "./logic.js";
+import { runSystemStatus } from "./tiles/system.js";
 import { runChecks } from "./tiles/checks.js";
 import { triggerCalculation } from "./tiles/calculations.js";
 import { runIndexHistory, runDailyHistory } from "./tiles/downloads.js";
@@ -56,6 +57,10 @@ export async function renderControlTiles() {
 
     // Tiles einfügen
     root.innerHTML = `
+        ${tile("system", "🖥️", "System", `
+            <div class="tile-results" id="results-system"></div>
+        `)}
+
         ${tile("downloads", "📥", "Yahoo-Downloads", `
             <div class="tile-results" id="results-downloads"></div>
         `)}
@@ -80,8 +85,12 @@ export async function renderControlTiles() {
 
     setupTileEvents();
 
-    // Persistenten Status laden
-    await loadPersistedStatus();
+    // System-Status automatisch laden
+    document.getElementById("tile-system").click();
+
+// Persistenten Status laden
+await loadPersistedStatus();
+
 }
 
 
@@ -90,6 +99,25 @@ export async function renderControlTiles() {
 // 3) TILE-EVENTS
 // ------------------------------------------------------
 function setupTileEvents() {
+    // System
+        document.getElementById("tile-system").addEventListener("click", async () => {
+            updateTile("system", { status: "running", progress: 0 });
+            simulateProgress("system");
+
+            const result = await runSystemStatus();
+
+            // WICHTIG: HTML in die Kachel schreiben
+            document.getElementById("results-system").innerHTML = result.html;
+
+            updateTile("system", {
+                status: result.ok ? "success" : "error",
+                progress: 100,
+                lastRun: new Date(),
+                duration: "–"
+            });
+        });
+
+
     // Downloads → nur Klick auf die Tabelle, nicht die Kachel
     document.getElementById("tile-downloads").addEventListener("click", () => {
         // Downloads laufen NICHT über runTileProcess

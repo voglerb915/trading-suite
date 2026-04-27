@@ -1,4 +1,6 @@
 import { updateTile, saveTileStatus, loadPersistedStatus } from "../logic.js";
+import { formatTimestamp } from "../../../../shared/utils/time.js";
+
 
 export function renderDownloadsStatus(downloads) {
     const root = document.getElementById("results-downloads");
@@ -10,14 +12,21 @@ export function renderDownloadsStatus(downloads) {
     ];
 
     root.innerHTML = `
-        <table class="check-table">
+        <table class="downloads-table">
+            <colgroup>
+                <col style="width: 28%;">
+                <col style="width: 13%;">
+                <col style="width: 31%;">
+                <col style="width: 13%;">
+                <col style="width: 15%;">
+            </colgroup>
             <thead>
                 <tr>
                     <th>Tabelle</th>
-                    <th>Status</th>
-                    <th>Letzter Lauf</th>
-                    <th>Dauer</th>
-                    <th>Aktion</th>
+                    <th style="text-align: center;">Status</th>
+                    <th style="text-align: center;">Letzter Lauf</th>
+                    <th style="text-align: center;">Dauer</th>
+                    <th style="text-align: center;">Aktion</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,7 +38,7 @@ export function renderDownloadsStatus(downloads) {
                         <tr class="${ok ? "success" : (s.ok === false ? "error" : "")}">
                             <td>${r.label}</td>
                             <td>${s.ok === undefined ? "–" : (ok ? "✔️" : "❌")}</td>
-                            <td>${s.lastRun ? s.lastRun : "–"}</td>
+                            <td>${s.lastRun ? formatTimestamp(s.lastRun) : "–"}</td>
                             <td>${s.duration || "–"}</td>
                             <td class="download-action" data-key="${r.key}" style="cursor: pointer;">📥</td>
                         </tr>

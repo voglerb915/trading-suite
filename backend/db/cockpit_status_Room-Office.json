@@ -2,15 +2,16 @@
   "downloads": {
     "IndexHistory": {
       "ok": true,
-      "lastRun": "2026-04-24T21:17:27.487Z",
-      "duration": "2s",
+      "lastRun": "2026-04-27T22:00:32.222Z",
+      "duration": "3s",
       "info": "5 Fehler übersprungen"
     },
     "DailyHistory": {
-      "ok": false,
-      "lastRun": "2026-04-24T21:24:46.258Z",
-      "duration": "423s",
-      "error": "errorCount is not defined"
+      "ok": true,
+      "lastRun": "2026-04-27T22:07:59.717Z",
+      "duration": "430s",
+      "error": "errorCount is not defined",
+      "info": "Erfolgreich"
     }
   },
   "calculations": {},

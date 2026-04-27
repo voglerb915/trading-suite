@@ -45,6 +45,29 @@ body {
     opacity: 0.7;
 }
 
+#device-status-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;      /* <-- Schrift größer */
+    opacity: 0.8;         /* leicht dezenter Look */
+    font-weight: 500;     /* etwas kräftiger, aber nicht fett */
+    letter-spacing: 0.5px; /* cockpit-konform */
+}
+
+#header-system-badge {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.header-badge-green  { background: #2ecc71; color: #000; }
+.header-badge-yellow { background: #f1c40f; color: #000; }
+.header-badge-red    { background: #e74c3c; color: #fff; }
+
+
 /* Hover-Effekt */
 #main-nav a:hover {
     opacity: 1;

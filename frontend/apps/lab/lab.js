@@ -3,7 +3,6 @@
 import { getVolumeMetrics } from "../../shared/api/volume.js";
 import GlobalState from "../../shared/state/globalState.js";
 import { renderVolumeTable, handleSort } from "./render/renderVolumeTable.js";
-import { initSqlStatus } from "./render/sql-status.js";
 
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -16,6 +15,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     GlobalState.set("volumeData", filtered);
     renderVolumeTable(filtered);
 
-    // SQL-Status erst NACHDEM das DOM existiert
-    initSqlStatus();
+        
 });

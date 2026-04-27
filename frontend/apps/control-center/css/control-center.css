@@ -22,7 +22,7 @@ body {
 ---------------------------------------------- */
 #control-center-root {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     padding: 10px;
 }
@@ -180,16 +180,67 @@ body {
 /* ----------------------------------------------
    9) DOWNLOADS – TABELLE
 ---------------------------------------------- */
+/* ----------------------------------------------
+   DOWNLOADS – PRÄZISE SPALTENSTEUERUNG
+---------------------------------------------- */
+.downloads-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* WICHTIG: Verhindert das "Springen" der Spalten */
+}
+
+/* 1. Spalte: Tabelle (Label) */
+.downloads-table th:nth-child(1),
+.downloads-table td:nth-child(1) { 
+    width: 5%; 
+    text-align: left;
+}
+
+/* 2. Spalte: Status (Icon) */
+.downloads-table th:nth-child(2),
+.downloads-table td:nth-child(2) { 
+    width: 15%; 
+    text-align: center; 
+}
+
+/* 3. Spalte: Letzter Lauf (Timestamp) */
+.downloads-table th:nth-child(3),
+.downloads-table td:nth-child(3) { 
+    width: 50%; 
+    text-align: center;
+    /*font-family: monospace; /* Zeitstempel sehen so sauberer aus */
+    /*font-size: 0.85rem; */
+}
+
+/* 4. Spalte: Dauer */
+.downloads-table th:nth-child(4),
+.downloads-table td:nth-child(4) { 
+    width: 15%; 
+    text-align: center; 
+}
+
+/* 5. Spalte: Aktion (Download-Icon) */
+.downloads-table th:nth-child(5),
+.downloads-table td:nth-child(5) {
+    width: 15%;
+    text-align: center;
+    /*font-size: 1.2rem; */
+}
+
 .tile-results {
     margin-top: 10px;
     font-size: 0.9rem;
     max-height: 70vh;
     overflow-y: auto;
 
-    /* --- Scrollbar-Puffer (empfohlen) --- */
+    /* NEU: horizontales Scrollen erlauben */
+    overflow-x: auto;
+
+    /* Scrollbar-Puffer */
     padding-right: 14px;
     box-sizing: border-box;
 }
+
 
 .download-action {
     cursor: pointer;
@@ -258,6 +309,48 @@ body {
 
 .check-table th:nth-child(4),
 .check-table td:nth-child(4) { width: 14%; text-align: right; }
+
+/* ----------------------------------------------
+   10.1) SYSTEM-STATUS (aus LAB migriert)
+---------------------------------------------- */
+
+/* Linien */
+.sql-status-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.sql-status-label {
+    opacity: 0.8;
+}
+
+.sql-status-value {
+    font-weight: 700;
+}
+
+.sql-ok      { color: #2ecc71; }
+.sql-error   { color: #e74c3c; }
+.sql-warning { color: #f1c40f; }
+
+/* Header wie Prüfungen */
+.system-status-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.system-status-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.system-status-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
 
 /* ----------------------------------------------

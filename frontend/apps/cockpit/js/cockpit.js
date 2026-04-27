@@ -57,6 +57,15 @@ function showTool(toolId) {
 /*----------------------------------
 4. UI-Layer (Rendering)
 ----------------------------------*/
+function updateHeaderSystemBadge(badge, text) {
+    const el = document.getElementById("header-system-badge");
+    if (!el) return;
+
+    el.className = ""; // Reset
+    el.classList.add(`header-badge-${badge}`);
+    el.textContent = text;
+}
+
 
 /*----------------------------------
 5. Controller
@@ -66,13 +75,25 @@ function showTool(toolId) {
 /*----------------------------------
 6. Event-Handler
 ----------------------------------*/
-
+// Klick auf den System-Status-Badge → Control-Center öffnen
+document.addEventListener("click", (e) => {
+    if (e.target.id === "header-system-badge") {
+        showTool("control");
+    }
+});
 
 /*----------------------------------
 7. Initialisierung
 ----------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Cockpit Initialisierung gestartet...");
+
+        // --- System-Status Badge Listener (vom Control-Center) ---
+        window.addEventListener("message", (event) => {
+            if (event.data?.type === "system-status-update") {
+                updateHeaderSystemBadge(event.data.badge, event.data.text);
+            }
+        });
 
     // --- NEU: Geräteerkennung beim Start ---
     fetch('/api/device-info')
@@ -86,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 deviceInfo.id = 'device-status-info';
                 
                 // Styling für die dezente Anzeige unter dem Logo
-                deviceInfo.style.fontSize = '9px'; // Sehr klein und dezent
+                deviceInfo.style.fontSize = ''; // Wert entfernt, war 9px damit css übernimmt
                 deviceInfo.style.color = 'white';
                 deviceInfo.style.marginTop = '2px';
                 deviceInfo.style.opacity = '0.7';
@@ -97,7 +118,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 // Text setzen
                 const mode = data.isLaptop ? 'Mobile Mode' : 'Stationary';
-                deviceInfo.innerText = `${data.deviceName} | ${mode}`;
+                deviceInfo.innerHTML = `
+                    ${data.deviceName} | ${mode}
+                    <span id="header-system-badge"></span>
+                `;
                 
                 // Unter das Logo hängen
                 logoDiv.appendChild(deviceInfo);

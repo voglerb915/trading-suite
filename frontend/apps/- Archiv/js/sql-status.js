@@ -5,6 +5,59 @@
 ====================================================== */
 import { formatTimestamp } from "../../../shared/utils/time.js";
 
+/* ----------------------------------------------
+   SYSTEM-STATUS LOGIK (Badge + Heatmap)
+---------------------------------------------- */
+function computeSystemStatus(s) {
+    const points = [
+        s.backendOnline ? "green" : "red",
+        s.portOpen ? "green" : "red",
+        s.serviceRunning ? "green" : "red",
+        s.queryOk ? "green" : (s.portOpen ? "yellow" : "red")
+    ];
+
+    let badge = "red";
+    let text = "Systemfehler";
+
+    const allGreen = points.every(p => p === "green");
+    const anyYellow = points.includes("yellow");
+
+    if (allGreen) {
+        badge = "green";
+        text = "System OK";
+    } else if (anyYellow) {
+        badge = "yellow";
+        text = "System Warnung";
+    }
+
+    return { badge, text, points };
+}
+
+function renderSystemHeatmap(points) {
+    return `
+        <div class="mini-heatmap">
+            ${points.map(p => {
+                const cls =
+                    p === "green"  ? "hm-success" :
+                    p === "yellow" ? "hm-warning" :
+                                     "hm-error";
+                return `<span class="hm ${cls}"></span>`;
+            }).join("")}
+        </div>
+    `;
+}
+
+
+function renderSystemBadge(badge, text) {
+    const cls =
+        badge === "green"  ? "badge-green" :
+        badge === "yellow" ? "badge-yellow" :
+                             "badge-red";
+
+    return `<span class="badge ${cls}">${text}</span>`;
+}
+
+
 export async function initSqlStatus() {
     console.log("🔍 INIT SQL STATUS START");
 
@@ -19,6 +72,17 @@ export async function initSqlStatus() {
     const status = await checkSqlStatus();
     console.log("🔍 STATUS RESULT:", status);
 
+    // Systemstatus berechnen
+    const sys = computeSystemStatus(status);
+
+    // --- Badge an Cockpit-Header senden ---
+    window.parent.postMessage({
+        type: "system-status-update",
+        badge: sys.badge,
+        text: sys.text
+    }, "*");
+
+    // HTML rendern
     const html = renderSqlStatus(status);
     console.log("🔍 RENDERED HTML:", html);
 
@@ -29,7 +93,6 @@ export async function initSqlStatus() {
         console.log("🔍 FINAL DOM CONTENT:", container.innerHTML);
     }, 100);
 }
-
 
 /* ----------------------------------------------
    1) SQL-STATUS PRÜFUNG
@@ -136,10 +199,22 @@ async function testSqlQuery() {
 ---------------------------------------------- */
 function renderSqlStatus(s) {
 
+    const sys = computeSystemStatus(s);
+
     // Backend tot → Fallback
     if (!s.backendOnline) {
         return `
             <div id="sql-status-widget">
+
+                <div class="system-status-header">
+                    <div class="system-status-title">System Status</div>
+
+                    <div class="system-status-row">
+                        ${renderSystemBadge(sys.badge, sys.text)}
+                        ${renderSystemHeatmap(sys.points)}
+                    </div>
+                </div>
+
                 <div class="sql-status-line">
                     <span class="sql-status-label">Backend:</span>
                     <span class="sql-status-value sql-error">OFFLINE</span>
@@ -171,6 +246,17 @@ function renderSqlStatus(s) {
 
     return `
         <div id="sql-status-widget">
+
+            <div class="system-status-header">
+                <div class="system-status-title">System Status</div>
+
+                <div class="system-status-row">
+                    ${renderSystemBadge(sys.badge, sys.text)}
+                    ${renderSystemHeatmap(sys.points)}
+                </div>
+            </div>
+
+
             <div class="sql-status-line">
                 <span class="sql-status-label">Backend:</span>
                 <span class="sql-status-value sql-ok">ONLINE</span>
@@ -209,3 +295,4 @@ function renderSqlStatus(s) {
         </div>
     `;
 }
+
