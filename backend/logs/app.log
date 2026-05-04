@@ -1680,3 +1680,9 @@
 [2026-04-27T22:30:58.231Z] [COCKPIT-METRICS] [INFO] Erfolgreich 228 Zeilen für Cockpit geladen.
 [2026-04-27T22:31:09.501Z] [COCKPIT-METRICS] [INFO] Erfolgreich 228 Zeilen für Cockpit geladen.
 [2026-04-27T22:41:56.682Z] [COCKPIT-METRICS] [INFO] Erfolgreich 228 Zeilen für Cockpit geladen.
+[2026-05-04T18:33:58.100Z] [COCKPIT-METRICS] [INFO] Erfolgreich 333 Zeilen für Cockpit geladen.
+[2026-05-04T18:34:11.286Z] [COCKPIT-METRICS] [INFO] Erfolgreich 333 Zeilen für Cockpit geladen.
+[2026-05-04T18:51:37.094Z] [COCKPIT-METRICS] [INFO] Erfolgreich 333 Zeilen für Cockpit geladen.
+[2026-05-04T18:57:01.076Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Failed to connect to 127.0.0.1:1433 in 15000ms
+[2026-05-04T19:09:35.466Z] [COCKPIT-METRICS] [INFO] Erfolgreich 333 Zeilen für Cockpit geladen.
+[2026-05-04T19:10:05.437Z] [COCKPIT-METRICS] [INFO] Erfolgreich 333 Zeilen für Cockpit geladen.

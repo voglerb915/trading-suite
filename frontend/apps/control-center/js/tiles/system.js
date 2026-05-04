@@ -4,6 +4,8 @@
 
 import { formatTimestamp } from "../../../../shared/utils/time.js";
 
+const BASE_URL = `http://${location.hostname}:4000`;
+
 // ----------------------------------------------
 // 1) System-Status Logik (unverändert aus LAB)
 // ----------------------------------------------
@@ -63,7 +65,7 @@ async function testBackend() {
     try {
         const controller = new AbortController();
         setTimeout(() => controller.abort(), 500);
-        await fetch("http://localhost:4000/api/system/ping", { signal: controller.signal });
+        await fetch(`${BASE_URL}/api/system/ping`, { signal: controller.signal });
         return true;
     } catch {
         return false;
@@ -72,7 +74,7 @@ async function testBackend() {
 
 async function testPort1433() {
     try {
-        const res = await fetch("http://localhost:4000/api/system/port-check");
+        const res = await fetch(`${BASE_URL}/api/system/port-check`);
         const data = await res.json();
         return data.portOpen === true;
     } catch {
@@ -82,7 +84,7 @@ async function testPort1433() {
 
 async function testSqlService() {
     try {
-        const res = await fetch("http://localhost:4000/api/system/sql-service");
+        const res = await fetch(`${BASE_URL}/api/system/sql-service`);
         const data = await res.json();
         return data.running === true;
     } catch {
@@ -92,7 +94,7 @@ async function testSqlService() {
 
 async function testSqlQuery() {
     try {
-        const res = await fetch("http://localhost:4000/api/system/sql-test");
+        const res = await fetch(`${BASE_URL}/api/system/sql-test`);
         const data = await res.json();
         return data.ok === true;
     } catch {

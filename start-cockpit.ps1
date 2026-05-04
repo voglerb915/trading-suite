@@ -47,7 +47,7 @@ $host.UI.RawUI.WindowTitle = 'Frontend'
 while (`$true) {
     try {
         cd $FrontendPath
-        npx vite
+        npx vite --host
 
     }
     catch {

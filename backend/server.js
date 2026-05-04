@@ -85,7 +85,7 @@ app.use((err, req, res, next) => {
 // 5. Start Server
 // ---------------------------------------------
 const PORT = 4000;
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
     console.log(`🚀 Trading-Suite Backend läuft auf Port ${PORT}`);
     console.log(`📅 Trading-Date: ${getTradingDate()}`);
     console.log(`💻 Device-Host: ${os.hostname()}`);
