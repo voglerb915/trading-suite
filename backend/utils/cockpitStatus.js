@@ -75,10 +75,11 @@ function updateTileStatus(tile, payload) {
     }
 
     // 🟩 Alle anderen Tiles normal speichern
-    status[tile] = {
-        ...(status[tile] || {}),
-        ...payload
-    };
+    if (tile === "checks") {
+        status.checks = payload;   // komplette Struktur ersetzen
+        writeStatusFile(status);
+        return;
+    }
 
     writeStatusFile(status);
 }

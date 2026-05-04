@@ -3,6 +3,7 @@ import { formatDateTimeShort, updateTile, openLogModal } from "../logic.js";
 export async function runChecks() {
     console.log("Prüfungen gestartet...");
 
+    // 🟩 1. Prüfungen ausführen (DB lesen)
     const res = await fetch("http://localhost:4000/api/checks/all");
 
     if (!res.ok) {
@@ -12,6 +13,7 @@ export async function runChecks() {
 
     const json = await res.json();
 
+    // 🟩 2. Sections vorbereiten
     const sections = {
         finviz: { title: "Finviz-Daten", status: "success", items: [] },
         yahoo: { title: "Yahoo-Daten + Berechnungen", status: "success", items: [] },
@@ -41,11 +43,27 @@ export async function runChecks() {
         }
     }
 
+    // 🟩 3. UI aktualisieren
     renderCheckSections(sections);
 
     if (!json.ok) {
         openLogModal("Prüfungen – Fehler", JSON.stringify(json, null, 2));
     }
+
+    // 🟩 4. Gesamtstatus berechnen
+    const overall = computeOverallCheckStatus(sections);
+
+    // 🟩 5. Status in die richtige Datei schreiben (automatisch per HOSTNAME)
+    await fetch("http://localhost:4000/api/cockpit/status/checks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            status: overall,
+            lastRun: new Date().toISOString(),
+            duration: json.duration ?? null,
+            sections
+        })
+    });
 
     return { sections };
 }
