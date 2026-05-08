@@ -10,7 +10,7 @@
 
 /* Linke Spalte (Volume-Daten) */
 #col-1 {
-    width: 25vw;
+    width: auto; /* oder komplett entfernen */;
     overflow-y: auto;
     padding: 0px 20px 20px 20px;
     border-right: 1px solid #252525;
@@ -19,7 +19,7 @@
 
 /* Mittlere Spalte (Volume-Tools / Filter) */
 #col-2 {
-    width: 10vw;
+    width: auto; /* oder komplett entfernen */;
     overflow-y: auto;
     padding: 0px 20px 20px 20px;
     border-right: 1px solid #252525;
