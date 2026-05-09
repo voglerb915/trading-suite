@@ -6,8 +6,8 @@
 import { loadPersistedStatus, simulateProgress, updateTile } from "./logic.js";
 import { runSystemStatus } from "./tiles/system.js";
 import { runChecks } from "./tiles/checks.js";
-import { triggerCalculation } from "./tiles/calculations.js";
 import { runIndexHistory, runDailyHistory } from "./tiles/downloads.js";
+import { renderCalculationsTable } from "./tiles/calculations.js";
 
 
 // ------------------------------------------------------
@@ -66,16 +66,7 @@ export async function renderControlTiles() {
         `)}
 
         ${tile("calculations", "🧮", "Berechnungen", `
-            <div class="tile-steps" id="steps-calculations">
-                <div class="tile-step" id="step-short">
-                    <span class="step-label">Short-Strategie</span>
-                    <span class="step-status" id="step-status-short">–</span>
-                </div>
-                <div class="tile-step" id="step-metrics">
-                    <span class="step-label">Update-Metrics</span>
-                    <span class="step-status" id="step-status-metrics">–</span>
-                </div>
-            </div>
+            <div class="tile-results" id="results-calculations"></div>
         `)}
 
         ${tile("checks", "🔍", "Prüfungen", `
@@ -90,6 +81,7 @@ export async function renderControlTiles() {
 
 // Persistenten Status laden
 await loadPersistedStatus();
+renderCalculationsTable(window.__persistedState?.calculations);
 
 }
 
@@ -124,20 +116,8 @@ function setupTileEvents() {
         // sondern über die Download-Tabelle selbst
     });
 
-    // Calculations
-    document.getElementById("tile-calculations").addEventListener("click", async () => {
-        updateTile("calculations", { status: "running", progress: 0 });
-        simulateProgress("calculations");
-
-        const result = await triggerCalculation();
-
-        updateTile("calculations", {
-            status: "success",
-            progress: 100,
-            lastRun: new Date(),
-            duration: result.duration
-        });
-    });
+    // Calculations – NICHT klickbar
+    document.getElementById("tile-calculations").addEventListener("click", () => {});
 
     // Checks
     document.getElementById("tile-checks").addEventListener("click", async () => {

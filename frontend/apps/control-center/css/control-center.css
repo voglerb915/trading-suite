@@ -181,51 +181,51 @@ body {
    9) DOWNLOADS – TABELLE
 ---------------------------------------------- */
 /* ----------------------------------------------
-   DOWNLOADS – PRÄZISE SPALTENSTEUERUNG
+   DOWNLOADS & CALCULATIONS – EINHEITLICHE SPALTENBREITEN
+   28% | 13% | 31% | 13% | 15%
 ---------------------------------------------- */
+
 .downloads-table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* WICHTIG: Verhindert das "Springen" der Spalten */
+    table-layout: fixed; /* Wichtig für stabile Spalten */
 }
 
-/* 1. Spalte: Tabelle (Label) */
+/* 1. Spalte: Label */
 .downloads-table th:nth-child(1),
-.downloads-table td:nth-child(1) { 
-    width: 5%; 
+.downloads-table td:nth-child(1) {
+    width: 28%;
     text-align: left;
 }
 
-/* 2. Spalte: Status (Icon) */
+/* 2. Spalte: Status */
 .downloads-table th:nth-child(2),
-.downloads-table td:nth-child(2) { 
-    width: 15%; 
-    text-align: center; 
+.downloads-table td:nth-child(2) {
+    width: 13%;
+    text-align: center;
 }
 
-/* 3. Spalte: Letzter Lauf (Timestamp) */
+/* 3. Spalte: Letzter Lauf */
 .downloads-table th:nth-child(3),
-.downloads-table td:nth-child(3) { 
-    width: 50%; 
+.downloads-table td:nth-child(3) {
+    width: 31%;
     text-align: center;
-    /*font-family: monospace; /* Zeitstempel sehen so sauberer aus */
-    /*font-size: 0.85rem; */
 }
 
 /* 4. Spalte: Dauer */
 .downloads-table th:nth-child(4),
-.downloads-table td:nth-child(4) { 
-    width: 15%; 
-    text-align: center; 
+.downloads-table td:nth-child(4) {
+    width: 13%;
+    text-align: center;
 }
 
-/* 5. Spalte: Aktion (Download-Icon) */
+/* 5. Spalte: Aktion */
 .downloads-table th:nth-child(5),
 .downloads-table td:nth-child(5) {
     width: 15%;
     text-align: center;
-    /*font-size: 1.2rem; */
 }
+
 
 .tile-results {
     margin-top: 10px;
@@ -241,8 +241,9 @@ body {
     box-sizing: border-box;
 }
 
-
-.download-action {
+/* Gemeinsamer Hover-Effekt für Downloads & Calculations */
+.download-action,
+.calc-action {
     cursor: pointer;
     text-align: center;
     font-size: 1.2rem;
@@ -250,7 +251,8 @@ body {
     transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
-.download-action:hover {
+.download-action:hover,
+.calc-action:hover {
     opacity: 1;
     transform: scale(1.35);
 }

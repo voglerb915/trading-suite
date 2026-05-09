@@ -2,23 +2,39 @@
   "downloads": {
     "IndexHistory": {
       "ok": true,
-      "lastRun": "2026-05-07T23:06:32.100Z",
-      "duration": "2s",
+      "lastRun": "2026-05-08T21:21:55.167Z",
+      "duration": "1s",
       "info": "5 Fehler übersprungen"
     },
     "DailyHistory": {
       "ok": true,
-      "lastRun": "2026-05-07T22:47:33.086Z",
-      "duration": "483s",
+      "lastRun": "2026-05-08T21:21:32.057Z",
+      "duration": "421s",
       "error": "errorCount is not defined",
       "info": "Erfolgreich"
     }
   },
-  "calculations": {},
+  "calculations": {
+    "RS_Sectors": {
+      "status": "success",
+      "lastRun": "2026-05-09T22:06:07.152Z",
+      "duration": "0.71s"
+    },
+    "RS_Industries": {
+      "status": "pending",
+      "lastRun": null,
+      "duration": null
+    },
+    "RS_Stocks": {
+      "status": "pending",
+      "lastRun": null,
+      "duration": null
+    }
+  },
   "checks": {
     "status": "green",
-    "lastRun": "2026-05-08T10:03:38.990Z",
-    "duration": "7.03s",
+    "lastRun": "2026-05-08T21:38:39.352Z",
+    "duration": "6.49s",
     "sections": {
       "finviz": {
         "title": "Finviz-Daten",
@@ -27,15 +43,15 @@
           {
             "name": "finviz",
             "status": "success",
-            "lastDateStr": "2026-05-07 22:15:40",
-            "countAtLastDate": 11115,
+            "lastDateStr": "2026-05-08 22:15:41",
+            "countAtLastDate": 11120,
             "isValidation": false,
             "details": null
           },
           {
             "name": "finviz_groups",
             "status": "success",
-            "lastDateStr": "2026-05-07 22:15:29",
+            "lastDateStr": "2026-05-08 22:15:27",
             "countAtLastDate": 155,
             "isValidation": false,
             "details": null
@@ -49,40 +65,40 @@
           {
             "name": "Indexes",
             "status": "success",
-            "lastDateStr": "2026-05-07",
-            "countAtLastDate": 14,
+            "lastDateStr": "2026-05-08",
+            "countAtLastDate": 27,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailyHistory",
             "status": "success",
-            "lastDateStr": "2026-05-07",
-            "countAtLastDate": 10782,
+            "lastDateStr": "2026-05-08",
+            "countAtLastDate": 10733,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailySignals",
             "status": "success",
-            "lastDateStr": "2026-05-07",
-            "countAtLastDate": 5588,
+            "lastDateStr": "2026-05-08",
+            "countAtLastDate": 5582,
             "isValidation": false,
             "details": null
           },
           {
             "name": "StockMetrics",
             "status": "success",
-            "lastDateStr": "2026-05-07",
-            "countAtLastDate": 10782,
+            "lastDateStr": "2026-05-08",
+            "countAtLastDate": 10733,
             "isValidation": false,
             "details": null
           },
           {
             "name": "Strategies",
             "status": "success",
-            "lastDateStr": "2026-05-07",
-            "countAtLastDate": 281,
+            "lastDateStr": "2026-05-08",
+            "countAtLastDate": 289,
             "isValidation": false,
             "details": null
           }

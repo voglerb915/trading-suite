@@ -52,37 +52,45 @@ function writeStatusFile(data) {
 function updateTileStatus(tile, payload) {
     const status = readStatusFile();
 
-    // Root-Objekte sicherstellen
     status.downloads = status.downloads || {};
     status.calculations = status.calculations || {};
     status.checks = status.checks || {};
 
-    // 🟥 Downloads selbst darf NICHT überschrieben werden
     if (tile === "downloads") {
         console.trace("❌ ILLEGALER updateTileStatus('downloads') AUFRUF");
         return;
     }
 
-    // 🟩 ABER: IndexHistory & DailyHistory gehören UNTER downloads
+    // 🔹 Downloads: einzelne Einträge
     if (tile === "IndexHistory" || tile === "DailyHistory") {
         status.downloads[tile] = {
             ...(status.downloads[tile] || {}),
             ...payload
         };
-
         writeStatusFile(status);
         return;
     }
-
-    // 🟩 Alle anderen Tiles normal speichern
+    
+    // 🔹 Calculations: einzelne Einträge (wie Downloads)
+    if (tile === "RS_Sectors" || tile === "RS_Industries" || tile === "RS_Stocks") {
+        status.calculations[tile] = {
+            ...(status.calculations[tile] || {}),
+            ...payload
+        };
+        writeStatusFile(status);
+        return;
+    }
+    // 🔹 Checks: komplette Struktur
     if (tile === "checks") {
-        status.checks = payload;   // komplette Struktur ersetzen
+        status.checks = payload;
         writeStatusFile(status);
         return;
     }
 
+    // Fallback (falls später weitere Tiles kommen)
     writeStatusFile(status);
 }
+
 
 module.exports = {
     readStatusFile,

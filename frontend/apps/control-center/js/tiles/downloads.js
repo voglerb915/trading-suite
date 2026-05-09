@@ -14,12 +14,13 @@ export function renderDownloadsStatus(downloads) {
     root.innerHTML = `
         <table class="downloads-table">
             <colgroup>
-                <col style="width: 28%;">
-                <col style="width: 13%;">
-                <col style="width: 31%;">
-                <col style="width: 13%;">
-                <col style="width: 15%;">
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
             </colgroup>
+
             <thead>
                 <tr>
                     <th>Tabelle</th>
@@ -29,6 +30,7 @@ export function renderDownloadsStatus(downloads) {
                     <th style="text-align: center;">Aktion</th>
                 </tr>
             </thead>
+
             <tbody>
                 ${rows.map(r => {
                     const s = downloads[r.key] || {};
@@ -47,6 +49,7 @@ export function renderDownloadsStatus(downloads) {
             </tbody>
         </table>
     `;
+
 
     root.onclick = (e) => {
         const el = e.target.closest(".download-action");

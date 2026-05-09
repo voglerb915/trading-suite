@@ -55,6 +55,7 @@ app.use("/api/cockpit", require("./routes/cockpitStatusRoutes"));
 //app.use("/api/downloads", require("./routes/loadIndexes"));
 app.use("/api/downloads", require("./routes/loadYahooStocks"));
 app.use("/api/system", systemStatusRoutes);
+app.use('/api/rs', require('./routes/rs/sectorsRSWriter'))
 
 // ---------------------------------------------
 // 3. STATIC FRONTEND SERVING

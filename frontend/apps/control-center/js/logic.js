@@ -54,9 +54,10 @@ export async function loadPersistedStatus() {
                 .then(m => m.renderDownloadsStatus(status.downloads));
         }
 
-        // Calculations
+        // Calculations (🔥 FIX)
         if (status.calculations) {
-            updateTile("calculations", status.calculations);
+            import("./tiles/calculations.js")
+                .then(m => m.renderCalculationsTable(status.calculations));
         }
 
         // Checks
@@ -73,6 +74,7 @@ export async function loadPersistedStatus() {
         console.warn("Status konnte nicht geladen werden:", err);
     }
 }
+
 
 
 export async function saveTileStatus(tile, payload) {

@@ -1702,3 +1702,53 @@
 [2026-05-08T10:04:22.710Z] [COCKPIT-METRICS] [INFO] Erfolgreich 639 Zeilen für Cockpit geladen.
 [2026-05-08T10:12:21.516Z] [COCKPIT-METRICS] [INFO] Erfolgreich 561 Zeilen für Cockpit geladen.
 [2026-05-08T10:28:01.616Z] [COCKPIT-METRICS] [INFO] Erfolgreich 561 Zeilen für Cockpit geladen.
+[2026-05-08T20:52:08.827Z] [COCKPIT-METRICS] [INFO] Erfolgreich 561 Zeilen für Cockpit geladen.
+[2026-05-08T20:56:55.367Z] [COCKPIT-METRICS] [INFO] Erfolgreich 561 Zeilen für Cockpit geladen.
+[2026-05-08T20:57:50.205Z] [COCKPIT-METRICS] [INFO] Erfolgreich 561 Zeilen für Cockpit geladen.
+[2026-05-08T20:57:54.619Z] [UPDATE-SHORT] [UPDATE] JSON-Export gestartet
+[2026-05-08T20:57:54.625Z] [UPDATE-SHORT] [UPDATE] JSON erfolgreich geschrieben
+[2026-05-08T20:58:52.142Z] [COCKPIT-METRICS] [INFO] Erfolgreich 561 Zeilen für Cockpit geladen.
+[2026-05-08T21:02:46.177Z] [COCKPIT-METRICS] [INFO] Erfolgreich 561 Zeilen für Cockpit geladen.
+[2026-05-08T21:03:17.006Z] [COCKPIT-METRICS] [INFO] Erfolgreich 561 Zeilen für Cockpit geladen.
+[2026-05-08T21:05:40.548Z] [COCKPIT-METRICS] [INFO] Erfolgreich 561 Zeilen für Cockpit geladen.
+[2026-05-08T21:10:32.651Z] [COCKPIT-METRICS] [INFO] Erfolgreich 561 Zeilen für Cockpit geladen.
+[2026-05-08T21:10:55.008Z] [COCKPIT-METRICS] [INFO] Erfolgreich 561 Zeilen für Cockpit geladen.
+[2026-05-08T21:11:23.143Z] [UPDATE-SHORT] [UPDATE] JSON-Export gestartet
+[2026-05-08T21:11:23.148Z] [UPDATE-SHORT] [UPDATE] JSON erfolgreich geschrieben
+[2026-05-08T21:39:34.667Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
+[2026-05-08T21:40:24.799Z] [COCKPIT-METRICS] [INFO] Erfolgreich 442 Zeilen für Cockpit geladen.
+[2026-05-08T21:41:09.549Z] [COCKPIT-METRICS] [INFO] Erfolgreich 442 Zeilen für Cockpit geladen.
+[2026-05-08T21:41:18.848Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-08T21:42:00.271Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-08T21:42:11.662Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-08T21:43:26.822Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T19:20:27.575Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T19:22:42.489Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T19:23:57.102Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T19:28:57.192Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T19:30:58.078Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T19:31:55.620Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T19:33:10.281Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T19:36:48.268Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T19:37:24.900Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T19:52:06.413Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T19:53:11.717Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T19:53:51.473Z] [UPDATE-SHORT] [UPDATE] JSON-Export gestartet
+[2026-05-09T19:53:51.483Z] [UPDATE-SHORT] [UPDATE] JSON erfolgreich geschrieben
+[2026-05-09T19:59:20.309Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T20:04:38.539Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T20:08:28.906Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T20:11:27.669Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T20:13:55.841Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T20:55:46.312Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T21:02:50.380Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T21:02:57.899Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T21:16:44.467Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T21:28:40.349Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T21:33:16.977Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T21:34:18.554Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T21:37:48.470Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T21:39:07.938Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T21:57:28.968Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T21:57:43.311Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.
+[2026-05-09T22:04:15.824Z] [COCKPIT-METRICS] [INFO] Erfolgreich 444 Zeilen für Cockpit geladen.

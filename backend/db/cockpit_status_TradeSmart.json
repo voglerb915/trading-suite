@@ -1,8 +1,8 @@
 {
   "checks": {
     "status": "green",
-    "lastRun": "2026-05-08T10:11:29.810Z",
-    "duration": "3.19s",
+    "lastRun": "2026-05-08T21:39:28.251Z",
+    "duration": "2.57s",
     "sections": {
       "finviz": {
         "title": "Finviz-Daten",
@@ -11,15 +11,15 @@
           {
             "name": "finviz",
             "status": "success",
-            "lastDateStr": "2026-05-07 22:15:40",
-            "countAtLastDate": 11115,
+            "lastDateStr": "2026-05-08 22:15:41",
+            "countAtLastDate": 11120,
             "isValidation": false,
             "details": null
           },
           {
             "name": "finviz_groups",
             "status": "success",
-            "lastDateStr": "2026-05-07 22:15:29",
+            "lastDateStr": "2026-05-08 22:15:27",
             "countAtLastDate": 155,
             "isValidation": false,
             "details": null
@@ -33,23 +33,23 @@
           {
             "name": "Indexes",
             "status": "success",
-            "lastDateStr": "2026-05-07",
-            "countAtLastDate": 15,
+            "lastDateStr": "2026-05-08",
+            "countAtLastDate": 27,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailyHistory",
             "status": "success",
-            "lastDateStr": "2026-05-07",
-            "countAtLastDate": 10779,
+            "lastDateStr": "2026-05-08",
+            "countAtLastDate": 10725,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailySignals",
             "status": "success",
-            "lastDateStr": "2026-05-07",
+            "lastDateStr": "2026-05-08",
             "countAtLastDate": 4611,
             "isValidation": false,
             "details": null
@@ -57,16 +57,16 @@
           {
             "name": "StockMetrics",
             "status": "success",
-            "lastDateStr": "2026-05-07",
-            "countAtLastDate": 10779,
+            "lastDateStr": "2026-05-08",
+            "countAtLastDate": 10725,
             "isValidation": false,
             "details": null
           },
           {
             "name": "Strategies",
             "status": "success",
-            "lastDateStr": "2026-05-07",
-            "countAtLastDate": 313,
+            "lastDateStr": "2026-05-08",
+            "countAtLastDate": 318,
             "isValidation": false,
             "details": null
           }
@@ -115,14 +115,14 @@
   "downloads": {
     "IndexHistory": {
       "ok": true,
-      "lastRun": "2026-05-07T22:40:19.555Z",
+      "lastRun": "2026-05-08T21:25:50.782Z",
       "duration": "1s",
       "info": "5 Fehler übersprungen"
     },
     "DailyHistory": {
       "ok": true,
-      "lastRun": "2026-05-07T22:46:37.342Z",
-      "duration": "372s",
+      "lastRun": "2026-05-08T21:24:43.117Z",
+      "duration": "413s",
       "error": "errorCount is not defined",
       "info": "Erfolgreich"
     }
