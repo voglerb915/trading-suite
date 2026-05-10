@@ -17,13 +17,15 @@
   "calculations": {
     "RS_Sectors": {
       "status": "success",
-      "lastRun": "2026-05-09T22:06:07.152Z",
-      "duration": "0.71s"
+      "lastRun": "2026-05-10T20:12:18.988Z",
+      "duration": "0.07s",
+      "error": "Invalid time value"
     },
     "RS_Industries": {
-      "status": "pending",
-      "lastRun": null,
-      "duration": null
+      "status": "success",
+      "lastRun": "2026-05-10T21:26:50.485Z",
+      "duration": "0.64s",
+      "error": "Invalid column name 'sector'."
     },
     "RS_Stocks": {
       "status": "pending",
@@ -33,8 +35,8 @@
   },
   "checks": {
     "status": "green",
-    "lastRun": "2026-05-08T21:38:39.352Z",
-    "duration": "6.49s",
+    "lastRun": "2026-05-10T19:29:55.627Z",
+    "duration": "7.67s",
     "sections": {
       "finviz": {
         "title": "Finviz-Daten",

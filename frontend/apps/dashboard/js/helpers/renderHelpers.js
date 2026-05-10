@@ -26,7 +26,9 @@ export function formatDiff(value) {
   if (value == null) return "—";
   const num = Number(value);
   if (isNaN(num)) return "—";
-  return num > 0 ? `+${num.toFixed(2)}%` : `${num.toFixed(2)}%`;
+  if (num > 0) return `+${num}`;
+  if (num < 0) return `${num}`;
+  return "0";
 }
 
 export function handleSectorClick(name) {

@@ -48,6 +48,7 @@ app.use('/api/journal', require('./routes/journal'));
 app.use('/api/calculations', require('./routes/calculations'));
 app.use('/api/short-strategy-1', require('./routes/shortStrategy1'));
 app.use('/api/sectors', require('./routes/sectors'));
+app.use('/api/industries', require('./routes/industries'));
 app.use("/api/checks", require("./routes/checks"));
 app.use("/api/downloads", require("./routes/download_stream_indexes"));
 app.use("/api/downloads", require("./routes/download_stream_stocks"));
@@ -55,7 +56,8 @@ app.use("/api/cockpit", require("./routes/cockpitStatusRoutes"));
 //app.use("/api/downloads", require("./routes/loadIndexes"));
 app.use("/api/downloads", require("./routes/loadYahooStocks"));
 app.use("/api/system", systemStatusRoutes);
-app.use('/api/rs', require('./routes/rs/sectorsRSWriter'))
+app.use('/api/rs', require('./routes/rs/sectorsRSWriter'));
+app.use('/api/rs', require('./routes/rs/industriesRSWriter'));
 
 // ---------------------------------------------
 // 3. STATIC FRONTEND SERVING

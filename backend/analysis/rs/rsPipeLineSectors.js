@@ -6,15 +6,26 @@ async function buildSectorRsSnapshot() {
   await sql.connect(config)
 
   const result = await sql.query(`
-    SELECT 
-      [name],
-      [perf_week],
-      [perf_month],
-      [perf_quart],
-      [perf_half],
-      [perf_year]
-    FROM trading.dbo.finviz_groups
-    WHERE [group] = 'sector'
+      WITH latest AS (
+          SELECT 
+              *,
+              ROW_NUMBER() OVER (
+                  PARTITION BY name 
+                  ORDER BY anl_datum DESC
+              ) AS rn
+          FROM trading.dbo.finviz_groups
+          WHERE [group] = 'sector'
+      )
+      SELECT 
+          name,
+          perf_week,
+          perf_month,
+          perf_quart,
+          perf_half,
+          perf_year,
+          anl_datum
+      FROM latest
+      WHERE rn = 1
   `)
 
   let sectors = result.recordset.map(row => {
@@ -27,7 +38,8 @@ async function buildSectorRsSnapshot() {
       perf_month: row.perf_month,
       perf_quart: row.perf_quart,
       perf_half: row.perf_half,
-      perf_year: row.perf_year
+      perf_year: row.perf_year,
+      anl_datum: row.anl_datum   // ⭐ MUSS REIN!
     }
   })
 
@@ -35,8 +47,14 @@ async function buildSectorRsSnapshot() {
   sectors.sort((a, b) => b.score - a.score)
   sectors.forEach((sec, i) => { sec.rankWonDb = i + 1 })
 
-  // Ranking-Deltas W/M/Q
-  sectors = getRankingDiffs(sectors, 'sector')
+  // ⭐ KORREKT: Deltas holen
+  const diffs = getRankingDiffs(sectors, 'sector')
+
+  // ⭐ KORREKT: Deltas in Snapshot mergen
+  sectors = sectors.map(sec => ({
+    ...sec,
+    ...(diffs[sec.name] || { diffW: 0, diffM: 0, diffQ: 0 })
+  }))
 
   return sectors
 }

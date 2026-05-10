@@ -1,5 +1,5 @@
-import { getSectorClass, getDiffColor, formatDiff, handleSectorClick } 
-  from "./renderHelpers.js";
+import { getSectorClass, getDiffColor, formatDiff, handleSectorClick }
+  from "../helpers/renderHelpers.js";
 
 export function renderSectorsList(sectors, state) {
   // Wir greifen uns das ÜBERGEORDNETE Element der Spalte

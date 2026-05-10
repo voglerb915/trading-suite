@@ -6,12 +6,12 @@ const path = require('path');
 // TEMPORÄR: Nur JSON direkt zurückgeben
 router.get('/won-db', (req, res) => {
     try {
-        const file = path.join(__dirname, '../json/rs_sectors.json');
+        const file = path.join(__dirname, '../db/finviz_industries.json');
         const json = JSON.parse(fs.readFileSync(file, 'utf8'));
         res.json(json);
     } catch (err) {
-        console.error("Fehler beim Laden der Sektoren:", err);
-        res.status(500).json({ error: "Fehler beim Laden der Sektoren" });
+        console.error("Fehler beim Laden der Industrien:", err);
+        res.status(500).json({ error: "Fehler beim Laden der Industrien" });
     }
 });
 

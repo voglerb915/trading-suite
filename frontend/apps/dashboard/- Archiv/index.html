@@ -15,23 +15,60 @@
   
   <div id="notification" class="notification"></div>
 
-  <!-- ⭐ MODULARER HEADER -->
   <div class="dashboard-header">
-      <div id="dashboard-header-left"></div>
-      <div id="dashboard-header-center"></div>
-      <div id="dashboard-header-right"></div>
+    <div id="reference-stock" class="reference-box"></div>
+    <div class="breadcrumbs-block">
+      <div class="page-title-small">RS Dashboard</div>
+      <div id="breadcrumbs" class="breadcrumbs">Alle Sektoren</div>
+      <button id="reset-btn" onclick="handleReset()">Reset</button>
+    </div>
+
+    <div class="control-block">
+      <div class="strategy-row">
+        <label for="strategy-select">Strategy:</label>
+        <select id="strategy-select">
+          <option value="none">none</option>
+          <option value="ath" disabled>All‑Time‑High</option>
+          <option value="high52">52-week High</option>
+          <option value="insideday52w">Inside Day @ 52W-High</option>
+          <option value="nearhigh52">Max. 5% below High</option>
+          <option value="stage3topping">Stage3 to Stage4</option>
+          <option value="shorttrend" disabled>Short Trend</option>
+        </select>
+      </div>
+
+      <div class="strategy-row">
+        <label for="index-select">Index:</label>
+        <select id="index-select">
+          <option value="all">All</option>
+          <option value="DJIA">DJIA</option>
+          <option value="NDX">NASDAQ-100</option>
+          <option value="S&P 500">S&P 500</option>
+          <option value="RUT">Russell 2000</option>
+        </select>
+      </div>
+
+      <div id="ticker-search-container">
+        <input id="ticker-search" type="text" placeholder="Ticker search..." autocomplete="off" />
+        <button id="search-btn">Search</button>
+        <div id="search-suggestions" class="suggestions"></div>
+      </div>
+    </div>
   </div>
 
-  <!-- ⭐ 4-SPALTEN-DASHBOARD -->
   <div class="dashboard-container">
 
     <div class="column" id="sectors-won-db">
       <div id="sector-list-container"></div>
     </div>
 
+
+
     <div class="column" id="rs-won-custom">
+      <h2>Industries – William O’Neil RS (DB)</h2>
       <div id="industry-list-container"></div>
     </div>
+
 
     <div class="column" id="stocks-won-db">
       <div class="column-header">
@@ -41,6 +78,7 @@
       </div>
       <div id="stocks-list-container"></div>
     </div>
+
 
     <div class="column" id="tools-tips-column">
         <div class="column-header"> 
@@ -61,7 +99,6 @@
     </div> 
   </div>
 
-  <!-- ⭐ MODAL -->
   <div id="chart-modal" style="display:none; position:fixed; z-index:10000; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);">
       <div style="background: #fff; margin: 2% auto; width: 90%; max-width: 1200px; height: 85vh; border-radius: 12px; position: relative; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
           <span id="close-modal" style="position:absolute; right:20px; top:10px; font-size:35px; cursor:pointer; color:#999;">&times;</span>

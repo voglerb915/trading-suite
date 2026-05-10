@@ -1,22 +1,20 @@
 const express = require('express')
 const router = express.Router()
 
-const { writeSectorSnapshot } = require('../../analysis/rs/writeSectorSnapshot')
-const { writeSectorHistory } = require('../../analysis/rs/writeSectorHistory')
-const { updateTileStatus } = require('../../utils/cockpitStatus')   // <--- wichtig
+const { runSectorPipeline } = require('../../analysis/rs/writeSectorsJson')
+const { updateTileStatus } = require('../../utils/cockpitStatus')
 
 router.get('/write-sectors', async (req, res) => {
   const start = Date.now()
 
   try {
-    const snapshot = await writeSectorSnapshot()
-    await writeSectorHistory(snapshot)
+    // ⭐ komplette Pipeline: Snapshot + History
+    const snapshot = await runSectorPipeline()
 
-    // 🔥 Dauer berechnen
     const durationMs = Date.now() - start
     const duration = `${(durationMs / 1000).toFixed(2)}s`
 
-    // 🔥 Status unter calculations.RS_Sectors setzen
+    // ⭐ Cockpit-Status setzen
     updateTileStatus("RS_Sectors", {
       status: "success",
       lastRun: new Date().toISOString(),
@@ -26,13 +24,12 @@ router.get('/write-sectors', async (req, res) => {
     res.json({
       success: true,
       count: snapshot.length,
-      message: 'RS Sectors JSON erfolgreich erzeugt.'
+      message: "RS Sectors JSON erfolgreich erzeugt."
     })
 
   } catch (err) {
     console.error("❌ Fehler beim Schreiben der RS Sektoren:", err)
 
-    // 🔥 Fehlerstatus setzen
     updateTileStatus("RS_Sectors", {
       status: "error",
       lastRun: new Date().toISOString(),
