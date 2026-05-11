@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { runIndustryPipeline } = require('../../analysis/rs/writeIndustriesJson');
+const { writeIndustriesJson } = require('../../analysis/rs/writeIndustriesJson');
 const { updateTileStatus } = require('../../utils/cockpitStatus');
 
 router.get('/write-industries', async (req, res) => {
@@ -9,7 +9,7 @@ router.get('/write-industries', async (req, res) => {
 
   try {
     // ⭐ komplette Pipeline: Snapshot + History
-    const snapshot = await runIndustryPipeline();
+    const snapshot = await writeIndustriesJson();
 
     const durationMs = Date.now() - start;
     const duration = `${(durationMs / 1000).toFixed(2)}s`;

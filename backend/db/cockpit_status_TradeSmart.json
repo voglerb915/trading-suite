@@ -1,8 +1,8 @@
 {
   "checks": {
-    "status": "green",
-    "lastRun": "2026-05-08T21:39:28.251Z",
-    "duration": "2.57s",
+    "status": "yellow",
+    "lastRun": "2026-05-11T22:16:17.605Z",
+    "duration": "2.66s",
     "sections": {
       "finviz": {
         "title": "Finviz-Daten",
@@ -33,32 +33,32 @@
           {
             "name": "Indexes",
             "status": "success",
-            "lastDateStr": "2026-05-08",
-            "countAtLastDate": 27,
+            "lastDateStr": "2026-05-11",
+            "countAtLastDate": 26,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailyHistory",
             "status": "success",
-            "lastDateStr": "2026-05-08",
-            "countAtLastDate": 10725,
+            "lastDateStr": "2026-05-11",
+            "countAtLastDate": 10793,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailySignals",
             "status": "success",
-            "lastDateStr": "2026-05-08",
-            "countAtLastDate": 4611,
+            "lastDateStr": "2026-05-11",
+            "countAtLastDate": 4605,
             "isValidation": false,
             "details": null
           },
           {
             "name": "StockMetrics",
             "status": "success",
-            "lastDateStr": "2026-05-08",
-            "countAtLastDate": 10725,
+            "lastDateStr": "2026-05-11",
+            "countAtLastDate": 10793,
             "isValidation": false,
             "details": null
           },
@@ -66,7 +66,7 @@
             "name": "Strategies",
             "status": "success",
             "lastDateStr": "2026-05-08",
-            "countAtLastDate": 318,
+            "countAtLastDate": 298,
             "isValidation": false,
             "details": null
           }
@@ -115,14 +115,14 @@
   "downloads": {
     "IndexHistory": {
       "ok": true,
-      "lastRun": "2026-05-08T21:25:50.782Z",
+      "lastRun": "2026-05-11T21:24:09.218Z",
       "duration": "1s",
       "info": "5 Fehler übersprungen"
     },
     "DailyHistory": {
       "ok": true,
-      "lastRun": "2026-05-08T21:24:43.117Z",
-      "duration": "413s",
+      "lastRun": "2026-05-11T21:30:27.939Z",
+      "duration": "370s",
       "error": "errorCount is not defined",
       "info": "Erfolgreich"
     }

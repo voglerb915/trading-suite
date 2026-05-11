@@ -4,7 +4,7 @@ import { getSectorClass, getDiffColor, formatDiff }
     from "../helpers/renderHelpers.js";
 
 export function renderIndustriesList(industries, state) {
-    const column = document.getElementById("rs-won-custom");
+    const column = document.getElementById("industries-won-db");
     const container = document.getElementById("industry-list-container");
 
     if (!column || !container) return;
