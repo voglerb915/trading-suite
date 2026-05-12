@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-const { runSectorPipeline } = require('../../analysis/rs/writeSectorsJson')
+const { writeSectorsJson } = require('../../analysis/rs/writeSectorsJson');
 const { updateTileStatus } = require('../../utils/cockpitStatus')
 
 router.get('/write-sectors', async (req, res) => {
@@ -9,7 +9,7 @@ router.get('/write-sectors', async (req, res) => {
 
   try {
     // ⭐ komplette Pipeline: Snapshot + History
-    const snapshot = await runSectorPipeline()
+    const snapshot = await writeSectorsJson();
 
     const durationMs = Date.now() - start
     const duration = `${(durationMs / 1000).toFixed(2)}s`

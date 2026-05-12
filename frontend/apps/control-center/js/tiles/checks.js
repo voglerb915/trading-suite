@@ -24,7 +24,7 @@ export async function runChecks() {
         const dbName = db.database.toLowerCase();
         let target = null;
 
-        if (dbName.includes("finviz")) target = sections.finviz;
+        if (dbName === "finviz") target = sections.finviz;
         if (dbName.includes("yahoo")) target = sections.yahoo;
         if (dbName.includes("journal")) target = sections.journal;
         if (!target) continue;

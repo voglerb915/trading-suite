@@ -1,20 +1,12 @@
+// analysis/rs/rsRankingHistory.js
 const fs = require('fs');
 const path = require('path');
 
 const historyFolder = path.join(__dirname, '..', '..', 'json-history');
+const rankmapFolder = path.join(historyFolder, 'rankmaps');
 
 /* ============================================================
-   1) GLOBALER CACHE & KONSTANTEN
-   ============================================================ */
-let cache = {
-  files: null,
-  fileStats: new Map(),
-  fileContents: new Map(),
-  maps: new Map(),
-};
-
-/* ============================================================
-   2) LOW-LEVEL HELFERFUNKTIONEN
+   Optimierte Version: Rankmap-basiert
    ============================================================ */
 
 function extractName(item) {
@@ -24,86 +16,37 @@ function extractName(item) {
   return 'UNKNOWN';
 }
 
-function loadHistoryFiles(type) {
-  const suffix = type === 'sector' ? '_sectors.json' : '_industries.json';
+function loadLatestRankmap(type) {
+  const suffix = type === 'sector'
+    ? '_sectors_rankmap.json'
+    : '_industries_rankmap.json';
 
-  const files = fs.readdirSync(historyFolder)
+  const files = fs.readdirSync(rankmapFolder)
     .filter(f => f.endsWith(suffix))
     .sort();
 
-  if (!cache.files || JSON.stringify(cache.files) !== JSON.stringify(files)) {
-    cache.files = files;
-    cache.fileStats.clear();
-    cache.fileContents.clear();
-    cache.maps.clear();
-  }
+  if (files.length === 0) return null;
 
-  return files;
+  const latest = files[files.length - 1];
+  const fullPath = path.join(rankmapFolder, latest);
+
+  return JSON.parse(fs.readFileSync(fullPath, 'utf8'));
 }
 
-function loadFileCached(filename) {
-  const fullPath = path.join(historyFolder, filename);
-  const stat = fs.statSync(fullPath);
+function applyRankmapDiffs(currentData, rankmap, type) {
+  const steps = type === 'sector'
+    ? { W: 5, M: 21, Q: 63 }
+    : { D: 1, W: 5, M: 21 };
 
-  const prevStat = cache.fileStats.get(filename);
-
-  if (prevStat && prevStat.mtimeMs === stat.mtimeMs) {
-    return cache.fileContents.get(filename);
-  }
-
-  const raw = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
-
-  cache.fileStats.set(filename, stat);
-  cache.fileContents.set(filename, raw);
-
-  return raw;
-}
-
-/* ============================================================
-   3) BUSINESS-LOGIK
-   ============================================================ */
-
-function buildHistoryMaps(files, steps) {
-  const cacheKey = JSON.stringify({ files, steps });
-
-  if (cache.maps.has(cacheKey)) {
-    return cache.maps.get(cacheKey);
-  }
-
-  const maps = {};
-
-  for (const [key, backStep] of Object.entries(steps)) {
-    const index = files.length - 1 - backStep;
-    if (index < 0) continue;
-
-    const filename = files[index];
-    const raw = loadFileCached(filename);
-
-    // Score NICHT neu berechnen – Score kommt aus JSON
-    const ranked = [...raw].sort((a, b) => b.score - a.score);
-
-    const map = new Map();
-    ranked.forEach((item, i) => {
-      map.set(extractName(item), i + 1);
-    });
-
-    maps[key] = map;
-  }
-
-  cache.maps.set(cacheKey, maps);
-
-  return maps;
-}
-
-function applyDiffs(currentData, historyMaps, steps) {
   return currentData.map((item, index) => {
     const name = extractName(item);
     const currentRank = index + 1;
 
     const diffs = {};
-    for (const key of Object.keys(steps)) {
-      const map = historyMaps[key];
-      diffs[`diff${key}`] = map?.has(name) ? map.get(name) - currentRank : null;
+
+    for (const step of Object.keys(steps)) {
+      const prevRank = rankmap?.[step]?.[name] ?? null;
+      diffs[`diff${step}`] = prevRank ? prevRank - currentRank : null;
     }
 
     return { ...item, ...diffs };
@@ -111,19 +54,25 @@ function applyDiffs(currentData, historyMaps, steps) {
 }
 
 /* ============================================================
-   4) ÖFFENTLICHE API
+   Öffentliche API
    ============================================================ */
 
 module.exports = {
   getRankingDiffs(currentData, type) {
-    const files = loadHistoryFiles(type);
-    if (files.length === 0) return currentData;
+    const rankmap = loadLatestRankmap(type);
 
-    const steps = type === 'sector'
-      ? { W: 5, M: 21, Q: 63 }
-      : { D: 1, W: 5, M: 21 };
+    // Falls keine Rankmap existiert → Fallback: keine Deltas
+    if (!rankmap) {
+      console.warn("⚠️ Keine Rankmap gefunden – Deltas = null");
+      return currentData.map(item => ({
+        ...item,
+        diffD: null,
+        diffW: null,
+        diffM: null,
+        diffQ: null
+      }));
+    }
 
-    const historyMaps = buildHistoryMaps(files, steps);
-    return applyDiffs(currentData, historyMaps, steps);
+    return applyRankmapDiffs(currentData, rankmap, type);
   }
 };

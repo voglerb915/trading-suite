@@ -2,6 +2,8 @@
 const express = require("express");
 const router = express.Router();
 const { sql, tradingPool, yahooPool, journalPool } = require("../db/connection");
+const fs = require("fs");
+const path = require("path");
 
 // ------------------------------------------------------
 // Hilfsfunktion: Prüft, ob Tabelle existiert
@@ -118,40 +120,142 @@ router.get("/all", async (req, res) => {
     const start = performance.now();
 
     try {
-        // ------------------------------------------------------
-        // FINVIZ (trading-DB, aber logischer Block "finviz")
-        // ------------------------------------------------------
-        const trading = {
-            database: "finviz",
-            tables: []
-        };
+    // ------------------------------------------------------
+    // FINVIZ (trading-DB, aber logischer Block "finviz")
+    // ------------------------------------------------------
+    const trading = {
+        database: "finviz",
+        tables: []
+    };
 
-        for (const table of ["finviz", "finviz_groups"]) {
-            const exists = await tableExists(tradingPool, table);
+    for (const table of ["finviz", "finviz_groups"]) {
+        const exists = await tableExists(tradingPool, table);
 
-            if (!exists) {
-                trading.tables.push({
-                    table,
-                    ok: false,
-                    message: "FEHLT"
-                });
-                continue;
-            }
-
-            const stats = await getTableStatsGeneric(tradingPool, table);
-
+        if (!exists) {
             trading.tables.push({
                 table,
-                ok: true,
-                message: "OK",
-                lastDate: stats.lastDate,
-                lastDateStr: stats.lastDateStr,
-                totalCount: stats.totalCount,
-                countAtLastDate: stats.countAtLastDate
+                ok: false,
+                message: "FEHLT"
             });
+            continue;
         }
 
-        // ------------------------------------------------------
+        const stats = await getTableStatsGeneric(tradingPool, table);
+
+        trading.tables.push({
+            table,
+            ok: true,
+            message: "OK",
+            lastDate: stats.lastDate,
+            lastDateStr: stats.lastDateStr,
+            totalCount: stats.totalCount,
+            countAtLastDate: stats.countAtLastDate
+        });
+    }
+
+// ------------------------------------------------------
+// FINVIZ JSON-Dateien prüfen
+// ------------------------------------------------------
+
+const sectorsPath = path.join(__dirname, "../json/rs_sectors.json");
+const industriesPath = path.join(__dirname, "../json/rs_industries.json");
+
+        // Sectors JSON
+        let sectorsLastDate = null;
+        let sectorsLastDateStr = null;
+        let sectorsCount = null;
+        let sectorsOk = fs.existsSync(sectorsPath);
+
+        if (sectorsOk) {
+            try {
+                const raw = fs.readFileSync(sectorsPath, "utf8");
+                const parsed = JSON.parse(raw);
+
+                // Anzahl bestimmen
+                if (Array.isArray(parsed)) {
+                    sectorsCount = parsed.length;
+                } else if (parsed && typeof parsed === "object") {
+                    sectorsCount = Object.keys(parsed).length;
+                }
+
+                // anl_datum aus erstem Objekt holen
+                const first = Array.isArray(parsed) ? parsed[0] : null;
+
+                if (first && first.anl_datum) {
+                    const anl = first.anl_datum; // <<< WICHTIG: neuer Name
+
+                    // Sekunden + Z entfernen → SQL-Format
+                    sectorsLastDateStr = anl.slice(0, 19).replace("T", " ");
+
+                    // Für Heatmap intern ok (Date-Objekt)
+                    sectorsLastDate = new Date(anl);
+                } else {
+                    sectorsOk = false;
+                }
+
+            } catch (e) {
+                sectorsOk = false;
+            }
+        }
+
+        trading.tables.push({
+            table: "Sectors JSON",
+            ok: sectorsOk,
+            message: sectorsOk ? "OK" : "FEHLT",
+            lastDate: sectorsLastDate,
+            lastDateStr: sectorsLastDateStr,
+            totalCount: sectorsCount,
+            countAtLastDate: sectorsCount
+        });
+
+        // Industries JSON
+        let industriesLastDate = null;
+        let industriesLastDateStr = null;
+        let industriesCount = null;
+        let industriesOk = fs.existsSync(industriesPath);
+
+        if (industriesOk) {
+            try {
+                const raw = fs.readFileSync(industriesPath, "utf8");
+                const parsed = JSON.parse(raw);
+
+                // Anzahl bestimmen
+                if (Array.isArray(parsed)) {
+                    industriesCount = parsed.length;
+                } else if (parsed && typeof parsed === "object") {
+                    industriesCount = Object.keys(parsed).length;
+                }
+
+                // anl_datum aus erstem Objekt holen
+        const first = Array.isArray(parsed) ? parsed[0] : null;
+
+        if (first && first.anl_datum) {
+            const raw = first.anl_datum;
+
+            industriesLastDateStr = raw.slice(0, 19).replace("T", " ");
+            industriesLastDate = new Date(raw);
+        } else {
+            industriesOk = false;
+        }
+
+
+    } catch (e) {
+        industriesOk = false;
+    }
+}
+
+trading.tables.push({
+    table: "Industries JSON",
+    ok: industriesOk,
+    message: industriesOk ? "OK" : "FEHLT",
+    lastDate: industriesLastDate,
+    lastDateStr: industriesLastDateStr,
+    totalCount: industriesCount,
+    countAtLastDate: industriesCount
+});
+
+
+// ------------------------------------------------------
 // YAHOO – alle Zeitreihen-Tabellen
 // ------------------------------------------------------
 const yahoo = {

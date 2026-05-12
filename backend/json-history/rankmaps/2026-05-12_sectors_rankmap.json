@@ -1,0 +1,41 @@
+{
+  "W": {
+    "Technology": 1,
+    "Energy": 2,
+    "Basic Materials": 3,
+    "Communication Services": 4,
+    "Industrials": 5,
+    "Real Estate": 6,
+    "Utilities": 7,
+    "Consumer Defensive": 8,
+    "Consumer Cyclical": 9,
+    "Financial": 10,
+    "Healthcare": 11
+  },
+  "M": {
+    "Technology": 1,
+    "Energy": 2,
+    "Basic Materials": 3,
+    "Communication Services": 4,
+    "Industrials": 5,
+    "Real Estate": 6,
+    "Utilities": 7,
+    "Consumer Defensive": 8,
+    "Consumer Cyclical": 9,
+    "Financial": 10,
+    "Healthcare": 11
+  },
+  "Q": {
+    "Technology": 1,
+    "Energy": 2,
+    "Basic Materials": 3,
+    "Communication Services": 4,
+    "Industrials": 5,
+    "Real Estate": 6,
+    "Utilities": 7,
+    "Consumer Defensive": 8,
+    "Consumer Cyclical": 9,
+    "Financial": 10,
+    "Healthcare": 11
+  }
+}
