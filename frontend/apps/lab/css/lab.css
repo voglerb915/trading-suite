@@ -34,7 +34,7 @@ body {
 #lab-container {
     display: grid;
     /* Definiert alle 3 Spalten: 25vw, 40vw und der Rest (35vw) */
-    grid-template-columns: 30vw 40vw 1fr; 
+    grid-template-columns: 30vw 20vw 1fr; 
     width: 100vw;
     height: 100vh;
     box-sizing: border-box;
@@ -67,10 +67,10 @@ h2, h3, .column-title {
 #col-3 {
     overflow-y: auto;
     height: 100vh;
-    padding: 20px;
+    padding: 5px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
 }
 
 /* ----------------------------------------------

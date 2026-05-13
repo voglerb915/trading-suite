@@ -59,6 +59,7 @@ app.use("/api/downloads", require("./routes/loadYahooStocks"));
 app.use("/api/system", systemStatusRoutes);
 app.use('/api/rs', require('./routes/rs/sectorsRSWriter'));
 app.use('/api/rs', require('./routes/rs/industriesRSWriter'));
+app.use('/api/excel', require('./routes/excel/rawData'));
 
 // ---------------------------------------------
 // 3. STATIC FRONTEND SERVING

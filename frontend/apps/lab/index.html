@@ -9,8 +9,11 @@
 
     <!-- Volume Modul -->
     <link rel="stylesheet" href="/apps/lab/css/volume.css">
-    
+
+    <!-- Excel Matrix Styles -->
+    <link rel="stylesheet" href="/apps/lab/css/excel.css">
 </head>
+
 
 <body style="background: #121212;">
 
@@ -18,13 +21,27 @@
 
         <div id="col-1"></div>   <!-- 25vw -->
         <div id="col-2"></div>   <!-- 10vw -->
-
         <div id="col-3">
-            <!-- SQL-Status Widget -->
+
+            <!-- SQL-Status Widget bleibt ganz oben -->
             <div id="sql-status-root"></div>
-        </div>   <!-- 65vw -->
-        
-    </div>
+
+            <!-- Tabs -->
+            <div class="excel-tabs">
+                <button class="tab-btn active" data-tab="performance">Performance</button>
+                <button class="tab-btn" data-tab="ranking">Ranking</button>
+                <button class="tab-btn" data-tab="sparkline">Sectors</button>
+                <button class="tab-btn" data-tab="excel">Industries</button>
+            </div>
+
+            <!-- Tab-Inhalte -->
+            <div id="tab-performance" class="tab-content"></div>
+            <div id="tab-ranking" class="tab-content" style="display:none;"></div>
+            <div id="tab-sparkline" class="tab-content" style="display:none;"></div>
+            <div id="tab-excel" class="tab-content" style="display:none;"></div>
+
+        </div>
+
 
     <script type="module" src="/apps/lab/lab.js"></script>
 

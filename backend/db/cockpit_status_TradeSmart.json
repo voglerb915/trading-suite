@@ -1,8 +1,8 @@
 {
   "checks": {
     "status": "green",
-    "lastRun": "2026-05-12T22:50:47.377Z",
-    "duration": "3.56s",
+    "lastRun": "2026-05-13T21:25:39.336Z",
+    "duration": "2.68s",
     "sections": {
       "finviz": {
         "title": "Finviz-Daten",
@@ -11,15 +11,15 @@
           {
             "name": "finviz",
             "status": "success",
-            "lastDateStr": "2026-05-12 22:21:28",
-            "countAtLastDate": 11127,
+            "lastDateStr": "2026-05-13 22:20:22",
+            "countAtLastDate": 11135,
             "isValidation": false,
             "details": null
           },
           {
             "name": "finviz_groups",
             "status": "success",
-            "lastDateStr": "2026-05-12 22:21:24",
+            "lastDateStr": "2026-05-13 22:20:16",
             "countAtLastDate": 155,
             "isValidation": false,
             "details": null
@@ -27,7 +27,7 @@
           {
             "name": "Sectors JSON",
             "status": "success",
-            "lastDateStr": "2026-05-12 22:40:24",
+            "lastDateStr": "2026-05-13 22:20:05",
             "countAtLastDate": 11,
             "isValidation": false,
             "details": null
@@ -35,7 +35,7 @@
           {
             "name": "Industries JSON",
             "status": "success",
-            "lastDateStr": "2026-05-12 22:40:36",
+            "lastDateStr": "2026-05-13 22:20:16",
             "countAtLastDate": 144,
             "isValidation": false,
             "details": null
@@ -49,15 +49,15 @@
           {
             "name": "Indexes",
             "status": "success",
-            "lastDateStr": "2026-05-12",
-            "countAtLastDate": 15,
+            "lastDateStr": "2026-05-13",
+            "countAtLastDate": 26,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailyHistory",
             "status": "success",
-            "lastDateStr": "2026-05-12",
+            "lastDateStr": "2026-05-13",
             "countAtLastDate": 10789,
             "isValidation": false,
             "details": null
@@ -65,15 +65,15 @@
           {
             "name": "DailySignals",
             "status": "success",
-            "lastDateStr": "2026-05-12",
-            "countAtLastDate": 4602,
+            "lastDateStr": "2026-05-13",
+            "countAtLastDate": 4599,
             "isValidation": false,
             "details": null
           },
           {
             "name": "StockMetrics",
             "status": "success",
-            "lastDateStr": "2026-05-12",
+            "lastDateStr": "2026-05-13",
             "countAtLastDate": 10789,
             "isValidation": false,
             "details": null
@@ -81,8 +81,8 @@
           {
             "name": "Strategies",
             "status": "success",
-            "lastDateStr": "2026-05-12",
-            "countAtLastDate": 364,
+            "lastDateStr": "2026-05-13",
+            "countAtLastDate": 378,
             "isValidation": false,
             "details": null
           }
@@ -131,29 +131,29 @@
   "downloads": {
     "IndexHistory": {
       "ok": true,
-      "lastRun": "2026-05-12T22:43:58.820Z",
+      "lastRun": "2026-05-13T21:06:26.987Z",
       "duration": "1s",
       "info": "5 Fehler übersprungen"
     },
     "DailyHistory": {
       "ok": true,
-      "lastRun": "2026-05-12T22:26:44.315Z",
-      "duration": "350s",
+      "lastRun": "2026-05-13T21:12:35.386Z",
+      "duration": "365s",
       "error": "errorCount is not defined",
       "info": "Erfolgreich"
     }
   },
   "calculations": {
     "RS_Sectors": {
-      "status": "error",
-      "lastRun": "2026-05-12T20:36:23.611Z",
-      "duration": null,
+      "status": "success",
+      "lastRun": "2026-05-13T21:13:34.937Z",
+      "duration": "0.23s",
       "error": "runSectorPipeline is not a function"
     },
     "RS_Industries": {
       "status": "success",
-      "lastRun": "2026-05-12T20:37:11.030Z",
-      "duration": "17.25s"
+      "lastRun": "2026-05-13T21:13:52.498Z",
+      "duration": "14.69s"
     }
   }
 }
