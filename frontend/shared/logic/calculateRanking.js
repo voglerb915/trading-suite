@@ -18,11 +18,12 @@ export function calculateRanking(sectors) {
                 value: Number(sectors[sector][tf][i])
             }));
 
-            // Sortieren DESC
+            // Sortieren DESC (bester zuerst)
             entries.sort((a, b) => b.value - a.value);
 
             entries.forEach((entry, index) => {
-                const rank = 11 - index;
+                // 1 = bester, 11 = schlechtester
+                const rank = index + 1;
 
                 if (!result[entry.sector][`${tf}_rank_series`]) {
                     result[entry.sector][`${tf}_rank_series`] = [];

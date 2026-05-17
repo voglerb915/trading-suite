@@ -172,3 +172,33 @@
     text-align: center !important;
     vertical-align: middle !important;
 }
+
+/* Sektor Kachel */
+.sector-tile {
+    background: #1b1b1b;
+    border: 1px solid #333;
+    padding: 6px 10px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #ddd;
+}
+
+.sector-header {
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #fff;
+}
+
+.sector-row {
+    display: grid;
+    grid-template-columns: 40px 120px 120px 120px;
+    align-items: center;
+    gap: 6px;
+}
+
+.rank-cell {
+    text-align: center;
+    font-weight: bold;
+    padding: 4px;
+    border-radius: 4px;
+}

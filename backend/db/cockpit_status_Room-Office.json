@@ -2,14 +2,14 @@
   "downloads": {
     "IndexHistory": {
       "ok": true,
-      "lastRun": "2026-05-13T21:14:44.656Z",
-      "duration": "2s",
+      "lastRun": "2026-05-17T17:05:06.307Z",
+      "duration": "1s",
       "info": "5 Fehler übersprungen"
     },
     "DailyHistory": {
       "ok": true,
-      "lastRun": "2026-05-13T21:13:24.863Z",
-      "duration": "439s",
+      "lastRun": "2026-05-17T17:03:24.419Z",
+      "duration": "481s",
       "error": "errorCount is not defined",
       "info": "Erfolgreich"
     }
@@ -17,14 +17,14 @@
   "calculations": {
     "RS_Sectors": {
       "status": "success",
-      "lastRun": "2026-05-13T20:11:44.608Z",
-      "duration": "0.29s",
+      "lastRun": "2026-05-17T17:06:18.485Z",
+      "duration": "0.61s",
       "error": "runSectorPipeline is not a function"
     },
     "RS_Industries": {
       "status": "success",
-      "lastRun": "2026-05-13T20:11:39.853Z",
-      "duration": "43.84s",
+      "lastRun": "2026-05-17T17:06:52.023Z",
+      "duration": "24.93s",
       "error": "runIndustryPipeline is not a function"
     },
     "RS_Stocks": {
@@ -35,8 +35,8 @@
   },
   "checks": {
     "status": "green",
-    "lastRun": "2026-05-13T21:46:43.576Z",
-    "duration": "7.08s",
+    "lastRun": "2026-05-17T17:34:09.333Z",
+    "duration": "7.91s",
     "sections": {
       "finviz": {
         "title": "Finviz-Daten",
@@ -45,15 +45,15 @@
           {
             "name": "finviz",
             "status": "success",
-            "lastDateStr": "2026-05-13 22:15:53",
-            "countAtLastDate": 11135,
+            "lastDateStr": "2026-05-15 22:15:15",
+            "countAtLastDate": 11158,
             "isValidation": false,
             "details": null
           },
           {
             "name": "finviz_groups",
             "status": "success",
-            "lastDateStr": "2026-05-13 22:15:35",
+            "lastDateStr": "2026-05-15 22:15:10",
             "countAtLastDate": 155,
             "isValidation": false,
             "details": null
@@ -61,7 +61,7 @@
           {
             "name": "Sectors JSON",
             "status": "success",
-            "lastDateStr": "2026-05-13 22:20:05",
+            "lastDateStr": "2026-05-15 22:15:02",
             "countAtLastDate": 11,
             "isValidation": false,
             "details": null
@@ -69,7 +69,7 @@
           {
             "name": "Industries JSON",
             "status": "success",
-            "lastDateStr": "2026-05-13 22:20:16",
+            "lastDateStr": "2026-05-15 22:15:10",
             "countAtLastDate": 144,
             "isValidation": false,
             "details": null
@@ -83,40 +83,40 @@
           {
             "name": "Indexes",
             "status": "success",
-            "lastDateStr": "2026-05-13",
-            "countAtLastDate": 26,
+            "lastDateStr": "2026-05-15",
+            "countAtLastDate": 39,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailyHistory",
             "status": "success",
-            "lastDateStr": "2026-05-13",
-            "countAtLastDate": 10792,
+            "lastDateStr": "2026-05-15",
+            "countAtLastDate": 11624,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailySignals",
             "status": "success",
-            "lastDateStr": "2026-05-13",
-            "countAtLastDate": 5571,
+            "lastDateStr": "2026-05-15",
+            "countAtLastDate": 5812,
             "isValidation": false,
             "details": null
           },
           {
             "name": "StockMetrics",
             "status": "success",
-            "lastDateStr": "2026-05-13",
-            "countAtLastDate": 10792,
+            "lastDateStr": "2026-05-15",
+            "countAtLastDate": 11624,
             "isValidation": false,
             "details": null
           },
           {
             "name": "Strategies",
             "status": "success",
-            "lastDateStr": "2026-05-13",
-            "countAtLastDate": 350,
+            "lastDateStr": "2026-05-15",
+            "countAtLastDate": 399,
             "isValidation": false,
             "details": null
           }

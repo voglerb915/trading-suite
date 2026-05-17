@@ -7,34 +7,66 @@ import { renderVolumeTable } from "./render/renderVolumeTable.js";
 import { calculateRanking } from "../../shared/logic/calculateRanking.js";
 import { loadExcelRawData } from "../../shared/logic/loadExcelRawData.js";
 
-import { renderExcelRawData } from "./render/renderExcelRawData.js";
-import { renderRankingMatrix } from "./render/renderRankingMatrix.js";
+// SECTORS
+import { renderSectorsPerformance } from "./render/renderSectorsPerformance.js";
+import { renderSectorsRanking } from "./render/renderSectorsRanking.js";
+
+// INDUSTRIES
+import { renderIndustriesPerformance } from "./render/renderIndustriesPerformance.js";
+import { renderIndustriesRanking } from "./render/renderIndustriesRanking.js";
+
+import { renderTab5 } from "./render/renderTab5.js";
+
 
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("LAB: Start...");
 
-    // Volume
+    // -----------------------------
+    // 1) Volume
+    // -----------------------------
     const volume = await getVolumeMetrics();
     const filtered = volume.filter(v => v.turnover >= 10_000_000);
     GlobalState.set("volumeData", filtered);
     renderVolumeTable(filtered);
 
-    // Excel-Daten laden (LOGIC)
-    const { sectors, dates } = await loadExcelRawData();
+    // -----------------------------
+    // 2) Excel-Daten laden
+    // -----------------------------
+    const { sectors, industries, dates } = await loadExcelRawData();
 
-    // Performance-Tab rendern (RENDER)
-    renderExcelRawData("tab-performance", sectors, dates);
+    // -----------------------------
+    // 3) SECTORS – Performance
+    // -----------------------------
+    renderSectorsPerformance("tab-sectors-performance", sectors, dates);
 
-    // Ranking berechnen (LOGIC)
-    const ranking = calculateRanking(sectors);
+    // -----------------------------
+    // 4) SECTORS – Ranking
+    // -----------------------------
+    const rankingSectors = calculateRanking(sectors);
+    renderSectorsRanking("tab-sectors-ranking", sectors, rankingSectors, dates);
 
-    // Ranking-Tab rendern (RENDER)
-    renderRankingMatrix("tab-ranking", sectors, ranking, dates);
+    // -----------------------------
+    // 5) INDUSTRIES – Performance
+    // -----------------------------
+    renderIndustriesPerformance("tab-industries-performance", industries, dates);
 
+    // -----------------------------
+    // 6) INDUSTRIES – Ranking
+    // -----------------------------
+    const rankingIndustries = calculateRanking(industries);
+    renderIndustriesRanking("tab-industries-ranking", industries, rankingIndustries, dates);
+
+    // -----------------------------
+    // 7) Tab 5 (noch zu benennen)
+    // -----------------------------
+    renderTab5("tab-next-stage");
 
 });
 
-// Tab-Logik unverändert
+
+// ---------------------------------------------------------
+// TAB-LOGIK (unverändert, nur IDs müssen stimmen)
+// ---------------------------------------------------------
 document.addEventListener("click", (e) => {
     if (!e.target.classList.contains("tab-btn")) return;
 

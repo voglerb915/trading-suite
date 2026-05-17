@@ -1,24 +1,37 @@
 import { renderSparkline } from "./renderSparkline.js";
-import { renderSparklineRanking } from "./renderSparklineRanking.js";   // ← FEHLT BEI DIR
+import { renderSparklineRanking } from "./renderSparklineRanking.js";
 
 /* ================================
    Ranking-Farbskala 1–11
    ================================ */
-const rankColors = {
-    1:  "#b30000",
-    2:  "#cc0000",
-    3:  "#e60000",
-    4:  "#ff1a1a",
-    5:  "#ff4d4d",
-    6:  "#ff944d",
-    7:  "#ffd24d",
-    8:  "#e6ff4d",
-    9:  "#b3ff66",
-    10: "#80ff80",
-    11: "#33cc33"
+// Neue 11er Farbskala (dunkelrot → dunkelgrün)
+const sectorRankColors = {
+    1:  "#006400",   // dunkelgrün
+    2:  "#3EC000",
+    3:  "#78E000",
+    4:  "#A8F000",
+    5:  "#D0F200",
+    6:  "#F0E000",
+    7:  "#EBCC00",
+    8:  "#D39C00",
+    9:  "#BB6800",
+    10: "#A33400",
+    11: "#8B0000"    // dunkelrot
 };
 
-export function renderRankingMatrix(targetId, sectors, ranking, dates) {
+function getSectorColor(rank) {
+    return sectorRankColors[rank] || "#000";
+}
+
+function getTextColor(bgColor) {
+    const r = parseInt(bgColor.substr(1, 2), 16);
+    const g = parseInt(bgColor.substr(3, 2), 16);
+    const b = parseInt(bgColor.substr(5, 2), 16);
+    const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    return luminance < 140 ? "#fff" : "#000";
+}
+
+export function renderSectorsRanking(targetId, sectors, ranking, dates) {
     const container = document.getElementById(targetId);
 
     container.innerHTML = `
@@ -61,7 +74,11 @@ function renderRankingTable(targetId, title, sectors, ranking, dates, key) {
                                 <canvas width="120" height="30" id="spark-rank-${sector}-${key}"></canvas>
                             </td>
 
-                            ${series.map(v => `<td class="excel-rank rank-${v}">${v}</td>`).join("")}
+                            ${series.map(v => {
+                                const bg = getSectorColor(v);
+                                const fg = getTextColor(bg);
+                                return `<td class="excel-rank" style="background:${bg}; color:${fg}">${v}</td>`;
+                            }).join("")}
                         </tr>
                     `;
                 }).join("")}
@@ -77,20 +94,11 @@ function renderRankingTable(targetId, title, sectors, ranking, dates, key) {
 
             if (!canvas || !series) return;
 
-            // letzter Wert = aktueller Rank
-            const lastRank = series[series.length - 1];
-
-            // passende Farbe aus der Skala
-            const color = rankColors[lastRank] || "#000";
-
-            // Sparkline mit Farbe zeichnen
-            renderSparklineRanking(canvas, series, rankColors);
+            renderSparklineRanking(canvas, series, sectorRankColors);
 
         });
     }, 0);
-
 }
-
 
 function formatDate(d) {
     const date = new Date(d);

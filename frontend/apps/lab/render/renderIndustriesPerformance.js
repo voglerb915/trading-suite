@@ -1,28 +1,26 @@
-// apps/lab/render/renderExcelRawData.js
+// apps/lab/render/renderIndustriesPerformance.js
 
 import { renderSparkline } from "./renderSparkline.js";
 
-export function renderExcelRawData(targetId, sectors, dates) {
+export function renderIndustriesPerformance(targetId, industries, dates) {
     const container = document.getElementById(targetId);
 
     container.innerHTML = `
         <div class="excel-container">
-            <h3 class="excel-title">Excel Matrix – Sectors × 15 Tage</h3>
+            <h3 class="excel-title">Excel Matrix – Industries × 15 Tage</h3>
 
-            <div id="excel-matrix-week"></div>
-            <div id="excel-matrix-month" style="margin-top: 40px;"></div>
-            <div id="excel-matrix-quarter" style="margin-top: 40px;"></div>
+            <div id="industries-matrix-week"></div>
+            <div id="industries-matrix-month" style="margin-top: 40px;"></div>
+            <div id="industries-matrix-quarter" style="margin-top: 40px;"></div>
         </div>
     `;
 
-    renderMatrixTable("excel-matrix-week", "Weekly Performance", sectors, dates, "week");
-    renderMatrixTable("excel-matrix-month", "Monthly Performance", sectors, dates, "month");
-    renderMatrixTable("excel-matrix-quarter", "Quarterly Performance", sectors, dates, "quarter");
+    renderMatrix("industries-matrix-week", "Weekly Performance", industries, dates, "week");
+    renderMatrix("industries-matrix-month", "Monthly Performance", industries, dates, "month");
+    renderMatrix("industries-matrix-quarter", "Quarterly Performance", industries, dates, "quarter");
 }
 
-
-// ⬇⬇⬇ WICHTIG: renderMatrixTable MUSS HIER BLEIBEN
-function renderMatrixTable(targetId, title, sectors, dates, key) {
+function renderMatrix(targetId, title, industries, dates, key) {
     const root = document.getElementById(targetId);
 
     root.innerHTML = `
@@ -30,21 +28,21 @@ function renderMatrixTable(targetId, title, sectors, dates, key) {
         <table class="excel-table">
             <thead>
                 <tr>
-                    <th>Sector</th>
+                    <th>Industry</th>
                     <th>Sparkline</th>
                     ${dates.map(d => `<th>${formatDate(d)}</th>`).join("")}
                 </tr>
             </thead>
             <tbody>
-                ${Object.keys(sectors).map(sector => `
+                ${Object.keys(industries).map(ind => `
                     <tr>
-                        <td class="excel-sector">${sector}</td>
+                        <td class="excel-sector">${ind}</td>
 
                         <td class="excel-spark">
-                            <canvas width="120" height="30" id="spark-${sector}-${key}"></canvas>
+                            <canvas width="120" height="30" id="spark-ind-${ind}-${key}"></canvas>
                         </td>
 
-                        ${sectors[sector][key].map(v => {
+                        ${industries[ind][key].map(v => {
                             const num = Number(v);
                             const cls = num >= 0 ? "excel-pos" : "excel-neg";
                             return `<td class="${cls}">${num.toFixed(2)}</td>`;
@@ -56,14 +54,13 @@ function renderMatrixTable(targetId, title, sectors, dates, key) {
     `;
 
     setTimeout(() => {
-        Object.keys(sectors).forEach(sector => {
-            const values = sectors[sector][key];
-            const canvas = document.getElementById(`spark-${sector}-${key}`);
+        Object.keys(industries).forEach(ind => {
+            const values = industries[ind][key];
+            const canvas = document.getElementById(`spark-ind-${ind}-${key}`);
             if (canvas) renderSparkline(canvas, values);
         });
     }, 0);
 }
-
 
 function formatDate(d) {
     const date = new Date(d);

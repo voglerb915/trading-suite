@@ -6,53 +6,69 @@ const { sql, tradingPool } = require('../../db/connection.js');
 // GET /api/excel/rawdata
 router.get('/rawdata', async (req, res) => {
     try {
-        // 1) Letzte 15 Tage holen (als String!)
+        // 1) Letzte 15 Tage holen (egal ob sector oder industry)
         const datesResult = await tradingPool.request().query(`
             SELECT DISTINCT TOP 15
                 CONVERT(VARCHAR(10), anl_datum, 23) AS anl_datum
             FROM trading.dbo.finviz_groups
-            WHERE [group] = 'sector'
             ORDER BY anl_datum DESC
         `);
 
         const dates = datesResult.recordset.map(r => r.anl_datum);
 
-        // 2) Daten für diese Tage holen
+        // 2) Alle relevanten Daten für diese Tage holen
         const dataResult = await tradingPool.request().query(`
             SELECT
+                [group],
                 name,
                 perf_week,
                 perf_month,
                 perf_quart,
                 CONVERT(VARCHAR(10), anl_datum, 23) AS anl_datum
             FROM trading.dbo.finviz_groups
-            WHERE [group] = 'sector'
-              AND CONVERT(VARCHAR(10), anl_datum, 23) IN (${dates.map(d => `'${d}'`).join(",")})
+            WHERE CONVERT(VARCHAR(10), anl_datum, 23) IN (${dates.map(d => `'${d}'`).join(",")})
             ORDER BY anl_datum DESC, name ASC
         `);
 
         const rows = dataResult.recordset;
 
-        // 3) Pivot-Struktur
+        // 3) Pivot-Struktur für sectors + industries
         const sectors = {};
-        const sectorNames = [...new Set(rows.map(r => r.name))];
+        const industries = {};
 
-        sectorNames.forEach(sector => {
-            sectors[sector] = { week: [], month: [], quarter: [] };
+        const groups = {
+            sector: sectors,
+            industry: industries
+        };
 
-            dates.forEach(date => {
-                const row = rows.find(r => r.name === sector && r.anl_datum === date);
+        // Alle Namen pro Gruppe extrahieren
+        const namesByGroup = {
+            sector: [...new Set(rows.filter(r => r.group === "sector").map(r => r.name))],
+            industry: [...new Set(rows.filter(r => r.group === "industry").map(r => r.name))]
+        };
 
-                sectors[sector].week.push(row ? row.perf_week : null);
-                sectors[sector].month.push(row ? row.perf_month : null);
-                sectors[sector].quarter.push(row ? row.perf_quart : null);
+        // Pivot für beide Gruppen
+        ["sector", "industry"].forEach(g => {
+            namesByGroup[g].forEach(name => {
+                groups[g][name] = { week: [], month: [], quarter: [] };
+
+                dates.forEach(date => {
+                    const row = rows.find(r => r.group === g && r.name === name && r.anl_datum === date);
+
+                    groups[g][name].week.push(row ? row.perf_week : null);
+                    groups[g][name].month.push(row ? row.perf_month : null);
+                    groups[g][name].quarter.push(row ? row.perf_quart : null);
+                });
             });
         });
 
         return res.json({
             success: true,
-            data: sectors,
-            dates
+            dates,
+            data: {
+                sectors,
+                industries
+            }
         });
 
     } catch (err) {
@@ -63,6 +79,5 @@ router.get('/rawdata', async (req, res) => {
         });
     }
 });
-
 
 module.exports = router;

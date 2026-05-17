@@ -7,7 +7,8 @@ export async function loadExcelRawData() {
     }
 
     return {
-        sectors: json.data,
+        sectors: json.data.sectors,
+        industries: json.data.industries,
         dates: json.dates
     };
 }

@@ -1,8 +1,8 @@
 {
   "checks": {
     "status": "green",
-    "lastRun": "2026-05-13T21:25:39.336Z",
-    "duration": "2.68s",
+    "lastRun": "2026-05-15T21:05:50.115Z",
+    "duration": "3.25s",
     "sections": {
       "finviz": {
         "title": "Finviz-Daten",
@@ -11,15 +11,15 @@
           {
             "name": "finviz",
             "status": "success",
-            "lastDateStr": "2026-05-13 22:20:22",
-            "countAtLastDate": 11135,
+            "lastDateStr": "2026-05-15 22:20:24",
+            "countAtLastDate": 11158,
             "isValidation": false,
             "details": null
           },
           {
             "name": "finviz_groups",
             "status": "success",
-            "lastDateStr": "2026-05-13 22:20:16",
+            "lastDateStr": "2026-05-15 22:20:20",
             "countAtLastDate": 155,
             "isValidation": false,
             "details": null
@@ -27,7 +27,7 @@
           {
             "name": "Sectors JSON",
             "status": "success",
-            "lastDateStr": "2026-05-13 22:20:05",
+            "lastDateStr": "2026-05-15 22:20:05",
             "countAtLastDate": 11,
             "isValidation": false,
             "details": null
@@ -35,7 +35,7 @@
           {
             "name": "Industries JSON",
             "status": "success",
-            "lastDateStr": "2026-05-13 22:20:16",
+            "lastDateStr": "2026-05-15 22:20:20",
             "countAtLastDate": 144,
             "isValidation": false,
             "details": null
@@ -49,40 +49,40 @@
           {
             "name": "Indexes",
             "status": "success",
-            "lastDateStr": "2026-05-13",
-            "countAtLastDate": 26,
+            "lastDateStr": "2026-05-15",
+            "countAtLastDate": 28,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailyHistory",
             "status": "success",
-            "lastDateStr": "2026-05-13",
-            "countAtLastDate": 10789,
+            "lastDateStr": "2026-05-15",
+            "countAtLastDate": 10796,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailySignals",
             "status": "success",
-            "lastDateStr": "2026-05-13",
-            "countAtLastDate": 4599,
+            "lastDateStr": "2026-05-15",
+            "countAtLastDate": 4601,
             "isValidation": false,
             "details": null
           },
           {
             "name": "StockMetrics",
             "status": "success",
-            "lastDateStr": "2026-05-13",
-            "countAtLastDate": 10789,
+            "lastDateStr": "2026-05-15",
+            "countAtLastDate": 10796,
             "isValidation": false,
             "details": null
           },
           {
             "name": "Strategies",
             "status": "success",
-            "lastDateStr": "2026-05-13",
-            "countAtLastDate": 378,
+            "lastDateStr": "2026-05-15",
+            "countAtLastDate": 417,
             "isValidation": false,
             "details": null
           }
@@ -131,14 +131,14 @@
   "downloads": {
     "IndexHistory": {
       "ok": true,
-      "lastRun": "2026-05-13T21:06:26.987Z",
+      "lastRun": "2026-05-15T20:47:12.733Z",
       "duration": "1s",
       "info": "5 Fehler übersprungen"
     },
     "DailyHistory": {
       "ok": true,
-      "lastRun": "2026-05-13T21:12:35.386Z",
-      "duration": "365s",
+      "lastRun": "2026-05-15T20:52:28.447Z",
+      "duration": "311s",
       "error": "errorCount is not defined",
       "info": "Erfolgreich"
     }
@@ -146,14 +146,14 @@
   "calculations": {
     "RS_Sectors": {
       "status": "success",
-      "lastRun": "2026-05-13T21:13:34.937Z",
-      "duration": "0.23s",
+      "lastRun": "2026-05-15T20:40:39.305Z",
+      "duration": "0.04s",
       "error": "runSectorPipeline is not a function"
     },
     "RS_Industries": {
       "status": "success",
-      "lastRun": "2026-05-13T21:13:52.498Z",
-      "duration": "14.69s"
+      "lastRun": "2026-05-15T20:44:47.866Z",
+      "duration": "16.22s"
     }
   }
 }
