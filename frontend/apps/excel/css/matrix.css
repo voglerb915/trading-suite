@@ -1,0 +1,178 @@
+/* ==========================================================================
+   BRANDMAUER: Erzwingt das 4-Spalten-Layout (Gegen Tab-Blockaden)
+   ========================================================================== */
+.matrix-dashboard-wrapper {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important; /* Exakt 4 Spalten */
+    gap: 15px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* ==========================================================================
+   DAS DASHBOARD-RASTER 
+   ========================================================================== */
+.sectors-tile-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)); 
+    gap: 15px;
+    padding: 15px;
+    background-color: #f2f2f2;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Die einzelne Kachel */
+.sector-tile {
+    background: #ffffff;
+    border: 1px solid #c8ced3;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Header */
+.tile-header {
+    background-color: #4682B4;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 13px;
+    text-align: left;
+    padding: 6px 10px;
+    border-bottom: 1px solid #c8ced3;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Die HTML-Tabelle (Matrix) – Bereinigter Einzel-Eintrag */
+.matrix-table {
+    border-collapse: collapse;
+    margin: 10px;
+    width: 296px !important; 
+    min-width: 296px !important;
+    table-layout: fixed;
+}
+
+/* Speziell für die "Rank" Überschrift ganz links */
+.th-matrix-rank {
+    width: 28px;
+    border-right: 2px solid #000000 !important;
+}
+
+/* Die Rang-Spalte ganz links */
+.scale-cell-num {
+    width: 28px;
+    height: 15px !important;
+    line-height: 15px !important;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid #e0e0e0;
+    border-right: 2px solid #000000; 
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Die 15 Daten-Zellen */
+.matrix-td {
+    width: 18px !important;
+    min-width: 18px !important;
+    height: 15px !important;
+    min-height: 15px !important;
+    font-size: 8px !important;
+    line-height: 15px !important; /* Auf 15px korrigiert, passend zur Höhe! */
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid #eaeaea;
+    border-right: 1px solid #eaeaea;
+    box-sizing: border-box;
+}
+
+/* Die fetten vertikalen Trennlinien nach Spalte 5 und 10 */
+.matrix-td.border-break {
+    border-right: 2px solid #000000 !important;
+}
+
+/* Der bunte Punkt */
+.tile-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid rgba(0,0,0,0.25);
+    vertical-align: middle;
+}
+
+/* Die leere 12. Kachel als reiner Struktur-Halter */
+.sector-tile.placeholder {
+    border: 1px dashed #ccc;
+    background: transparent;
+    box-shadow: none;
+    visibility: hidden;
+}
+/* ==========================================================================
+   UPGRADE: SPALTENBREITEN & TRENNLINIEN (HEADER + MATRIX)
+   ========================================================================== */
+
+/* Allgemeine Header-Zellen der Matrix-Tabelle */
+.matrix-table thead th {
+    font-size: 12px !important;
+    font-weight: bold !important;
+    padding: 4px 0 !important; /* Leicht erhöht für besseres Spacing */
+    background: #ffffff !important; 
+    color: #333333 !important;
+    text-align: center !important;
+    
+    /* NEU: Horizontale Trennlinie zwischen Überschriften und Datenzeilen */
+    border-bottom: 2px solid #000000 !important; 
+}
+
+/* Speziell für die "Rank" Überschrift ganz links */
+.th-matrix-rank {
+    width: 30px !important; /* Knallhart auf 28px fixiert */
+    min-width: 30px !important;
+    /* Vertikale Trennlinie nach Rank im Header */
+    border-right: 2px solid #000000 !important; 
+}
+
+/* Die Gruppen Week, Month, Quarter im Header */
+.th-matrix-group {
+    font-family: "Segoe UI", Arial, sans-serif;
+    letter-spacing: 0.5px;
+}
+
+/* NEU: Vertikale Trennlinien AUCH im Tabellenkopf nach Week und Month */
+.th-matrix-group.header-break {
+    border-right: 2px solid #000000 !important;
+}
+
+/* Die Rang-Spalte ganz links in den Datenzeilen */
+.scale-cell-num {
+    width: 30px !important;       /* Jetzt perfekt synchron mit dem Header auf 28px */
+    min-width: 30px !important;
+    height: 15px !important;
+    line-height: 15px !important;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid #e0e0e0;
+    border-right: 2px solid #000000; /* Vertikale Trennlinie in den Daten */
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Die HTML-Tabelle (Matrix) – Gesamtbreite leicht angepasst für die 28px Rank-Spalte */
+.matrix-table {
+    border-collapse: collapse;
+    margin: 10px;
+    /* 28px (Skala) + 15 * 18px (Spalten) + Linien = ca. 302px */
+    width: 302px !important; 
+    min-width: 302px !important;
+    table-layout: fixed;
+}

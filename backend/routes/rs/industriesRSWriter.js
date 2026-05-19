@@ -8,13 +8,11 @@ router.get('/write-industries', async (req, res) => {
   const start = Date.now();
 
   try {
-    // ⭐ komplette Pipeline: Snapshot + History
     const snapshot = await writeIndustriesJson();
 
     const durationMs = Date.now() - start;
     const duration = `${(durationMs / 1000).toFixed(2)}s`;
 
-    // ⭐ Cockpit-Status setzen
     updateTileStatus("RS_Industries", {
       status: "success",
       lastRun: new Date().toISOString(),

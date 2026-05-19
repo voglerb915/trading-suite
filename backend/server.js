@@ -57,8 +57,9 @@ app.use("/api/cockpit", require("./routes/cockpitStatusRoutes"));
 //app.use("/api/downloads", require("./routes/loadIndexes"));
 app.use("/api/downloads", require("./routes/loadYahooStocks"));
 app.use("/api/system", systemStatusRoutes);
-app.use('/api/rs', require('./routes/rs/sectorsRSWriter'));
-app.use('/api/rs', require('./routes/rs/industriesRSWriter'));
+app.use('/api/rs', require('./routes/rs/sectorsRsWriter'));
+app.use('/api/rs', require('./routes/rs/industriesRsWriter'));
+app.use('/api/rs', require('./routes/rs/stocksRsWriter'));
 app.use('/api/excel', require('./routes/excel/rawData'));
 
 // ---------------------------------------------

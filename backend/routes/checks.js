@@ -159,6 +159,7 @@ router.get("/all", async (req, res) => {
 
 const sectorsPath = path.join(__dirname, "../json/rs_sectors.json");
 const industriesPath = path.join(__dirname, "../json/rs_industries.json");
+const stocksPath = path.join(__dirname, "../json/rs_stocks.json");
 
         // Sectors JSON
         let sectorsLastDate = null;
@@ -252,6 +253,54 @@ trading.tables.push({
     lastDateStr: industriesLastDateStr,
     totalCount: industriesCount,
     countAtLastDate: industriesCount
+});
+
+// ------------------------------------------------------
+// Stocks JSON
+// ------------------------------------------------------
+
+let stocksLastDate = null;
+let stocksLastDateStr = null;
+let stocksCount = null;
+let stocksOk = fs.existsSync(stocksPath);
+
+if (stocksOk) {
+    try {
+        const raw = fs.readFileSync(stocksPath, "utf8");
+        const parsed = JSON.parse(raw);
+
+        // Anzahl bestimmen
+        if (Array.isArray(parsed)) {
+            stocksCount = parsed.length;
+        } else if (parsed && typeof parsed === "object") {
+            stocksCount = Object.keys(parsed).length;
+        }
+
+        // anl_datum aus erstem Objekt holen
+        const first = Array.isArray(parsed) ? parsed[0] : null;
+
+        if (first && first.anl_datum) {
+            const anl = first.anl_datum;
+
+            stocksLastDateStr = anl.slice(0, 19).replace("T", " ");
+            stocksLastDate = new Date(anl);
+        } else {
+            stocksOk = false;
+        }
+
+    } catch (e) {
+        stocksOk = false;
+    }
+}
+
+trading.tables.push({
+    table: "Stocks JSON",
+    ok: stocksOk,
+    message: stocksOk ? "OK" : "FEHLT",
+    lastDate: stocksLastDate,
+    lastDateStr: stocksLastDateStr,
+    totalCount: stocksCount,
+    countAtLastDate: stocksCount
 });
 
 

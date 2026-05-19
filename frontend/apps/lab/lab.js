@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // -----------------------------
     // 7) Tab 5 (noch zu benennen)
     // -----------------------------
-    renderTab5("tab-next-stage");
+    renderTab5("tab-next-stage", sectors);
 
 });
 

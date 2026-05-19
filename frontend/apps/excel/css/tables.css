@@ -1,0 +1,153 @@
+/* ================================
+   Excel Matrix – Grundlayout
+   ================================ */
+
+.excel-container {
+    padding: 10px;
+    background: #f2f2f2;
+    color: #000;
+    font-family: "Segoe UI", Arial, sans-serif;
+    border-radius: 6px;
+}
+
+.excel-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 12px;
+}
+
+/* ================================
+   Tabellenstruktur
+   ================================ */
+
+.excel-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+}
+
+.excel-table thead th {
+    padding: 6px 4px;
+    border-bottom: 1px solid #bbb;
+    background: #e6e6e6;
+    font-weight: 600;
+    text-align: center;
+    color: #000;
+}
+
+.excel-table tbody td {
+    padding: 6px 4px;
+    border-bottom: 1px solid #ddd;
+    text-align: right;
+    color: #000;
+}
+
+.excel-table tbody tr:hover {
+    background: #f7f7f7;
+}
+
+.excel-table tr:last-child td {
+    border-bottom: 1px solid #ccc !important;
+}
+
+/* ================================
+   Sektor‑Spalte
+   ================================ */
+
+.excel-sector {
+    font-weight: 600;
+    text-align: left !important;
+    border-right: 1px solid #ccc;
+    color: #000;
+    padding-left: 6px;
+}
+
+/* ================================
+   Werte‑Zellen (positiv/negativ)
+   ================================ */
+
+.excel-table td.excel-pos { color: #008000 !important; }
+.excel-table td.excel-neg { color: #cc0000 !important; }
+
+/* ================================
+   Responsive Verhalten
+   ================================ */
+
+@media (max-width: 1200px) {
+    .excel-table { font-size: 12px; }
+}
+
+@media (max-width: 900px) {
+    .excel-table thead th,
+    .excel-table tbody td { padding: 4px 2px; }
+}
+
+/* ================================
+   Sparkline
+   ================================ */
+
+.excel-spark {
+    width: 130px;
+    padding: 0;
+    text-align: center;
+}
+
+/* ================================
+   Tab-Logik
+   ================================ */
+
+.excel-tabs {
+    display: flex;
+    gap: 5px;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    background: #eee;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.tab-btn.active {
+    background: #fff;
+    border-bottom: 2px solid #0078d4;
+    font-weight: bold;
+}
+
+.tab-content { margin-top: 0px; }
+
+/* Ranking-Farben */
+.excel-rank {
+    text-align: center !important;
+    font-weight: 600;
+    padding: 4px 6px;
+}
+
+.rank-1  { background:#b30000 !important; color:#fff !important; }
+.rank-2  { background:#cc0000 !important; color:#fff !important; }
+.rank-3  { background:#e60000 !important; color:#fff !important; }
+.rank-4  { background:#ff1a1a !important; color:#fff !important; }
+.rank-5  { background:#ff4d4d !important; color:#000 !important; }
+.rank-6  { background:#ff944d !important; color:#000 !important; }
+.rank-7  { background:#ffd24d !important; color:#000 !important; }
+.rank-8  { background:#e6ff4d !important; color:#000 !important; }
+.rank-9  { background:#b3ff66 !important; color:#000 !important; }
+.rank-10 { background:#80ff80 !important; color:#000 !important; }
+.rank-11 { background:#33cc33 !important; color:#fff !important; }
+
+.top20-row {
+    display: flex;
+    gap: 30px;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.top20-col {
+    flex: 1;
+    min-width: 300px;
+}
