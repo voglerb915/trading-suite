@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 const { sql, tradingPool } = require('../../db/connection.js');
+// ⬇️ Mapping importieren
+const { getSectorForIndustry } = require("../../utils/industrySectorMap.js");
 
 // GET /api/excel/rawdata
 router.get('/rawdata', async (req, res) => {
@@ -62,14 +64,18 @@ router.get('/rawdata', async (req, res) => {
             });
         });
 
+        // ⬇️ HIER: Industries mit Sector anreichern
+        Object.keys(industries).forEach(ind => {
+            industries[ind].sector = getSectorForIndustry(ind);
+        });
+
         return res.json({
             success: true,
             dates,
-            data: {
-                sectors,
-                industries
-            }
+            sectors,
+            industries
         });
+
 
     } catch (err) {
         console.error("DB-Fehler:", err);

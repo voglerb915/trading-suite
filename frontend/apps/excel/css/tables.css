@@ -140,6 +140,8 @@
 .rank-10 { background:#80ff80 !important; color:#000 !important; }
 .rank-11 { background:#33cc33 !important; color:#fff !important; }
 
+/* Top 20 Klassen */
+
 .top20-row {
     display: flex;
     gap: 30px;
@@ -151,3 +153,83 @@
     flex: 1;
     min-width: 300px;
 }
+
+.top20-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.pill {
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #333;
+    color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    user-select: none;
+}
+
+.pill.active {
+    background: #0a84ff;
+}
+
+/* ================================
+   Top20 – Rank & Delta Styling
+   ================================ */
+
+/* Rank-Spalte wirklich zentrieren */
+td.rank-col {
+    text-align: center !important;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.rank-delta {
+    text-align: center !important;
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.rank-delta-arrow {
+    font-size: 17px;
+    font-weight: 700;
+    display: inline-block;
+    margin-left: 4px;
+}
+
+/* ================================
+   Farbige Pfeile für Rank-Delta
+   ================================ */
+
+.rank-delta {
+    text-align: center !important;
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.rank-delta-arrow {
+    font-size: 20px;          /* größer */
+    font-weight: 900;         /* maximal fett */
+    margin-left: 4px;
+    -webkit-text-stroke: 0.6px currentColor; /* macht den Pfeil sichtbar fetter */
+}
+
+/* Aufwärts (besser geworden) */
+.delta-up {
+    color: #008000; /* Grün */
+}
+
+/* Abwärts (schlechter geworden) */
+.delta-down {
+    color: #990000; /* dunkleres Rot */
+}
+
+/* Gleich geblieben */
+.delta-neutral {
+    color: #ff8800; /* kräftiges Orange */
+}
+

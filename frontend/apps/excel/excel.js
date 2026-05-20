@@ -35,9 +35,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const rankingIndustries = calculateRanking(industries);
     renderIndustriesRanking("tab-industries-ranking", industries, rankingIndustries, dates);
 
+    // ⬅️ Sector ins Ranking übernehmen
+    Object.keys(rankingIndustries).forEach(ind => {
+        rankingIndustries[ind].sector = industries[ind].sector;
+    });
+    
     // 6) INDUSTRIES – Top 20%
     renderIndustriesTop20("tab-industries-top20", industries, rankingIndustries, dates);
-
+    
     // 7) SECTORS – Overview
     renderSectorsOverview("tab-sectors-overview", sectors);
     

@@ -1,8 +1,8 @@
 {
   "checks": {
-    "status": "yellow",
-    "lastRun": "2026-05-19T22:52:04.237Z",
-    "duration": "2.85s",
+    "status": "green",
+    "lastRun": "2026-05-19T23:04:25.808Z",
+    "duration": "3.12s",
     "sections": {
       "finviz": {
         "title": "Finviz-Daten",
@@ -74,23 +74,23 @@
             "name": "DailySignals",
             "status": "success",
             "lastDateStr": "2026-05-19",
-            "countAtLastDate": 630,
+            "countAtLastDate": 4594,
             "isValidation": false,
             "details": null
           },
           {
             "name": "StockMetrics",
             "status": "success",
-            "lastDateStr": "2026-05-18",
-            "countAtLastDate": 10812,
+            "lastDateStr": "2026-05-19",
+            "countAtLastDate": 10772,
             "isValidation": false,
             "details": null
           },
           {
             "name": "Strategies",
             "status": "success",
-            "lastDateStr": "2026-05-18",
-            "countAtLastDate": 427,
+            "lastDateStr": "2026-05-19",
+            "countAtLastDate": 417,
             "isValidation": false,
             "details": null
           }

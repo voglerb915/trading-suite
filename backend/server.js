@@ -6,6 +6,7 @@ const os = require('os'); // <--- NEU: Für die Geräte-Erkennung
 const logger = require('./utils/logger');
 const { getTradingDate } = require('./utils/dateHelper');
 const systemStatusRoutes = require("./routes/systemStatus.js");
+const { loadIndustrySectorMap } = require('./utils/industrySectorMap');
 
 // --- Datenbank-Verbindung importieren ---
 const { tradingConnect, yahooConnect, journalConnect } = require('./db/connection');
@@ -23,7 +24,6 @@ Promise.all([tradingConnect, yahooConnect, journalConnect])
         console.log('✅ Datenbanken erfolgreich verbunden (Pfad: ./db/connection.js)');
     })
     .catch(err => {
-        // Wir loggen den Fehler, lassen den Server aber laufen (hilfreich bei Teilausfällen)
         console.error('❌ Datenbank-Verbindungsfehler:', err.message);
     });
 
@@ -91,8 +91,12 @@ app.use((err, req, res, next) => {
 // 5. Start Server
 // ---------------------------------------------
 const PORT = 4000;
-app.listen(PORT, "0.0.0.0", () => {
+app.listen(PORT, "0.0.0.0", async () => {
     console.log(`🚀 Trading-Suite Backend läuft auf Port ${PORT}`);
     console.log(`📅 Trading-Date: ${getTradingDate()}`);
     console.log(`💻 Device-Host: ${os.hostname()}`);
+
+    // ⭐ Jetzt ist die DB garantiert bereit
+    await loadIndustrySectorMap();
+    console.log("📚 Industry → Sector Mapping geladen");
 });
