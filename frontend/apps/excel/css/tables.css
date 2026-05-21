@@ -233,3 +233,20 @@ td.rank-col {
     color: #ff8800; /* kräftiges Orange */
 }
 
+.toggle-pill {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.pill {
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: #333;
+    color: #fff;
+    cursor: pointer;
+}
+
+.pill.active {
+    background: #007bff;
+}

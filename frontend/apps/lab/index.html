@@ -9,45 +9,30 @@
 
     <!-- Volume Modul -->
     <link rel="stylesheet" href="/apps/lab/css/volume.css">
-
-    <!-- Excel Matrix Styles -->
-    <link rel="stylesheet" href="/apps/lab/css/excel.css">
 </head>
 
 <body style="background: #121212;">
 
     <div id="lab-container">
 
-        <div id="col-1"></div>   <!-- 25vw -->
-        <div id="col-2"></div>   <!-- 10vw -->
+        <!-- Linke Spalte (25vw) -->
+        <div id="col-1"></div>
+
+        <!-- Mittlere Spalte (10vw) -->
+        <div id="col-2"></div>
+
+        <!-- Rechte Spalte (Hauptbereich) -->
         <div id="col-3">
 
-            <!-- SQL-Status Widget bleibt ganz oben -->
+            <!-- SQL-Status Widget -->
             <div id="sql-status-root"></div>
 
-            <!-- Tabs -->
-            <div class="excel-tabs">
-                <div class="tab-btn active" data-tab="sectors-performance">📊 Perf. %</div>
-                <div class="tab-btn" data-tab="sectors-ranking">📊 Rank</div>
-
-                <div class="tab-btn" data-tab="industries-performance">🏭 Perf. %</div>
-                <div class="tab-btn" data-tab="industries-ranking">🏭 Rank</div>
-
-                <!-- ⭐ NEUER TAB 5 -->
-                <div class="tab-btn" data-tab="next-stage">🧩 Next</div>
-            </div>
-
-            <!-- Tab-Inhalte -->
-            <div id="tab-sectors-performance" class="tab-content"></div>
-            <div id="tab-sectors-ranking" class="tab-content" style="display:none;"></div>
-
-            <div id="tab-industries-performance" class="tab-content" style="display:none;"></div>
-            <div id="tab-industries-ranking" class="tab-content" style="display:none;"></div>
-
-            <!-- ⭐ NEUER TAB 5 CONTENT -->
-            <div id="tab-next-stage" class="tab-content" style="display:none;"></div>
+            <!-- LAB-Content (frei für Widgets, Charts, Module) -->
+            <div id="lab-content"></div>
+            <div id="lab-index-base"></div>
 
         </div>
+    </div>
 
     <script type="module" src="/apps/lab/lab.js"></script>
 

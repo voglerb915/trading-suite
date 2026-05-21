@@ -1,7 +1,6 @@
 // analysis/rs/rsPipelineSectors.js
 const { sql, config } = require('../../db/connection');
 const { calculateRsScoreWoNFromDb } = require('./rsScoreWoNFromDb');
-const { getRankingDiffs } = require('./rsRankingHistory');
 
 async function buildSectorRsSnapshot() {
   await sql.connect(config);
@@ -65,15 +64,8 @@ async function buildSectorRsSnapshot() {
   sectors.sort((a, b) => b.score - a.score);
   sectors.forEach((sec, i) => sec.rankWonDb = i + 1);
 
-  // ⭐ 4) Deltas holen (nutzt jetzt Rankmap → extrem schnell)
-  const diffs = getRankingDiffs(sectors, 'sector');
-
-  sectors = sectors.map(sec => ({
-    ...sec,
-    ...(diffs.find(d => d.name === sec.name) || {})
-  }));
-
   return sectors;
+
 }
 
 module.exports = { buildSectorRsSnapshot };

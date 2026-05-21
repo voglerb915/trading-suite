@@ -1,0 +1,22 @@
+.index-base-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.index-base-table th {
+    text-align: left;
+    padding: 6px 10px;
+    background: #222;
+    color: #fff;
+    font-weight: 600;
+}
+
+.index-base-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #333;
+}
+
+.index-base-table tr:hover {
+    background: #1a1a1a;
+}

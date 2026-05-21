@@ -2,7 +2,6 @@
 const fs = require('fs');
 const path = require('path');
 const { buildSectorRsSnapshot } = require('./rsPipelineSectors');
-const { getRankingDiffs } = require('./rsRankingHistory');
 
 function normalizeDate(value) {
   if (!value) return null;
@@ -10,58 +9,111 @@ function normalizeDate(value) {
   return isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10);
 }
 
-async function writeSectorsJson() {
-  let sectors = await buildSectorRsSnapshot();
+function loadHistoryFiles() {
+  const historyDir = path.join(__dirname, '..', '..', 'json-history');
+  if (!fs.existsSync(historyDir)) return [];
 
-  if (!sectors || sectors.length === 0) {
-    console.warn("⚠️ Keine Sector-Daten.");
-    return sectors;
+  return fs.readdirSync(historyDir)
+    .filter(f => f.endsWith('_sectors.json'))
+    .sort()
+    .map(f => ({
+      date: f.slice(0, 10),
+      file: path.join(historyDir, f)
+    }));
+}
+
+function loadSnapshotByDate(date, historyFiles) {
+  const entry = historyFiles.find(h => h.date === date);
+  if (!entry) return null;
+
+  try {
+    return JSON.parse(fs.readFileSync(entry.file, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function buildRankMap(snapshot) {
+  const map = {};
+  snapshot.forEach((sec, idx) => {
+    map[sec.name] = idx + 1;
+  });
+  return map;
+}
+
+function computeDiffs(current, historyFiles) {
+  const today = normalizeDate(current[0].anl_datum);
+
+  // ❗ KEIN DAY MEHR
+  const steps = {
+    diffW: 5,
+    diffM: 21,
+    diffQ: 63
+  };
+
+  const result = current.map(sec => ({
+    ...sec,
+    diffW: null,
+    diffM: null,
+    diffQ: null
+  }));
+
+  const allDates = historyFiles.map(h => h.date);
+  const todayIndex = allDates.indexOf(today);
+
+  if (todayIndex === -1) return result;
+
+  for (const [key, offset] of Object.entries(steps)) {
+    const targetIndex = todayIndex - offset;
+    if (targetIndex < 0) continue;
+
+    const targetDate = allDates[targetIndex];
+    const snapshot = loadSnapshotByDate(targetDate, historyFiles);
+    if (!snapshot) continue;
+
+    const prevRankMap = buildRankMap(snapshot);
+
+    result.forEach(sec => {
+      const prevRank = prevRankMap[sec.name];
+      if (!prevRank) return;
+
+      const currentRank = sec.rankWonDb;
+      sec[key] = prevRank - currentRank;
+    });
   }
 
-  // ⭐ Nur neuestes Datum behalten
+  return result;
+}
+
+async function writeSectorsJson() {
+  let sectors = await buildSectorRsSnapshot();
+  if (!sectors || sectors.length === 0) return sectors;
+
   const latestDate = normalizeDate(sectors[0].anl_datum);
   sectors = sectors.filter(sec => normalizeDate(sec.anl_datum) === latestDate);
 
-  // ⭐ Snapshot speichern
   const snapshotFile = path.join(__dirname, '..', '..', 'json', 'rs_sectors.json');
-  fs.writeFileSync(snapshotFile, JSON.stringify(sectors, null, 2));
-
-  // ⭐ History speichern
   const historyDir = path.join(__dirname, '..', '..', 'json-history');
   if (!fs.existsSync(historyDir)) fs.mkdirSync(historyDir, { recursive: true });
 
   const historyFile = path.join(historyDir, `${latestDate}_sectors.json`);
+
+  // 1) Roh-Snapshot (ohne Diffs) als History speichern
   fs.writeFileSync(historyFile, JSON.stringify(sectors, null, 2));
 
-  // ⭐ Rankmap erzeugen (Precompute)
-  const rankmapDir = path.join(historyDir, 'rankmaps');
-  if (!fs.existsSync(rankmapDir)) fs.mkdirSync(rankmapDir, { recursive: true });
+  // 2) History laden und Diffs berechnen
+  const historyFiles = loadHistoryFiles();
+  const sectorsWithDiffs = computeDiffs(sectors, historyFiles);
 
-  // Deltas berechnen → liefert fertige Ranking-Maps
-  const diffs = getRankingDiffs(sectors, 'sector');
+  // 3) Snapshot MIT Diffs schreiben
+  fs.writeFileSync(snapshotFile, JSON.stringify(sectorsWithDiffs, null, 2));
 
-  // Rankmap extrahieren
-  const rankmap = {};
-  const steps = { W: 5, M: 21, Q: 63 };
+  // 4) History ebenfalls MIT Diffs überschreiben
+  fs.writeFileSync(historyFile, JSON.stringify(sectorsWithDiffs, null, 2));
 
-  for (const step of Object.keys(steps)) {
-    rankmap[step] = {};
-    diffs.forEach(sec => {
-      const name = sec.name;
-      const diffKey = `diff${step}`;
-      const currentRank = sec.rankWonDb;
-      const previousRank = currentRank + (sec[diffKey] ?? 0);
-      rankmap[step][name] = previousRank;
-    });
-  }
+  console.log(`✅ RS Sectors Snapshot + History geschrieben (${sectors.length} Einträge, Datum ${latestDate})`);
 
-  // Rankmap speichern
-  const rankmapFile = path.join(rankmapDir, `${latestDate}_sectors_rankmap.json`);
-  fs.writeFileSync(rankmapFile, JSON.stringify(rankmap, null, 2));
-
-  console.log(`✅ RS Sectors Snapshot + History + Rankmap geschrieben (${sectors.length} Einträge, Datum ${latestDate})`);
-
-  return sectors;
+  return sectorsWithDiffs;
 }
 
 module.exports = { writeSectorsJson };

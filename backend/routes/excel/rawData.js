@@ -8,13 +8,15 @@ const { getSectorForIndustry } = require("../../utils/industrySectorMap.js");
 // GET /api/excel/rawdata
 router.get('/rawdata', async (req, res) => {
     try {
-        // 1) Letzte 15 Tage holen (egal ob sector oder industry)
+        // 1) Letzte 25 Tage holen / alternativ 200 (egal ob sector oder industry)
+        // Immer nur die letzten 25 Tage holen
         const datesResult = await tradingPool.request().query(`
             SELECT DISTINCT TOP 25
                 CONVERT(VARCHAR(10), anl_datum, 23) AS anl_datum
             FROM trading.dbo.finviz_groups
             ORDER BY anl_datum DESC
         `);
+
 
         const dates = datesResult.recordset.map(r => r.anl_datum);
 

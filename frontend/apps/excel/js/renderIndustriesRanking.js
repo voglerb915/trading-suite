@@ -13,13 +13,19 @@ export function renderIndustriesRanking(targetId, industries, ranking, dates) {
 
     container.innerHTML = `
         <div class="excel-container">
-            <h3 class="excel-title">Ranking – Industries × 15 Tage</h3>
+            <h3 class="excel-title">Ranking – Industries</h3>
+
+            <div class="toggle-pill">
+                <button class="pill active" data-mode="short">Short</button>
+                <button class="pill" data-mode="long">Long</button>
+            </div>
 
             <div id="industries-ranking-week"></div>
             <div id="industries-ranking-month" style="margin-top: 40px;"></div>
             <div id="industries-ranking-quarter" style="margin-top: 40px;"></div>
         </div>
     `;
+
 
     renderRanking("industries-ranking-week", "Weekly Ranking", industries, ranking, dates, "week");
     renderRanking("industries-ranking-month", "Monthly Ranking", industries, ranking, dates, "month");
@@ -29,6 +35,9 @@ export function renderIndustriesRanking(targetId, industries, ranking, dates) {
 function renderRanking(targetId, title, industries, ranking, dates, key) {
     const root = document.getElementById(targetId);
 
+    // Nur die letzten 25 Tage anzeigen
+    const visibleDates = dates.slice(-25);
+
     root.innerHTML = `
         <h4 class="excel-title">${title}</h4>
         <table class="excel-table">
@@ -36,12 +45,13 @@ function renderRanking(targetId, title, industries, ranking, dates, key) {
                 <tr>
                     <th>Industry</th>
                     <th>Sparkline</th>
-                    ${dates.map(d => `<th>${formatDate(d)}</th>`).join("")}
+                    ${visibleDates.map(d => `<th>${formatDate(d)}</th>`).join("")}
                 </tr>
             </thead>
             <tbody>
                 ${Object.keys(industries).map(ind => {
-                    const series = ranking[ind][`${key}_rank_series`];
+                    const fullSeries = ranking[ind][`${key}_rank_series`];
+                    const series = fullSeries.slice(-25);   // <<< HIER
 
                     return `
                         <tr>
@@ -65,15 +75,17 @@ function renderRanking(targetId, title, industries, ranking, dates, key) {
 
     setTimeout(() => {
         Object.keys(industries).forEach(ind => {
-            const series = ranking[ind][`${key}_rank_series`];
-            const canvas = document.getElementById(`spark-rank-ind-${ind}-${key}`);
+            const fullSeries = ranking[ind][`${key}_rank_series`];
+            const series = fullSeries.slice(-25);   // <<< UND HIER
 
+            const canvas = document.getElementById(`spark-rank-ind-${ind}-${key}`);
             if (!canvas || !series) return;
 
             renderSparklineRanking(canvas, series, rankIndustryColors);
         });
     }, 0);
 }
+
 
 function formatDate(d) {
     const date = new Date(d);

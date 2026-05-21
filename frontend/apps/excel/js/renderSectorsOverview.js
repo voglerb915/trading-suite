@@ -1,7 +1,8 @@
-import { renderSectorTile } from "./renderSectorTile.js";
+import { renderSectorTile } from "./renderSectorsTile.js";
+import { renderIndustriesTile } from "./renderIndustriesTile.js";
 import { calculateRanking } from "../../../shared/logic/calculateRanking.js";
 
-export function renderSectorsOverview(targetId, sectors) {
+export function renderSectorsOverview(targetId, sectors, industriesData) {
     const container = document.getElementById(targetId);
     container.innerHTML = "";
 
@@ -20,10 +21,11 @@ export function renderSectorsOverview(targetId, sectors) {
         gridWrapper.appendChild(tile);
     });
 
-    // 4) Die leere 12. Kachel als unsichtbarer Platzhalter für die Symmetrie
-    const placeholderTile = document.createElement("div");
-    placeholderTile.className = "sector-tile placeholder";
-    gridWrapper.appendChild(placeholderTile);
+    // 4) Industries-Kachel einbauen
+    
+    const industriesTile = renderIndustriesTile(industriesData);
+    gridWrapper.appendChild(industriesTile);
+
 
     // 5) Erst jetzt hängen wir den kompletten Wrapper in den echten Tab-Container
     container.appendChild(gridWrapper);

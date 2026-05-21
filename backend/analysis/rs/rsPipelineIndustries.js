@@ -1,7 +1,6 @@
 // analysis/rs/rsPipelineIndustries.js
 const { sql, config } = require('../../db/connection');
 const { calculateRsScoreWoNFromDb } = require('./rsScoreWoNFromDb');
-const { getRankingDiffs } = require('./rsRankingHistory');
 
 async function buildIndustryRsSnapshot() {
   await sql.connect(config);
@@ -78,16 +77,7 @@ async function buildIndustryRsSnapshot() {
   // ⭐ 4) Ranking nach RS-Score
   industries.sort((a, b) => b.score - a.score);
   industries.forEach((ind, i) => ind.rankWonDb = i + 1);
-
-  // ⭐ 5) Deltas holen
-  const diffs = getRankingDiffs(industries, 'industry');
-
-  industries = industries.map(ind => ({
-    ...ind,
-    ...(diffs[ind.name] || {}),
-    diffQ: diffs[ind.name]?.diffQ ?? 0   // ⭐ UI erwartet diffQ
-  }));
-
+  
   return industries;
 }
 
