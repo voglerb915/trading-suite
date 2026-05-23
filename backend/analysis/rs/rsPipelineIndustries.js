@@ -7,8 +7,9 @@ async function buildIndustryRsSnapshot() {
 
   // ⭐ 1) Sector-Mapping laden (aus finviz_stocks)
   const stocks = await sql.query(`
-    SELECT sector, industry
+    SELECT DISTINCT sector, industry
     FROM trading.dbo.finviz
+    WHERE anl_datum = (SELECT MAX(anl_datum) FROM trading.dbo.finviz)
   `);
 
   const sectorMap = {};

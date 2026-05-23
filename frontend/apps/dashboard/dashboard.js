@@ -23,6 +23,7 @@ async function loadDashboardData() {
         dashboardState.sectors = await fetch("/api/sectors/won-db").then(r => r.json());
         dashboardState.industries = await fetch("/api/industries/won-db").then(r => r.json());
         dashboardState.stocks = await fetch("/api/stocks/won-db").then(r => r.json());
+        dashboardState.etfs = await fetch("/api/etfs/won-db").then(r => r.json());
     } catch (err) {
         console.error("Fehler beim Laden der Dashboard-Daten:", err);
     }

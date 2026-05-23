@@ -34,15 +34,15 @@ export function renderIndustriesList(industries, state) {
 
                 <div class="grid-cell count-cell">[${count}]</div>
 
-                <div class="grid-cell" style="color:${getDiffColor(item.diffW)};">
+                <div class="grid-cell" style="color:${getDiffColor(item.diffD)};">
                     ${formatDiff(item.diffD)}
                 </div>
 
-                <div class="grid-cell" style="color:${getDiffColor(item.diffM)};">
+                <div class="grid-cell" style="color:${getDiffColor(item.diffW)};">
                     ${formatDiff(item.diffW)}
                 </div>
 
-                <div class="grid-cell" style="color:${getDiffColor(item.diffQ)};">
+                <div class="grid-cell" style="color:${getDiffColor(item.diffM)};">
                     ${formatDiff(item.diffM)}
                 </div>
             </div>

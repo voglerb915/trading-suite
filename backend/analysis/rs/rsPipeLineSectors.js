@@ -7,15 +7,6 @@ async function buildSectorRsSnapshot() {
 
   // ⭐ 1) Neueste Sector-Daten holen
   const result = await sql.query(`
-    WITH latest AS (
-        SELECT *,
-            ROW_NUMBER() OVER (
-                PARTITION BY name 
-                ORDER BY anl_datum DESC
-            ) AS rn
-        FROM trading.dbo.finviz_groups
-        WHERE [group] = 'sector'
-    )
     SELECT 
       [name],
       [perf_week],
@@ -25,9 +16,11 @@ async function buildSectorRsSnapshot() {
       [perf_year],
       [change],
       [anl_datum]
-    FROM latest
-    WHERE rn = 1
+    FROM trading.dbo.finviz_groups
+    WHERE [group] = 'sector'
+      AND anl_datum = (SELECT MAX(anl_datum) FROM trading.dbo.finviz_groups)
   `);
+
 
   // ⭐ 2) Snapshot-Objekte erzeugen
   let sectors = result.recordset.map(row => {

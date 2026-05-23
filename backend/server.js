@@ -51,6 +51,7 @@ app.use('/api/short-strategy-1', require('./routes/shortStrategy1'));
 app.use('/api/sectors', require('./routes/sectors'));
 app.use('/api/industries', require('./routes/industries'));
 app.use('/api/stocks', require('./routes/stocks'));
+app.use("/api/etfs", require("./routes/etfs"));
 app.use("/api/checks", require("./routes/checks"));
 app.use("/api/downloads", require("./routes/download_stream_indexes"));
 app.use("/api/downloads", require("./routes/download_stream_stocks"));

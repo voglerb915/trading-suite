@@ -326,17 +326,6 @@ body {
   background-color: #f9f9f9;
 }
 
-.sector-tech { border-left: 6px solid #4A90E2; }
-.sector-healthcare { border-left: 6px solid #D0021B; }
-.sector-financial { border-left: 6px solid #7ED321; }
-.sector-industrials { border-left: 6px solid #F5A623; }
-.sector-consumer-cyclical { border-left: 6px solid #9013FE; }
-.sector-consumer-defensive { border-left: 6px solid #F8E71C; }
-.sector-energy { border-left: 6px solid #8B572A; }
-.sector-basic-materials { border-left: 6px solid #50E3C2; }
-.sector-utilities { border-left: 6px solid #9B9B9B; }
-.sector-real-estate { border-left: 6px solid #FF6F61; }
-.sector-communication { border-left: 6px solid #B565A7; }
 
 /* ---------------------------------------------------------
    Highlights (Sehr dezentes Hellgrau)

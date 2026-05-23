@@ -1,0 +1,62 @@
+/* ---------------------------------------------------------
+   Sector Colors – zentrale Farblogik für alle Renderer
+   ---------------------------------------------------------
+   Diese Datei definiert ausschließlich die Farben für
+   Sektoren. Sie wird von allen Renderern (Stocks, Sectors,
+   Industries) genutzt und kann 1:1 in Excel übernommen werden.
+--------------------------------------------------------- */
+
+/* Technology */
+.sector-tech {
+  border-left: 6px solid #4A90E2;
+}
+
+/* Healthcare */
+.sector-healthcare {
+  border-left: 6px solid #D0021B;
+}
+
+/* Financial */
+.sector-financial {
+  border-left: 6px solid #7ED321;
+}
+
+/* Industrials */
+.sector-industrials {
+  border-left: 6px solid #F5A623;
+}
+
+/* Consumer Cyclical */
+.sector-consumer-cyclical {
+  border-left: 6px solid #9013FE;
+}
+
+/* Consumer Defensive */
+.sector-consumer-defensive {
+  border-left: 6px solid #F8E71C;
+}
+
+/* Energy */
+.sector-energy {
+  border-left: 6px solid #8B572A;
+}
+
+/* Basic Materials */
+.sector-basic-materials {
+  border-left: 6px solid #50E3C2;
+}
+
+/* Utilities */
+.sector-utilities {
+  border-left: 6px solid #9B9B9B;
+}
+
+/* Real Estate */
+.sector-real-estate {
+  border-left: 6px solid #FF6F61;
+}
+
+/* Communication Services */
+.sector-communication {
+  border-left: 6px solid #B565A7;
+}

@@ -97,7 +97,7 @@ function renderTop20(targetId, title, industries, ranking, dates, key) {
             <thead>
                 <tr>
                     <th>Rank</th>
-                    <th>Δ −1D</th>
+                    <th>−1D</th>
                     <th>Sparkline</th>
                     <th>Industry</th>
                     <th>Sector</th>

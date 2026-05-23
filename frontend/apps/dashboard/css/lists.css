@@ -1,0 +1,332 @@
+/* =========================================================
+   LISTEN-STYLES (Stocks, Industries, Sectors, ETFs, Signals)
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   STOCK ITEM (alte einfache Liste)
+--------------------------------------------------------- */
+.stock-item {
+  padding: 6px 10px;
+  margin: 4px 0;
+  background-color: #ffffff;
+  border-radius: 4px;
+  list-style: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.stock-item:hover {
+  background-color: #f9f9f9;
+}
+
+/* ---------------------------------------------------------
+   HIGHLIGHTS (Ticker, Industry, Sector)
+--------------------------------------------------------- */
+.highlight-ticker, 
+.highlight-industry, 
+.highlight-sector { 
+  background-color: #f2f2f2 !important; 
+  font-weight: bold; 
+  border-radius: 4px;
+  outline: 1px solid #e8e8e8;
+}
+
+.highlight-sector .grid-cell,
+.highlight-industry .grid-cell-industry {
+    background-color: #f2f2f2 !important;
+}
+
+.highlight-ticker td {
+    background-color: transparent !important;
+}
+
+/* =========================================================
+   SECTORS LIST
+   ========================================================= */
+
+.grid-table {
+  display: grid;
+  grid-template-columns: 1fr 56px 32px 32px 32px;
+  row-gap: 6px;
+}
+
+.grid-row-sector {
+  display: contents;
+  font-size: 0.95em;
+}
+
+.grid-cell {
+  padding: 8px 0;
+}
+
+.grid-cell:first-child {
+  padding-left: 10px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grid-cell:nth-child(n+2) {
+  text-align: right;
+  font-weight: bold;
+}
+
+.grid-cell.count-cell {
+  font-weight: normal;
+  color: #000;
+  opacity: 1;
+  padding-right: 6px;
+}
+
+/* =========================================================
+   INDUSTRIES LIST
+   ========================================================= */
+
+.grid-table-industries {
+    display: grid;
+    grid-template-columns: 1fr 56px 32px 32px 32px;
+    row-gap: 6px;
+}
+
+.grid-row-industry {
+    display: contents;
+    font-size: 0.95em;
+}
+
+.grid-cell-industry {
+    padding: 6px 0;
+}
+
+.grid-cell-industry:first-child {
+    padding-left: 10px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.grid-cell-industry:nth-child(n+2) {
+    text-align: right;
+    font-weight: bold;
+}
+
+.grid-cell-industry.count-cell {
+    font-weight: normal !important;
+    color: #000;
+    opacity: 1;
+    padding-right: 6px;
+}
+
+/* =========================================================
+   STOCKS LIST – Linker Abstand wie Sectors/Industries
+   ========================================================= */
+#stocks-list {
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.stock-row-inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    width: 100%;
+}
+
+.stock-left {
+    text-align: left;
+}
+
+.stock-right {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #444;
+}
+
+.stock-sub {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+/* =========================================================
+   SIGNALS LIST (Tab 1)
+   ========================================================= */
+
+.signal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.signal-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ticker-line {
+    font-size: 14px;
+    font-weight: 700;
+    color: #000;
+    display: flex;
+    align-items: center;
+}
+
+.origin-label {
+    font-size: 11px;
+    color: #888;
+    margin-left: 8px;
+    font-weight: 400;
+}
+
+.details-line {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    color: #777;
+    line-height: 1.4;
+}
+
+.btn-delete-active {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.btn-delete-active:hover {
+    transform: scale(1.2);
+}
+
+.btn-delete-disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.signal-visual-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.phase-badge {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 11px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.phase-badge.active-phase {
+    background-color: #1976d2 !important;
+    color: white !important;
+    border-color: #0d47a1 !important;
+}
+
+.signal-visual {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    min-width: 30px;
+    justify-content: flex-end;
+}
+
+.bar {
+    width: 4px;
+    background-color: #e0e0e0;
+}
+
+.bar-1 { height: 18px; }
+.bar-2 { height: 14px; }
+.bar-3 { height: 11px; }
+.bar-4 { height: 8px; }
+.bar-5 { height: 5px; }
+
+.bg-green  { background-color: #28a745 !important; }
+.bg-red    { background-color: #dc3545 !important; }
+.bg-orange { background-color: #fd7e14 !important; }
+.bg-yellow { background-color: #ffc107 !important; color: #000 !important; }
+
+.note-btn {
+    margin-left: 8px;
+    font-size: 0.85rem;
+    transition: transform 0.2s;
+}
+
+.note-btn:hover {
+    transform: scale(1.2);
+}
+
+.note-active {
+    color: #f39c12 !important;
+}
+
+.note-empty {
+    color: #ccc !important;
+}
+
+/* =========================================================
+   ETFs LIST (Tab 5) – rechte Spalte exakt wie Stocks
+   ========================================================= */
+
+.etf-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    width: 100%;
+    padding: 6px 10px;
+    margin: 4px 0;
+    background-color: #ffffff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.etf-row:hover {
+    background-color: #f9f9f9;
+}
+
+.etf-left {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ticker wie Stocks */
+.etf-ticker {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #000;
+}
+
+/* Name wie .stock-sub */
+.etf-name {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 2px;
+    font-weight: 400;
+}
+
+/* Rechte Spalte 1:1 wie .stock-right */
+.etf-right {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #444;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Rank & Score exakt wie Stocks */
+.etf-rank,
+.etf-score {
+    font-size: 0.85rem;
+    font-weight: normal;
+    font-family: inherit;      /* kein Monospace mehr */
+    line-height: 1.3;
+}
