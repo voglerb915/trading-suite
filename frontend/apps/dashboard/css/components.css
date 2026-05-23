@@ -201,3 +201,52 @@
     color: white !important;
     border-color: #0d47a1 !important;
 }
+
+/* ---------------------------------------------------------
+   BREADCRUMBS (Navigation)
+--------------------------------------------------------- */
+
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #ddd;
+    gap: 4px;
+}
+
+.bc-link {
+    cursor: pointer;
+    color: #000;
+    transition: color 0.15s ease;
+}
+
+.bc-link:hover {
+    color: #333;
+    text-decoration: underline;
+}
+
+
+.bc-sep {
+    margin: 0 4px;
+    color: #999;
+}
+
+.bc-item {
+    color: #eee;
+    font-weight: 500;
+}
+
+/* ---------------------------------------------------------
+   ACTIVE MARKER (schwarzes Dreieck)
+--------------------------------------------------------- */
+
+.triangle-cell {
+    width: auto;
+    padding-right: 4px; /* optional */
+}
+
+.triangle {
+    font-size: 1.1rem;
+    color: #000;
+    display: inline-block;
+}

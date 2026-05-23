@@ -25,16 +25,24 @@
 
         <a href="#" data-tool="control">Control-Center</a>
     </nav>
-
 </header>
 
 <main id="content">
 
+    <!-- ⭐ NATIVES COCKPIT-UI -->
     <div id="cockpit-ui" class="tool-view">
         <div id="cockpit-grid">
-            </div>
+
+            <!-- ⭐ Cockpit Widgets -->
+            <div id="cockpit-header"></div>
+            <div id="cockpit-top20"></div>
+            <div id="cockpit-index-performance"></div>
+            <div id="cockpit-sectors"></div>
+
+        </div>
     </div>
 
+    <!-- ⭐ IFRAME-TOOLS -->
     <iframe id="iframe-lab" src="/apps/lab/index.html" class="tool-iframe"></iframe>
     <iframe id="iframe-dashboard" src="http://localhost:3000" class="tool-iframe active"></iframe>
     <iframe id="iframe-new-dashboard" src="/apps/dashboard/index.html" class="tool-iframe"></iframe>
@@ -48,7 +56,11 @@
 
 </main>
 
-<script type="module" src="/apps/cockpit/js/cockpit.js"></script>
+<!-- ⭐ WICHTIG: Cockpit-Controller -->
+<script type="module" src="/apps/cockpit/cockpit.js"></script>
+
+<!-- ⭐ NEU: Cockpit-Renderer -->
+<script type="module" src="/apps/cockpit/js/renderCockpit.js"></script>
 
 </body>
 </html>

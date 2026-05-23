@@ -26,10 +26,10 @@ export function renderIndustriesList(industries, state) {
 
         return `
             <div class="grid-row-sector stock-item ${isSelected ? "highlight-sector" : ""}"
-                 onclick="handleIndustryClick('${item.name}')">
+                onclick="handleIndustryClick('${item.name}', '${item.sector}')">
 
                 <div class="grid-cell ${getSectorClass(item.sector)}">
-                    <strong>${item.rankWonDb || "—"}.</strong> ${item.name} (${score})
+                    ${isSelected ? '▶ ' : ''}<strong>${item.rankWonDb || '—'}.</strong> ${item.name} (${score})
                 </div>
 
                 <div class="grid-cell count-cell">[${count}]</div>

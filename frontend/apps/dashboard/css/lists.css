@@ -133,8 +133,10 @@
     width: 100%;
 }
 
-.stock-left {
-    text-align: left;
+/* Schriftgröße für Ticker in der Stocks-Liste */
+.stock-left strong {
+    font-size: 0.9rem;   /* oder 0.9rem, 0.85rem – wie du willst */
+    font-weight: 700;
 }
 
 .stock-right {

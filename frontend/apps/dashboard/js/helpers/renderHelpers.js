@@ -1,5 +1,23 @@
+// frontend/apps/dashboard/js/helpers/renderHelpers.js
+
 import { sectorClasses } from "../../../../shared/logic/sectorColors.js";
 
+import {
+  handleSectorSelection,
+  handleIndustrySelection,
+  handleStockSelection
+} from "../../../../shared/logic/selectionHandlers.js";
+
+import { renderDashboard } from "../structure/renderDashboard.js";
+
+// ⭐ FEHLENDE IMPORTS (entscheidend!)
+import { renderDashboardHeaderLeft } from "../header/renderDashboardHeaderLeft.js";
+import { renderDashboardHeaderCenter } from "../header/renderDashboardHeaderCenter.js";
+import { renderDashboardHeaderRight } from "../header/renderDashboardHeaderRight.js";
+
+// ---------------------------------------------------------
+//  UI Helper
+// ---------------------------------------------------------
 export function getSectorClass(name) {
   return sectorClasses[name] ?? "sector-default";
 }
@@ -20,7 +38,76 @@ export function formatDiff(value) {
   return "0";
 }
 
-export function handleSectorClick(name) {
-  const event = new CustomEvent("dashboard:sectorClick", { detail: name });
-  document.dispatchEvent(event);
+
+// ---------------------------------------------------------
+//  CLICK HANDLER: SECTOR
+// ---------------------------------------------------------
+export function handleSectorClick(sectorName) {
+  const currentState = window.dashboardState;
+  const newState = handleSectorSelection(currentState, sectorName);
+
+  // ⭐ Breadcrumbs setzen
+  newState.breadcrumbs = newState.sector ?? "Alle Sektoren";
+
+  window.dashboardState = newState;
+  renderDashboard(newState);
 }
+
+// ---------------------------------------------------------
+//  CLICK HANDLER: INDUSTRY
+// ---------------------------------------------------------
+export function handleIndustryClick(industryName, sectorName) {
+  const currentState = window.dashboardState;
+  const newState = handleIndustrySelection(currentState, industryName, sectorName);
+
+  // ⭐ Breadcrumbs setzen
+  if (!newState.sector) {
+    newState.breadcrumbs = "Alle Sektoren";
+  } else if (!newState.industry) {
+    newState.breadcrumbs = newState.sector;
+  } else {
+    newState.breadcrumbs = `${newState.sector} › ${newState.industry}`;
+  }
+
+  window.dashboardState = newState;
+  renderDashboard(newState);
+}
+
+// ---------------------------------------------------------
+//  CLICK HANDLER: STOCK
+// ---------------------------------------------------------
+export function handleStockClick(ticker, industry, sector) {
+  const currentState = window.dashboardState;
+
+  // 1) Vollständiges Stock-Objekt finden
+  const item = currentState.stocks?.find(s => s.ticker === ticker);
+
+  // Wenn nicht gefunden → Klick abbrechen
+  if (!item) {
+    console.warn("Stock not found:", ticker);
+    return;
+  }
+
+  // 2) referenceStock setzen
+  currentState.referenceStock = item;
+
+  // 3) State aktualisieren
+  const newState = handleStockSelection(currentState, { ticker, industry, sector });
+
+  // 4) Breadcrumbs setzen
+  newState.breadcrumbs = `${newState.sector} › ${newState.industry} › ${newState.ticker}`;
+
+  // 5) State speichern
+  window.dashboardState = newState;
+
+  // 6) HeaderLeft aktualisieren
+  renderDashboardHeaderLeft(newState);
+
+  // 7) Dashboard neu rendern
+  renderDashboard(newState);
+}
+
+// --- GLOBAL BINDINGS FÜR INLINE ONCLICK ---
+window.handleSectorClick = handleSectorClick;
+window.handleIndustryClick = handleIndustryClick;
+window.handleStockClick = handleStockClick;
