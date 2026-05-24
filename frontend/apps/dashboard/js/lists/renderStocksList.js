@@ -12,6 +12,15 @@ export function renderStocksList(stocks, state) {
 
         const sectorClass = sectorClasses[item.sector] ?? "";
 
+        // 🔥 Robuste Fallback-Logik:
+        // Wenn keine Strategy aktiv ODER kein StrategyValue vorhanden → Score anzeigen
+        const hasStrategy = state?.strategy && state.strategy !== "none";
+        const hasStrategyValue = item.strategyValue !== undefined && item.strategyValue !== null;
+
+        const displayScore = (hasStrategy && hasStrategyValue)
+            ? `<strong>${item.strategyValue}</strong>`
+            : (item.score ?? 0).toFixed(2);
+
         return `
             <li class="stock-item ${sectorClass} ${isSelected ? 'highlight-ticker' : ''}"
                 onclick="handleStockClick('${item.ticker}', '${item.industry}', '${item.sector}')">
@@ -26,8 +35,8 @@ export function renderStocksList(stocks, state) {
                     </div>
 
                     <div class="stock-right">
-                        Rank: ${item.rankWonDb ?? '—'}<br>
-                        Score: ${(item.score ?? 0).toFixed(2)}
+                        Score: ${displayScore}<br>
+                        Rank: ${item.rankWonDb ?? '—'}
                     </div>
 
                 </div>

@@ -1,5 +1,3 @@
-// apps/dashboard/js/dashboard.js
-
 // ⭐ GLOBALER STATE INITIAL
 window.dashboardState = {
     sectors: [],
@@ -10,7 +8,8 @@ window.dashboardState = {
     industry: null,
     ticker: null,
     referenceStock: null,
-    breadcrumbs: "Alle Sektoren"
+    breadcrumbs: "Alle Sektoren",
+    strategy: "none"
 };
 
 
@@ -28,7 +27,11 @@ async function loadDashboardData() {
     try {
         window.dashboardState.sectors    = await fetch("/api/sectors/won-db").then(r => r.json());
         window.dashboardState.industries = await fetch("/api/industries/won-db").then(r => r.json());
-        window.dashboardState.stocks     = await fetch("/api/stocks/won-db").then(r => r.json());
+
+        // Strategy wird hier korrekt an die API gesendet
+        window.dashboardState.stocks = await fetch(`/api/stocks/won-db?strategy=${window.dashboardState.strategy}`)
+            .then(r => r.json());
+
         window.dashboardState.etfs       = await fetch("/api/etfs/won-db").then(r => r.json());
     } catch (err) {
         console.error("Fehler beim Laden der Dashboard-Daten:", err);
@@ -73,6 +76,19 @@ document.addEventListener("click", (e) => {
     if (!ticker) return;
 
     handleStockClick(ticker);
+});
+
+
+// ⭐ Strategy-Wechsel (GLOBAL, KORREKT)
+document.addEventListener("dashboard:strategyChange", (e) => {
+    console.log("Dashboard received strategy:", e.detail);
+
+    window.dashboardState.strategy = e.detail;
+
+    loadDashboardData().then(() => {
+        renderHeader(window.dashboardState);
+        renderDashboard(window.dashboardState);
+    });
 });
 
 

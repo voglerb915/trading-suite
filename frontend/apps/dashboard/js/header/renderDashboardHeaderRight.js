@@ -10,7 +10,7 @@ export function renderDashboardHeaderRight(state) {
                 <label for="strategy-select">Strategy:</label>
                 <select id="strategy-select">
                     <option value="none">none</option>
-                    <option value="high52">52-week High</option>
+                    <option value="52wHigh">52-week High</option>
                     <option value="insideday52w">Inside Day @ 52W-High</option>
                     <option value="nearhigh52">Max. 5% below High</option>
                     <option value="stage3topping">Stage3 to Stage4</option>
@@ -37,10 +37,10 @@ export function renderDashboardHeaderRight(state) {
         </div>
     `;
 
-    // -----------------------------------------
-    // EVENTS (werden später erweitert)
-    // -----------------------------------------
+    // ⭐ HIER: Dropdown auf aktuellen State setzen
+    document.getElementById("strategy-select").value = state.strategy;
 
+    // Events
     document.getElementById("strategy-select").addEventListener("change", (e) => {
         document.dispatchEvent(new CustomEvent("dashboard:strategyChange", {
             detail: e.target.value
@@ -62,3 +62,4 @@ export function renderDashboardHeaderRight(state) {
         }
     });
 }
+
