@@ -1,11 +1,10 @@
-// analysis/rs/rsPipelineSectors.js
 const { sql, config } = require('../../db/connection');
 const { calculateRsScoreWoNFromDb } = require('./rsScoreWoNFromDb');
 
 async function buildSectorRsSnapshot() {
   await sql.connect(config);
 
-  // ⭐ 1) Neueste Sector-Daten holen
+  // ⭐ Neu: neuestes Datum NUR für Sectors holen
   const result = await sql.query(`
     SELECT 
       [name],
@@ -18,11 +17,13 @@ async function buildSectorRsSnapshot() {
       [anl_datum]
     FROM trading.dbo.finviz_groups
     WHERE [group] = 'sector'
-      AND anl_datum = (SELECT MAX(anl_datum) FROM trading.dbo.finviz_groups)
+      AND anl_datum = (
+        SELECT MAX(anl_datum)
+        FROM trading.dbo.finviz_groups
+        WHERE [group] = 'sector'
+      )
   `);
 
-
-  // ⭐ 2) Snapshot-Objekte erzeugen
   let sectors = result.recordset.map(row => {
     const rs = calculateRsScoreWoNFromDb(row);
 
@@ -30,8 +31,10 @@ async function buildSectorRsSnapshot() {
       name: row.name,
       score: rs.score,
 
-      // wird später gesetzt
       rankWonDb: 0,
+
+      // ⭐ diffD neu
+      diffD: 0,
       diffW: 0,
       diffM: 0,
       diffQ: 0,
@@ -53,12 +56,11 @@ async function buildSectorRsSnapshot() {
     };
   });
 
-  // ⭐ 3) Ranking nach RS-Score
+  // Ranking
   sectors.sort((a, b) => b.score - a.score);
   sectors.forEach((sec, i) => sec.rankWonDb = i + 1);
 
   return sectors;
-
 }
 
 module.exports = { buildSectorRsSnapshot };

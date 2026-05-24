@@ -62,6 +62,7 @@ app.use("/api/system", systemStatusRoutes);
 app.use('/api/rs', require('./routes/rs/sectorsRsWriter'));
 app.use('/api/rs', require('./routes/rs/industriesRsWriter'));
 app.use('/api/rs', require('./routes/rs/stocksRsWriter'));
+//app.use('/api/market-scores', require('./routes/marketScores'));
 app.use('/api/excel', require('./routes/excel/rawData'));
 
 // ---------------------------------------------

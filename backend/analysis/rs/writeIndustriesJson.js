@@ -107,6 +107,53 @@ async function writeIndustriesJson() {
   const historyFiles = loadHistoryFiles();
   const industriesWithDiffs = computeDiffs(industries, historyFiles);
 
+  // ---------------------------------------------------------
+  // marketScores: Insert Industries into DB
+  // ---------------------------------------------------------
+  const { sql, config } = require('../../db/connection');
+  const pool = await sql.connect(config);
+
+  const insertSql = `
+      INSERT INTO trading.dbo.marketScores (
+          type,
+          name,
+          score,
+          rank_db,
+          diffD,
+          diffW,
+          diffM,
+          diffQ,
+          anl_datum
+      )
+      VALUES (
+          @type,
+          @name,
+          @score,
+          @rank_db,
+          @diffD,
+          @diffW,
+          @diffM,
+          @diffQ,
+          @anl_datum
+      )
+  `;
+
+  for (const item of industriesWithDiffs) {
+      await pool.request()
+          .input('type', sql.VarChar, 'industry')
+          .input('name', sql.VarChar, item.name)
+          .input('score', sql.Float, item.score)
+          .input('rank_db', sql.Int, item.rankWonDb)
+          .input('diffD', sql.Int, item.diffD)
+          .input('diffW', sql.Int, item.diffW)
+          .input('diffM', sql.Int, item.diffM)
+          .input('diffQ', sql.Int, item.diffQ)
+          .input('anl_datum', sql.DateTime, item.anl_datum)
+          .query(insertSql);
+  }
+
+  console.log(`📥 marketScores: ${industriesWithDiffs.length} Industry‑Einträge gespeichert`);
+
   // 3) Snapshot MIT Diffs
   fs.writeFileSync(snapshotFile, JSON.stringify(industriesWithDiffs, null, 2));
 

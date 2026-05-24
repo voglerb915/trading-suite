@@ -1,4 +1,3 @@
-// analysis/rs/writeSectorsJson.js
 const fs = require('fs');
 const path = require('path');
 const { buildSectorRsSnapshot } = require('./rsPipelineSectors');
@@ -44,8 +43,8 @@ function buildRankMap(snapshot) {
 function computeDiffs(current, historyFiles) {
   const today = normalizeDate(current[0].anl_datum);
 
-  // ❗ KEIN DAY MEHR
   const steps = {
+    diffD: 1,
     diffW: 5,
     diffM: 21,
     diffQ: 63
@@ -53,6 +52,7 @@ function computeDiffs(current, historyFiles) {
 
   const result = current.map(sec => ({
     ...sec,
+    diffD: null,
     diffW: null,
     diffM: null,
     diffQ: null
@@ -98,17 +98,62 @@ async function writeSectorsJson() {
 
   const historyFile = path.join(historyDir, `${latestDate}_sectors.json`);
 
-  // 1) Roh-Snapshot (ohne Diffs) als History speichern
+  // Roh-Snapshot speichern
   fs.writeFileSync(historyFile, JSON.stringify(sectors, null, 2));
 
-  // 2) History laden und Diffs berechnen
+  // Diffs berechnen
   const historyFiles = loadHistoryFiles();
   const sectorsWithDiffs = computeDiffs(sectors, historyFiles);
+  // ---------------------------------------------------------
+  // marketScores Insert
+  // ---------------------------------------------------------
+  const { sql, config } = require('../../db/connection');
+  const pool = await sql.connect(config);
 
-  // 3) Snapshot MIT Diffs schreiben
+  const insertSql = `
+      INSERT INTO trading.dbo.marketScores (
+          type,
+          name,
+          score,
+          rank_db,
+          diffD,
+          diffW,
+          diffM,
+          diffQ,
+          anl_datum
+      )
+      VALUES (
+          @type,
+          @name,
+          @score,
+          @rank_db,
+          @diffD,
+          @diffW,
+          @diffM,
+          @diffQ,
+          @anl_datum
+      )
+  `;
+
+  for (const item of sectorsWithDiffs) {
+      await pool.request()
+          .input('type', sql.VarChar, 'sector')
+          .input('name', sql.VarChar, item.name)
+          .input('score', sql.Float, item.score)
+          .input('rank_db', sql.Int, item.rankWonDb)
+          .input('diffD', sql.Int, item.diffD)
+          .input('diffW', sql.Int, item.diffW)
+          .input('diffM', sql.Int, item.diffM)
+          .input('diffQ', sql.Int, item.diffQ)
+          .input('anl_datum', sql.DateTime, item.anl_datum)
+          .query(insertSql);
+  }
+
+  console.log(`📥 marketScores: ${sectorsWithDiffs.length} Sector‑Einträge gespeichert`);
+
+
+  // Snapshot + History schreiben
   fs.writeFileSync(snapshotFile, JSON.stringify(sectorsWithDiffs, null, 2));
-
-  // 4) History ebenfalls MIT Diffs überschreiben
   fs.writeFileSync(historyFile, JSON.stringify(sectorsWithDiffs, null, 2));
 
   console.log(`✅ RS Sectors Snapshot + History geschrieben (${sectors.length} Einträge, Datum ${latestDate})`);

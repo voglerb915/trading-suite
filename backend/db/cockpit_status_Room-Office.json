@@ -17,20 +17,20 @@
   "calculations": {
     "RS_Sectors": {
       "status": "success",
-      "lastRun": "2026-05-22T21:43:24.855Z",
-      "duration": "0.41s",
-      "error": "Cannot read properties of undefined (reading 'length')"
+      "lastRun": "2026-05-24T17:24:48.850Z",
+      "duration": "1.72s",
+      "error": "sql.request is not a function"
     },
     "RS_Industries": {
       "status": "success",
-      "lastRun": "2026-05-22T21:43:26.514Z",
-      "duration": "0.36s",
-      "error": "getRankingDiffs is not defined"
+      "lastRun": "2026-05-24T18:26:47.831Z",
+      "duration": "2.01s",
+      "error": "Invalid column name 'sector'."
     },
     "RS_Stocks": {
       "status": "success",
-      "lastRun": "2026-05-23T14:34:45.169Z",
-      "duration": "3.70s",
+      "lastRun": "2026-05-24T18:33:35.172Z",
+      "duration": "13.24s",
       "error": "Timeout: Request failed to complete in 60000ms"
     }
   },

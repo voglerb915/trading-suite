@@ -18,8 +18,8 @@ async function buildStockRsSnapshot() {
     const rs = calculateRsScoreWoNFromDb(row);
 
     return {
-      ticker: row.ticker,      // <-- dazu
-      name: row.company,       // <-- echter Name aus SQL
+      ticker: row.ticker,
+      name: row.company,
       sector: row.sector,
       industry: row.industry,
       score: rs.score,
@@ -46,7 +46,6 @@ async function buildStockRsSnapshot() {
       anl_datum: row.anl_datum
     };
   });
-
 
   stocks.sort((a, b) => b.score - a.score);
   stocks.forEach((s, i) => s.rankWonDb = i + 1);
