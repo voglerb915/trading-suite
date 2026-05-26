@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { sql, yahooPool } = require("../db/connection");
+const { sql, yahooPool } = require("../../db/connection");
 
 // ------------------------------------------------------
 //  /api/indexhistory  →  liefert ALLE Indizes + bis zu 70 Tage History

@@ -83,7 +83,9 @@ export function renderCalculationsTable(state = {}) {
 
         promise.finally(() => {
             el.style.opacity = "1";
-            renderCalculationsTable(window.__persistedState.calculations);
+            // 🟢 Gesetzte Absicherung gegen das 'undefined'-Problem aus dem Absturz
+            const nextState = window.__persistedState?.calculations ?? state;
+            renderCalculationsTable(nextState);
         });
     };
 }
@@ -95,7 +97,8 @@ async function runShortStrategyAction() {
     const start = performance.now();
 
     try {
-        const res = await fetch("http://localhost:4000/api/short-strategy-1/update-short-strategy");
+        // 🟢 Pfad angepasst an server.js: app.use("/api/strategy/short-1", ...)
+        const res = await fetch("http://localhost:4000/api/strategy/short-1/update-short-strategy");
         if (!res.ok) throw new Error(await res.text());
 
         await saveTileStatus("calculations", {
@@ -126,7 +129,8 @@ async function runMetricsAction() {
     const start = performance.now();
 
     try {
-        const res = await fetch("http://localhost:4000/api/calculations/update-metrics");
+        // 🟢 Pfad angepasst an server.js: app.use("/api/data/volume-metrics", ...)
+        const res = await fetch("http://localhost:4000/api/data/volume-metrics");
         if (!res.ok) throw new Error(await res.text());
 
         await saveTileStatus("calculations", {
@@ -182,7 +186,7 @@ async function runRsSectorsWriter() {
 }
 
 /* ============================================================
-   ACTION: RS Industries WRITER (Platzhalter)
+   ACTION: RS Industries WRITER
 ============================================================ */
 async function runRsIndustriesWriter() {
     const start = performance.now();
@@ -213,7 +217,7 @@ async function runRsIndustriesWriter() {
 }
 
 /* ============================================================
-   ACTION: RS Stocks WRITER (Platzhalter)
+   ACTION: RS Stocks WRITER
 ============================================================ */
 async function runRsStocksWriter() {
     const start = performance.now();

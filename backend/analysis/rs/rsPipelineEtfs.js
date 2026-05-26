@@ -18,12 +18,12 @@ async function buildEtfRsSnapshot() {
     const rs = calculateRsScoreWoNFromDb(row);
 
     return {
-      ticker: row.ticker,      // <-- dazu
-      name: row.company,       // <-- echter Name aus SQL
+      ticker: row.ticker,
+      company: row.company,      // 🟢 'company' statt 'name' für 1:1 Stock-Gleichheit
       sector: row.sector,
       industry: row.industry,
-      score: rs.score,
-      rankWonDb: 0,
+      rsScore: rs.score,         // 🟢 Gold-Standard: rsScore statt score
+      rsRank: 0,                 // 🟢 Gold-Standard: rsRank statt rankWonDb
 
       diffD: 0,
       diffW: 0,
@@ -47,8 +47,11 @@ async function buildEtfRsSnapshot() {
     };
   });
 
-  etfs.sort((a, b) => b.score - a.score);
-  etfs.forEach((e, i) => e.rankWonDb = i + 1);
+  // Nach rsScore sortieren
+  etfs.sort((a, b) => b.rsScore - a.rsScore);
+  
+  // 🟢 Den Rang im Wunschfeld rsRank vergeben
+  etfs.forEach((e, i) => e.rsRank = i + 1);
 
   return etfs;
 }

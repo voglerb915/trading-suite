@@ -3,8 +3,8 @@ import { formatDateTimeShort, updateTile, openLogModal } from "../logic.js";
 export async function runChecks() {
     console.log("Prüfungen gestartet...");
 
-    // 🟩 1. Prüfungen ausführen (DB lesen)
-    const res = await fetch("http://localhost:4000/api/checks/all");
+    // 🟩 1. Prüfungen ausführen (DB lesen) – Pfad an server.js angepasst
+    const res = await fetch("http://localhost:4000/api/system/checks/all");
 
     if (!res.ok) {
         openLogModal("Prüfungen – Fehler", await res.text());
@@ -53,17 +53,17 @@ export async function runChecks() {
     // 🟩 4. Gesamtstatus berechnen
     const overall = computeOverallCheckStatus(sections);
 
-    // 🟩 5. Status in die richtige Datei schreiben (automatisch per HOSTNAME)
-    await fetch("http://localhost:4000/api/cockpit/status/checks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            status: overall,
-            lastRun: new Date().toISOString(),
-            duration: json.duration ?? null,
-            sections
-        })
-    });
+    // 🟩 5. Status in die richtige Datei schreiben (Passend zur :tile Route)
+        await fetch("http://localhost:4000/api/system/cockpit/checks", { // 🟢 '/status' entfernt
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                status: overall,
+                lastRun: new Date().toISOString(),
+                duration: json.duration ?? null,
+                sections
+            })
+        });
 
     return { sections };
 }

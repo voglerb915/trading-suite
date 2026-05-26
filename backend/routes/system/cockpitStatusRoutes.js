@@ -4,12 +4,12 @@ const router = express.Router();
 const {
     readStatusFile,
     updateTileStatus
-} = require("../utils/cockpitStatus");
+} = require("../../utils/cockpitStatus");
 
 // ------------------------------------------------------
 // GET: gesamten Status liefern
 // ------------------------------------------------------
-router.get("/status", (req, res) => {
+router.get("/", (req, res) => {
     const raw = readStatusFile();
 
     const status = {
@@ -24,7 +24,7 @@ router.get("/status", (req, res) => {
 // ------------------------------------------------------
 // POST: Status einer Kachel aktualisieren
 // ------------------------------------------------------
-router.post("/status/:tile", (req, res) => {
+router.post("/:tile", (req, res) => {
     const tile = req.params.tile;
     const payload = req.body;
 

@@ -2,9 +2,9 @@ console.log("SSE ROUTE GELADEN");
 
 const express = require("express");
 const router = express.Router();
-const { sql, yahooPool } = require("../db/connection");
+const { sql, yahooPool } = require("../../db/connection");
 const axios = require("axios");
-const { readStatusFile, writeStatusFile } = require("../utils/cockpitStatus");
+const { readStatusFile, writeStatusFile } = require("../../utils/cockpitStatus");
 
 router.get("/stream", async (req, res) => {
     const startTime = Date.now();

@@ -7,27 +7,44 @@ import { renderActiveOrders } from "../lists/renderActiveOrders.js";
 import { renderEtfsList } from "../lists/renderEtfsList.js";
 
 export function renderDashboardTools(state) {
-    const content = document.getElementById("tools-tab-content");
-    const tabs = document.querySelectorAll(".tab-item");
+    const tabHeaders = document.querySelectorAll(".tab-header .tab-item");
+    const tabContent = document.getElementById("tools-tab-content");
 
-    if (!content || !tabs.length) return;
+    if (!tabHeaders || !tabContent) return;
 
-    // Default: Signals
-    let activeTab = "signals";
+    // Wir entfernen alte Listener (Cleanup), falls die Spalte neu rendert
+    tabHeaders.forEach(tab => {
+        // Neuen Klick-Listener registrieren
+        tab.onclick = function() {
+            // 1. Alle Tabs visuell deaktivieren
+            tabHeaders.forEach(t => t.classList.remove("active"));
+            
+            // 2. Geklickten Tab aktivieren
+            this.classList.add("active");
 
-    tabs.forEach(tab => {
-        tab.onclick = () => {
-            tabs.forEach(t => t.classList.remove("active"));
-            tab.classList.add("active");
+            // 3. Welcher Tab wurde geklickt?
+            const targetTab = this.getAttribute("data-tab");
 
-            activeTab = tab.dataset.tab;
-            renderActiveTab(activeTab, state, content);
+            // 4. Inhalts-Wechsel loggen & steuern
+            if (targetTab === "etfs") {
+                console.log("📊 Tab ETFs aktiv. Hole Daten aus dem Dashboard-State...");
+                
+                // 🟢 Hier rufen wir deine renderEtfsList auf und füttern sie mit den RAM-Daten
+                renderEtfsList(state.etfs || [], tabContent);
+            } else {
+                // Platzhalter für deine anderen Tabs (Signals, Watch, Open, Active)
+                tabContent.innerHTML = `<p>Inhalt für '${targetTab}' wird geladen...</p>`;
+            }
         };
     });
 
-    renderActiveTab(activeTab, state, content);
+    // 🟢 DOPPELBODEN: Falls beim kompletten Dashboard-Neu-Render der ETF-Tab 
+    // bereits als 'active' markiert ist, rendern wir die Daten direkt rein!
+    const activeTab = document.querySelector(".tab-header .tab-item.active");
+    if (activeTab && activeTab.getAttribute("data-tab") === "etfs") {
+        renderEtfsList(state.etfs || [], tabContent);
+    }
 }
-
 function renderActiveTab(tabName, state, content) {
     switch (tabName) {
         case "signals":
@@ -47,7 +64,7 @@ function renderActiveTab(tabName, state, content) {
             break;
 
         case "etfs":
-            renderEtfsList(state.etfs, content);
+            renderEtfsList(window.dataStore.etfs, content);
             break;
 
         default:

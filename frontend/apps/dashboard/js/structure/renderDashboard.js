@@ -29,17 +29,9 @@ export function renderDashboard(state) {
     // =====================================================
     // 3) STOCKS
     // =====================================================
-    let stocksFiltered = state.stocks;
-
-    if (state.sector) {
-        stocksFiltered = stocksFiltered.filter(s => s.sector === state.sector);
-    }
-
-    if (state.industry) {
-        stocksFiltered = stocksFiltered.filter(s => s.industry === state.industry);
-    }
-
-    renderDashboardStocks(stocksFiltered, state);
+    // ❗ WICHTIG: Keine Filter mehr im Dashboard!
+    // Cockpit liefert bereits gefilterte + sortierte Stocks.
+    renderDashboardStocks(state.stocks, state);
 
     // =====================================================
     // 4) TOOLS

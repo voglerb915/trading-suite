@@ -3,7 +3,7 @@ const router = express.Router();
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
-const { loadYahooStocks } = require("../services/downloads/loadYahooStocks");
+const { loadYahooStocks } = require("../../services/downloads/loadYahooStocks");
 
 // Pfad zur Host-basierten Status-Datei
 function getStatusFilePath() {

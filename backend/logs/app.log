@@ -2163,3 +2163,206 @@
 [2026-05-24T22:41:09.148Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
 [2026-05-24T23:04:15.969Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
 [2026-05-24T23:10:16.687Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T10:29:18.126Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T10:29:57.722Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T10:53:56.687Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T10:59:58.944Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T11:00:45.208Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T11:01:32.373Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T11:03:22.872Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T11:05:01.624Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T11:06:19.212Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T11:32:59.864Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T11:35:51.618Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T11:38:41.720Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T11:45:39.011Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T11:46:30.042Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T11:46:38.241Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T11:48:14.308Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T12:25:38.741Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T12:27:33.321Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T12:34:48.894Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T12:45:30.402Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T12:52:58.847Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T12:57:27.876Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T13:02:25.764Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T13:04:00.028Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T13:07:39.891Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T13:08:48.937Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T13:18:13.458Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T13:23:09.460Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T17:15:11.153Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid column name '52wHigh'.
+[2026-05-25T17:18:43.208Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid column name '52wHigh'.
+[2026-05-25T17:19:42.940Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid column name '52wHigh'.
+[2026-05-25T17:24:54.900Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid column name '52wHigh'.
+[2026-05-25T17:25:10.931Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid column name '52wHigh'.
+[2026-05-25T17:32:45.492Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid column name '52wHigh'.
+[2026-05-25T17:36:39.151Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid column name 'industry'.
+[2026-05-25T17:53:34.603Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T19:24:15.432Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T19:28:07.630Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T19:30:25.476Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T19:33:54.949Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T19:36:55.331Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T19:38:43.919Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T19:47:48.945Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T20:07:01.687Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T20:07:58.973Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T20:08:42.529Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T20:09:31.768Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T20:18:05.016Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T20:19:17.092Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T20:20:34.854Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T20:21:29.323Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T20:51:10.198Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T20:52:09.966Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T20:54:40.230Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T20:55:35.389Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T20:59:03.591Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T20:59:59.712Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T21:01:28.819Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T21:08:48.069Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T21:10:08.471Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid string length
+[2026-05-25T21:24:25.773Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T21:28:48.511Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T21:29:08.430Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T21:33:54.540Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T21:34:57.259Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T21:36:10.544Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T21:37:31.576Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T21:43:49.849Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T21:46:01.791Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T21:46:59.958Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T21:53:05.902Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T21:56:40.775Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Connection is closed.
+[2026-05-25T21:58:26.515Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid column name 'ticker'.
+[2026-05-25T22:01:04.816Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T22:11:12.598Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T22:12:48.760Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T22:13:26.944Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T22:14:05.939Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T22:14:14.374Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T22:14:58.017Z] [SERVER] [ERROR] GET /api/market/stocks → Failed to connect to 127.0.0.1:1433 in 15000ms
+[2026-05-25T22:26:08.836Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T22:27:32.534Z] [SERVER] [ERROR] GET /api/market/stocks → sql is not defined
+[2026-05-25T22:30:02.970Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T22:42:49.810Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T22:47:42.421Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T22:47:52.108Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T22:51:06.894Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T22:53:25.023Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T22:55:05.418Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T22:58:29.060Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T23:01:19.500Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T23:08:10.337Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T23:08:27.325Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T23:09:36.449Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T23:09:55.665Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T23:12:22.511Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T23:12:52.221Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T23:14:48.979Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-25T23:15:30.508Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T06:53:48.267Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Failed to connect to 127.0.0.1:1433 in 15000ms
+[2026-05-26T07:11:00.312Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T07:11:48.504Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T08:07:37.332Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T08:25:48.219Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T09:23:55.101Z] [SERVER] [ERROR] GET /api/market/stocks → stocksService.getStocksForList is not a function
+[2026-05-26T09:24:19.103Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T09:26:44.434Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T09:32:23.522Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T11:40:00.615Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T11:50:45.984Z] [SERVER] [ERROR] GET /api/market/stocks → stocksService.getStocksForList is not a function
+[2026-05-26T11:51:26.204Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T11:52:35.258Z] [SERVER] [ERROR] GET /api/market/stocks → tradingConnect is not defined
+[2026-05-26T11:53:21.981Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T11:56:40.511Z] [SERVER] [ERROR] GET /api/market/stocks → getLatestStockDate is not defined
+[2026-05-26T11:56:44.549Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T12:01:31.039Z] [SERVER] [ERROR] GET /api/market/stocks → Validation failed for parameter 'start'. Invalid date.
+[2026-05-26T12:01:55.865Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T12:08:03.522Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T12:08:51.839Z] [SERVER] [ERROR] GET /api/market/stocks → Timeout: Request failed to complete in 60000ms
+[2026-05-26T12:18:46.078Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T12:25:40.033Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T12:29:37.001Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T12:35:56.187Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T12:36:46.008Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T12:40:23.830Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T12:41:48.694Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T12:42:04.182Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T12:44:15.419Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T12:52:58.100Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T12:54:30.493Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T15:42:06.824Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Failed to connect to 127.0.0.1:1433 in 15000ms
+[2026-05-26T15:43:01.778Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T15:51:35.348Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T15:52:57.405Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T15:55:04.518Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Failed to connect to 127.0.0.1:1433 in 15000ms
+[2026-05-26T15:56:29.106Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Failed to connect to 127.0.0.1:1433 in 15000ms
+[2026-05-26T16:03:09.574Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Failed to connect to 127.0.0.1:1433 in 15000ms
+[2026-05-26T16:04:02.387Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T16:07:01.415Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T16:08:31.669Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T16:14:23.240Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Failed to connect to 127.0.0.1:1433 in 15000ms
+[2026-05-26T16:15:10.360Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T16:15:29.916Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:03:05.113Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:07:22.734Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:13:39.841Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:13:59.606Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:31:11.231Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:32:19.897Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:32:36.415Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:37:21.131Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:37:41.754Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:38:26.147Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:40:10.330Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:41:04.471Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:41:58.373Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:42:01.777Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:51:25.442Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T18:52:31.246Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T19:07:01.693Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T19:08:09.634Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T19:15:38.252Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T19:15:54.300Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T19:17:00.708Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T19:17:18.101Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T19:17:45.648Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T19:21:20.311Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T19:21:34.336Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T19:23:34.820Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T19:24:30.979Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T19:43:59.912Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T19:45:52.714Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T20:27:21.932Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid column name '52w_high'.
+[2026-05-26T20:27:24.686Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T20:29:31.366Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T20:30:31.856Z] [SERVER] [ERROR] GET /api/market/stocks → Incorrect syntax near the keyword 'with'. If this statement is a common table expression, an xmlnamespaces clause or a change tracking context clause, the previous statement must be terminated with a semicolon.
+[2026-05-26T20:30:38.091Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T20:35:58.076Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T20:36:08.132Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T20:43:34.477Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T20:48:26.605Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T20:48:41.189Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T20:52:11.934Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T20:52:52.365Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T20:53:03.293Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T21:01:32.681Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T21:01:45.824Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T21:04:29.740Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid object name 'marketScores'.
+[2026-05-26T21:04:32.027Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T21:12:20.700Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T21:17:50.285Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T21:18:03.414Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T21:22:15.508Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T21:22:42.049Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T21:27:59.792Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T21:42:50.486Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T21:48:10.607Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T21:48:24.707Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T21:53:19.306Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T21:57:00.852Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T22:10:47.631Z] [COCKPIT-METRICS] [INFO] Erfolgreich 259 Zeilen für Cockpit geladen.
+[2026-05-26T22:35:41.203Z] [COCKPIT-METRICS] [INFO] Erfolgreich 383 Zeilen für Cockpit geladen.
+[2026-05-26T22:36:22.468Z] [COCKPIT-METRICS] [INFO] Erfolgreich 383 Zeilen für Cockpit geladen.

@@ -9,7 +9,7 @@ import { renderIndexes } from "./render/renderIndexes.js";
 // API: IndexHistory laden
 // --------------------------------------------------
 async function loadIndexHistory() {
-    const res = await fetch("/api/indexhistory");
+    const res = await fetch("http://localhost:4000/api/data/indexhistory");
     return await res.json();
 }
 

@@ -5,7 +5,7 @@ const cors = require('cors');
 const os = require('os'); // <--- NEU: Für die Geräte-Erkennung
 const logger = require('./utils/logger');
 const { getTradingDate } = require('./utils/dateHelper');
-const systemStatusRoutes = require("./routes/systemStatus.js");
+const systemStatusRoutes = require('./routes/system/systemStatusRoutes.js')
 const { loadIndustrySectorMap } = require('./utils/industrySectorMap');
 
 // --- Datenbank-Verbindung importieren ---
@@ -39,31 +39,39 @@ app.get('/api/device-info', (req, res) => {
     });
 });
 
-// ---------------------------------------------
-// 2. API-Routen
-// ---------------------------------------------
-app.use('/api/volume-metrics', require('./routes/volumeMetrics'));
-app.use('/api/daily-history', require('./routes/dailyHistory'));
-app.use('/api/indexhistory', require('./routes/indexHistory'));
-app.use('/api/journal', require('./routes/journal')); 
-app.use('/api/calculations', require('./routes/calculations'));
-app.use('/api/short-strategy-1', require('./routes/shortStrategy1'));
-app.use('/api/sectors', require('./routes/sectors'));
-app.use('/api/industries', require('./routes/industries'));
-app.use('/api/stocks', require('./routes/stocks'));
-app.use("/api/etfs", require("./routes/etfs"));
-app.use("/api/checks", require("./routes/checks"));
-app.use("/api/downloads", require("./routes/download_stream_indexes"));
-app.use("/api/downloads", require("./routes/download_stream_stocks"));
-app.use("/api/cockpit", require("./routes/cockpitStatusRoutes"));
-//app.use("/api/downloads", require("./routes/loadIndexes"));
-app.use("/api/downloads", require("./routes/loadYahooStocks"));
-app.use("/api/system", systemStatusRoutes);
-app.use('/api/rs', require('./routes/rs/sectorsRsWriter'));
-app.use('/api/rs', require('./routes/rs/industriesRsWriter'));
-app.use('/api/rs', require('./routes/rs/stocksRsWriter'));
-//app.use('/api/market-scores', require('./routes/marketScores'));
-app.use('/api/excel', require('./routes/excel/rawData'));
+// MARKET
+// MARKET
+app.use("/api/market/stocks", require("./routes/market/stocks"));
+app.use("/api/market/sectors", require("./routes/market/sectors"));
+app.use("/api/market/industries", require("./routes/market/industries"));
+app.use("/api/market/etfs", require("./routes/market/etfs"));
+app.use("/api/market/dashboard", require("./routes/market/dashboard"));
+
+// DATA
+app.use("/api/data/volume-metrics", require("./routes/data/volumeMetrics"));
+app.use("/api/data/daily-history", require("./routes/data/dailyHistory"));
+app.use("/api/data/indexhistory", require("./routes/data/indexHistory"));
+app.use("/api/data/downloads", require("./routes/data/download_stream_indexes"));
+app.use("/api/data/downloads", require("./routes/data/download_stream_stocks"));
+app.use("/api/data/downloads", require("./routes/data/loadYahooStocks"));
+app.use("/api/data/excel", require("./routes/data/excelRawData"));
+
+// STRATEGY
+app.use("/api/strategy/short-1", require("./routes/strategy/shortStrategy1"));
+app.use("/api/strategy", require("./routes/strategy/strategies"));
+
+// RS
+app.use("/api/rs", require("./routes/rs/sectorsRsWriter"));
+app.use("/api/rs", require("./routes/rs/industriesRsWriter"));
+app.use("/api/rs", require("./routes/rs/stocksRsWriter"));
+
+// SYSTEM
+app.use("/api/system/checks", require("./routes/system/checks"));
+app.use("/api/system/cockpit", require("./routes/system/cockpitStatusRoutes"));
+app.use("/api/system", require("./routes/system/systemStatusRoutes"));
+
+// JOURNAL
+app.use("/api/journal", require("./routes/journal/journal"));
 
 // ---------------------------------------------
 // 3. STATIC FRONTEND SERVING

@@ -43,7 +43,7 @@ export function updateTile(key, data) {
 // ------------------------------------------------------
 export async function loadPersistedStatus() {
     try {
-        const res = await fetch("/api/cockpit/status");
+        const res = await fetch("http://localhost:4000/api/system/cockpit");
         if (!res.ok) return;
 
         const status = await res.json();
@@ -54,7 +54,7 @@ export async function loadPersistedStatus() {
                 .then(m => m.renderDownloadsStatus(status.downloads));
         }
 
-        // Calculations (🔥 FIX)
+        // Calculations
         if (status.calculations) {
             import("./tiles/calculations.js")
                 .then(m => m.renderCalculationsTable(status.calculations));
@@ -79,7 +79,7 @@ export async function loadPersistedStatus() {
 
 export async function saveTileStatus(tile, payload) {
     try {
-        await fetch(`/api/cockpit/status/${tile}`, {
+        await fetch(`http://localhost:4000/api/system/cockpit/${tile}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)

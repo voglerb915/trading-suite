@@ -1,7 +1,7 @@
 // routes/checks.js
 const express = require("express");
 const router = express.Router();
-const { sql, tradingPool, yahooPool, journalPool } = require("../db/connection");
+const { sql, tradingPool, yahooPool, journalPool } = require("../../db/connection");
 const fs = require("fs");
 const path = require("path");
 
@@ -157,9 +157,10 @@ router.get("/all", async (req, res) => {
 // FINVIZ JSON-Dateien prüfen
 // ------------------------------------------------------
 
-const sectorsPath = path.join(__dirname, "../json/rs_sectors.json");
-const industriesPath = path.join(__dirname, "../json/rs_industries.json");
-const stocksPath = path.join(__dirname, "../json/rs_stocks.json");
+// 🟢 NEU: Zwei Ebenen hochspringen, um den korrekten globalen json-Ordner zu treffen!
+const sectorsPath = path.join(__dirname, "../../json/rs_sectors.json");
+const industriesPath = path.join(__dirname, "../../json/rs_industries.json");
+const stocksPath = path.join(__dirname, "../../json/rs_stocks.json");
 
         // Sectors JSON
         let sectorsLastDate = null;

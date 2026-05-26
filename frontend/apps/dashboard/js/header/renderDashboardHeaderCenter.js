@@ -36,25 +36,48 @@ export function renderDashboardHeaderCenter(state) {
         </div>
     `;
 
-    // ⭐ WICHTIG: Event-Delegation auf den gesamten Container
-    container.addEventListener("click", (ev) => {
+    // ⭐ Event-Delegation
+    container.addEventListener("click", async (ev) => {
         const action = ev.target.dataset?.bc;
         if (!action) return;
 
         if (action === "reset") {
+
+            // 1) DashboardState zurücksetzen
             window.dashboardState = {
                 ...window.dashboardState,
                 sector: null,
                 industry: null,
-                ticker: null
+                ticker: null,
+                strategy: "none",
+                index: "all",
+                search: ""
             };
-        } else if (action === "sector") {
+
+            // 2) Cockpit informieren
+            await window.applyStrategy("none");
+            await window.applyIndex?.("all");
+            await window.applySearch?.("");
+
+            // 3) DashboardState aus Cockpit aktualisieren
+            if (window.syncDashboardStateFromCockpit) {
+                window.syncDashboardStateFromCockpit();
+            }
+
+            // 4) UI neu rendern
+            renderDashboard(window.dashboardState);
+            return;
+        }
+
+        if (action === "sector") {
             window.dashboardState = {
                 ...window.dashboardState,
                 industry: null,
                 ticker: null
             };
-        } else if (action === "industry") {
+        }
+
+        if (action === "industry") {
             window.dashboardState = {
                 ...window.dashboardState,
                 ticker: null

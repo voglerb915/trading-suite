@@ -74,7 +74,8 @@ export async function runIndexHistory() {
     updateTile("downloads", { status: "running", progress: 0 });
 
     return new Promise((resolve) => {
-        const evtSource = new EventSource("http://localhost:4000/api/downloads/stream");
+        // 🟢 NEU: Pfad um '/data/downloads' erweitert, passend zur server.js
+        const evtSource = new EventSource("http://localhost:4000/api/data/downloads/stream");
 
         evtSource.addEventListener("progress", (e) => {
             const data = JSON.parse(e.data);
@@ -91,6 +92,8 @@ export async function runIndexHistory() {
         evtSource.addEventListener("done", async () => {
             evtSource.close();
 
+            // 🟢 HINWEIS: Falls saveTileStatus intern gegen /api/cockpit geschossen hat, 
+            // stellt die Funktion das im logic.js-Core hoffentlich ebenfalls auf /api/system/cockpit um.
             await saveTileStatus("downloads", {
                 IndexHistory: {
                     ok: true,
@@ -109,7 +112,8 @@ export async function runDailyHistory() {
     updateTile("downloads", { status: "running", progress: 0 });
 
     return new Promise((resolve) => {
-        const evtSource = new EventSource("http://localhost:4000/api/downloads/stream-daily");
+        // 🟢 NEU: Pfad um '/data/downloads' erweitert, passend zur server.js
+        const evtSource = new EventSource("http://localhost:4000/api/data/downloads/stream-daily");
 
         evtSource.addEventListener("progress", (e) => {
             const data = JSON.parse(e.data);

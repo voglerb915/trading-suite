@@ -1,8 +1,8 @@
 {
   "checks": {
-    "status": "green",
-    "lastRun": "2026-05-22T21:35:22.270Z",
-    "duration": "3.19s",
+    "status": "yellow",
+    "lastRun": "2026-05-26T22:47:02.881Z",
+    "duration": "3.72s",
     "sections": {
       "finviz": {
         "title": "Finviz-Daten",
@@ -11,15 +11,15 @@
           {
             "name": "finviz",
             "status": "success",
-            "lastDateStr": "2026-05-22 22:20:24",
-            "countAtLastDate": 11179,
+            "lastDateStr": "2026-05-26 22:20:24",
+            "countAtLastDate": 11153,
             "isValidation": false,
             "details": null
           },
           {
             "name": "finviz_groups",
             "status": "success",
-            "lastDateStr": "2026-05-22 22:20:20",
+            "lastDateStr": "2026-05-26 22:20:20",
             "countAtLastDate": 155,
             "isValidation": false,
             "details": null
@@ -27,7 +27,7 @@
           {
             "name": "Sectors JSON",
             "status": "success",
-            "lastDateStr": "2026-05-22 22:15:02",
+            "lastDateStr": "2026-05-26 22:15:02",
             "countAtLastDate": 11,
             "isValidation": false,
             "details": null
@@ -35,7 +35,7 @@
           {
             "name": "Industries JSON",
             "status": "success",
-            "lastDateStr": "2026-05-22 22:15:41",
+            "lastDateStr": "2026-05-26 22:15:23",
             "countAtLastDate": 144,
             "isValidation": false,
             "details": null
@@ -43,8 +43,8 @@
           {
             "name": "Stocks JSON",
             "status": "success",
-            "lastDateStr": "2026-05-22 22:15:59",
-            "countAtLastDate": 5597,
+            "lastDateStr": "2026-05-26 22:15:30",
+            "countAtLastDate": 5579,
             "isValidation": false,
             "details": null
           }
@@ -57,24 +57,24 @@
           {
             "name": "Indexes",
             "status": "success",
-            "lastDateStr": "2026-05-22",
-            "countAtLastDate": 27,
+            "lastDateStr": "2026-05-26",
+            "countAtLastDate": 17,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailyHistory",
             "status": "success",
-            "lastDateStr": "2026-05-22",
-            "countAtLastDate": 10828,
+            "lastDateStr": "2026-05-26",
+            "countAtLastDate": 10859,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailySignals",
             "status": "success",
-            "lastDateStr": "2026-05-22",
-            "countAtLastDate": 4591,
+            "lastDateStr": "2026-05-26",
+            "countAtLastDate": 4602,
             "isValidation": false,
             "details": null
           },
@@ -139,14 +139,14 @@
   "downloads": {
     "IndexHistory": {
       "ok": true,
-      "lastRun": "2026-05-22T20:48:34.075Z",
+      "lastRun": "2026-05-26T22:38:21.139Z",
       "duration": "1s",
       "info": "5 Fehler übersprungen"
     },
     "DailyHistory": {
       "ok": true,
-      "lastRun": "2026-05-22T20:54:47.649Z",
-      "duration": "368s",
+      "lastRun": "2026-05-26T22:44:14.993Z",
+      "duration": "349s",
       "error": "errorCount is not defined",
       "info": "Erfolgreich"
     }

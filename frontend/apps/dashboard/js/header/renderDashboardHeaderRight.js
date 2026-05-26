@@ -1,7 +1,6 @@
-// apps/dashboard/js/structure/header/renderDashboardHeaderRight.js
-
 export function renderDashboardHeaderRight(state) {
     const container = document.getElementById("dashboard-header-right");
+    if (!container) return;
 
     container.innerHTML = `
         <div class="control-block">
@@ -37,10 +36,10 @@ export function renderDashboardHeaderRight(state) {
         </div>
     `;
 
-    // ⭐ HIER: Dropdown auf aktuellen State setzen
+    // ⭐ Dropdown auf aktuellen State setzen
     document.getElementById("strategy-select").value = state.strategy;
 
-    // Events
+    // ⭐ Events NEU setzen (jedes Mal!)
     document.getElementById("strategy-select").addEventListener("change", (e) => {
         document.dispatchEvent(new CustomEvent("dashboard:strategyChange", {
             detail: e.target.value
@@ -62,4 +61,3 @@ export function renderDashboardHeaderRight(state) {
         }
     });
 }
-

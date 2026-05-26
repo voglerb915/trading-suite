@@ -2,9 +2,10 @@
 
 const express = require("express");
 const router = express.Router();
-const { buildEtfRsSnapshot } = require("../analysis/rs/rsPipelineEtfs");
+const { buildEtfRsSnapshot } = require("../../analysis/rs/rsPipelineEtfs");
 
-router.get("/won-db", async (req, res) => {
+// ETF-Daten direkt zurückgeben
+router.get("/", async (req, res) => {
     try {
         const data = await buildEtfRsSnapshot();
         res.json(data);

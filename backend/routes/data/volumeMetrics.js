@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { yahooPool } = require('../db/connection');
-const logger = require('../utils/logger');
+const { yahooPool } = require('../../db/connection');
+const logger = require('../../utils/logger');
 
 router.get('/', async (req, res) => {
     try {

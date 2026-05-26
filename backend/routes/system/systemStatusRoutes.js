@@ -13,7 +13,7 @@ const {
     sql,
     tradingPool,
     tradingConnect
-} = require("../db/connection.js");
+} = require("../../db/connection.js");
 
 const router = express.Router();
 

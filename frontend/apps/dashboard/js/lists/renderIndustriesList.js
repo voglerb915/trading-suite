@@ -1,5 +1,3 @@
-// apps/dashboard/js/lists/renderIndustriesList.js
-
 import { getSectorClass, getDiffColor, formatDiff } 
     from "../helpers/renderHelpers.js";
 
@@ -9,27 +7,30 @@ export function renderIndustriesList(industries, state) {
 
     if (!column || !container) return;
 
-    // Sortierung identisch zu Sectors
+    // KORREKT: Sortierung nach rsRank
     const sortedIndustries = [...industries].sort((a, b) => {
-        const rankA = Number(a.rankWonDb || a.rank || 999);
-        const rankB = Number(b.rankWonDb || b.rank || 999);
+        const rankA = Number(a.rsRank ?? 999);
+        const rankB = Number(b.rsRank ?? 999);
         return rankA - rankB;
     });
 
     const rowsHtml = sortedIndustries.map(item => {
-        const isSelected = item.name === state.industry;
-        const score = (item.score ?? 0).toFixed(2);
+        // KORREKT: Vergleich mit item.industry
+        const isSelected = item.industry === state.industry;
 
-        // Anzahl Stocks in dieser Industry
+        // KORREKT: Score-Feld
+        const score = (item.rsScore ?? 0).toFixed(2);
+
+        // KORREKT: Stock-Zählung
         const count = (state.stocks || [])
-            .filter(s => s.industry === item.name).length;
+            .filter(s => s.industry === item.industry).length;
 
         return `
             <div class="grid-row-sector stock-item ${isSelected ? "highlight-sector" : ""}"
-                onclick="handleIndustryClick('${item.name}', '${item.sector}')">
+                onclick="handleIndustryClick('${item.industry}', '${item.sector}')">
 
                 <div class="grid-cell ${getSectorClass(item.sector)}">
-                    ${isSelected ? '▶ ' : ''}<strong>${item.rankWonDb || '—'}.</strong> ${item.name} (${score})
+                    ${isSelected ? '▶ ' : ''}<strong>${item.rsRank ?? '—'}.</strong> ${item.industry} (${score})
                 </div>
 
                 <div class="grid-cell count-cell">[${count}]</div>
@@ -49,7 +50,6 @@ export function renderIndustriesList(industries, state) {
         `;
     }).join("");
 
-    // Header identisch zu Sectors
     container.innerHTML = `
         <div class="sectors-header">
             <div class="sectors-header-title">

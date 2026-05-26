@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { sql, yahooPool, tradingPool } = require("../db/connection");
+const { sql, yahooPool, tradingPool } = require("../../db/connection");
 const axios = require("axios");
-const { readStatusFile, writeStatusFile } = require("../utils/cockpitStatus");
+const { readStatusFile, writeStatusFile } = require("../../utils/cockpitStatus");
 
 let isDailySyncing = false;
 

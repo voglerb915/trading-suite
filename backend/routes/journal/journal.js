@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { journalPool, journalConnect } = require('../db/connection'); 
+const { journalPool, journalConnect } = require('../../db/connection'); 
 
 router.get('/executed', async (req, res) => {
     try {

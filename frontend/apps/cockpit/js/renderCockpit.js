@@ -45,7 +45,7 @@ function renderCockpitTop20(state) {
     if (!el) return;
 
     const top20 = [...state.stocks]
-        .sort((a, b) => b.score - a.score)
+        .sort((a, b) => (b.rsScore ?? 0) - (a.rsScore ?? 0))
         .slice(0, 20);
 
     el.innerHTML = `
@@ -54,7 +54,7 @@ function renderCockpitTop20(state) {
             ${top20.map(s => `
                 <li>
                     <span class="ticker">${s.ticker}</span>
-                    <span class="score">${s.score.toFixed(2)}</span>
+                    <span class="score">${(s.rsScore ?? 0).toFixed(2)}</span>
                 </li>
             `).join("")}
         </ul>
