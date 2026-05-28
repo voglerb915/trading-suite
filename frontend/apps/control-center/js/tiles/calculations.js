@@ -9,6 +9,7 @@ export function renderCalculationsTable(state = {}) {
         { key: "RS_Sectors", label: "RS Sectors JSON", action: "rssectors" },
         { key: "RS_Industries", label: "RS Industries JSON", action: "rsindustries" },
         { key: "RS_Stocks", label: "RS Stocks JSON", action: "rsstocks" },
+        { key: "RS_ETFs", label: "RS ETFs JSON", action: "rsetfs" }, // 🟢 NEU in der Tabelle!
         { key: "ShortStrategy", label: "Short-Strategie", action: "short" },
         { key: "Metrics", label: "Update-Metrics", action: "metrics" }
     ];
@@ -33,7 +34,6 @@ export function renderCalculationsTable(state = {}) {
                 ${rows.map(r => {
                     const s = state[r.key] || {};
 
-                    // 🔥 NEUE STATUS-LOGIK (status + ok unterstützt)
                     const ok = s.ok === true || s.status === "success";
                     const isError = s.ok === false || s.status === "error";
 
@@ -51,7 +51,6 @@ export function renderCalculationsTable(state = {}) {
         </table>
     `;
 
-    // EINZIGER Event-Handler (Delegation)
     root.onclick = (e) => {
         const el = e.target.closest(".calc-action");
         if (!el) return;
@@ -61,29 +60,15 @@ export function renderCalculationsTable(state = {}) {
 
         let promise;
 
-        if (action === "short") {
-            promise = runShortStrategyAction();
-        }
-
-        if (action === "metrics") {
-            promise = runMetricsAction();
-        }
-
-        if (action === "rssectors") {
-            promise = runRsSectorsWriter();
-        }
-
-        if (action === "rsindustries") {
-            promise = runRsIndustriesWriter();
-        }
-
-        if (action === "rsstocks") {
-            promise = runRsStocksWriter();
-        }
+        if (action === "short") promise = runShortStrategyAction();
+        if (action === "metrics") promise = runMetricsAction();
+        if (action === "rssectors") promise = runRsSectorsWriter();
+        if (action === "rsindustries") promise = runRsIndustriesWriter();
+        if (action === "rsstocks") promise = runRsStocksWriter();
+        if (action === "rsetfs") promise = runRsEtfsWriter(); // 🟢 NEU verknüpft!
 
         promise.finally(() => {
             el.style.opacity = "1";
-            // 🟢 Gesetzte Absicherung gegen das 'undefined'-Problem aus dem Absturz
             const nextState = window.__persistedState?.calculations ?? state;
             renderCalculationsTable(nextState);
         });
@@ -237,6 +222,37 @@ async function runRsStocksWriter() {
     } catch (err) {
         await saveTileStatus("calculations", {
             RS_Stocks: {
+                status: "error",
+                lastRun: new Date(),
+                duration: "–"
+            }
+        });
+    }
+
+    await loadPersistedStatus();
+}
+
+/* ============================================================
+   🟢 ACTION: RS ETFs WRITER (NEU)
+============================================================ */
+async function runRsEtfsWriter() {
+    const start = performance.now();
+
+    try {
+        const res = await fetch("http://localhost:4000/api/rs/write-etfs");
+        const data = await res.json();
+
+        await saveTileStatus("calculations", {
+            RS_ETFs: {
+                status: data.success ? "success" : "error",
+                lastRun: new Date(),
+                duration: ((performance.now() - start) / 1000).toFixed(1) + "s"
+            }
+        });
+
+    } catch (err) {
+        await saveTileStatus("calculations", {
+            RS_ETFs: {
                 status: "error",
                 lastRun: new Date(),
                 duration: "–"

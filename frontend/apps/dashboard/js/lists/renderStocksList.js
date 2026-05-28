@@ -17,22 +17,34 @@ export function renderStocksList(stocks, state) {
     const visible = stocks.slice(0, limit);
 
     const isStrategyMode = state?.strategy && state.strategy !== "none";
+    const isFiltered =
+        isStrategyMode ||
+        state?.sector ||
+        state?.industry ||
+        state?.index ||
+        state?.search;
 
     const html = visible.map((item, idx) => {
         const isSelected = item.ticker === state?.ticker;
         const sectorClass = sectorClasses[item.sector] ?? "";
 
-        const displayValue = isStrategyMode
-            ? `<strong>${item.strategyValue ?? "—"}</strong>`
+        // Position links (immer)
+        const position = idx + 1;
+
+        // GlobalRank nur anzeigen, wenn Filter aktiv
+        const globalRank = item.globalRank ?? item.rsRank ?? null;
+        const showGlobalRank = isFiltered && globalRank != null;
+
+        // Score rechts
+        const scoreValue = isStrategyMode
+            ? (item.strategyValue != null ? `${item.strategyValue}%` : "—")
             : (typeof item.rsScore === "number" ? item.rsScore.toFixed(2) : "—");
 
-        // 🟢 Hier greift der Standard-Modus jetzt sauber auf rsRank zu
-        const displayRank = isStrategyMode
-            ? (item.strategyRank ?? "—")
-            : (item.rsRank ?? "—");
+        // Score-Label abhängig vom Modus
+        const scoreLabel = isStrategyMode ? "Strategy" : "Score";
 
-        const displaySector = isStrategyMode ? "—" : (item.sector ?? "—");
-        const displayIndustry = isStrategyMode ? "—" : (item.industry ?? "—");
+        const displaySector = item.sector ?? "—";
+        const displayIndustry = item.industry ?? "—";
 
         const clickHandler = isStrategyMode
             ? ""
@@ -44,16 +56,18 @@ export function renderStocksList(stocks, state) {
 
                 <div class="stock-row-inner">
 
+                    <!-- LINKS -->
                     <div class="stock-left">
-                        ${isSelected ? '▶ ' : ''}<strong>${idx + 1}. ${item.ticker}</strong><br>
+                        <strong>${position}. ${item.ticker}</strong><br>
                         <span class="stock-sub">
                             ${displaySector} | ${displayIndustry}
                         </span>
                     </div>
 
+                    <!-- RECHTS -->
                     <div class="stock-right">
-                        Score: ${displayValue}<br>
-                        Rank: ${displayRank}
+                        ${showGlobalRank ? `Global: ${globalRank}<br>` : ""}
+                        ${scoreLabel}: ${scoreValue}
                     </div>
 
                 </div>

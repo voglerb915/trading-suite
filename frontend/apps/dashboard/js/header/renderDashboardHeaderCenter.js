@@ -9,9 +9,12 @@ export function renderDashboardHeaderCenter(state) {
 
     parts.push(`<span class="bc-link" data-bc="reset">All Sectors</span>`);
 
+    // In renderDashboardHeaderCenter.js:
+    // Ändere deine `parts.push` Logik für Sektoren:
     if (state.sector) {
         parts.push(`<span class="bc-sep">›</span>`);
-        parts.push(`<span class="bc-link" data-bc="sector">${state.sector}</span>`);
+        // WICHTIG: data-sector Attribut hier setzen!
+        parts.push(`<span class="bc-link" data-sector="${state.sector}">${state.sector}</span>`);
     }
 
     if (state.industry) {
@@ -36,54 +39,5 @@ export function renderDashboardHeaderCenter(state) {
         </div>
     `;
 
-    // ⭐ Event-Delegation
-    container.addEventListener("click", async (ev) => {
-        const action = ev.target.dataset?.bc;
-        if (!action) return;
-
-        if (action === "reset") {
-
-            // 1) DashboardState zurücksetzen
-            window.dashboardState = {
-                ...window.dashboardState,
-                sector: null,
-                industry: null,
-                ticker: null,
-                strategy: "none",
-                index: "all",
-                search: ""
-            };
-
-            // 2) Cockpit informieren
-            await window.applyStrategy("none");
-            await window.applyIndex?.("all");
-            await window.applySearch?.("");
-
-            // 3) DashboardState aus Cockpit aktualisieren
-            if (window.syncDashboardStateFromCockpit) {
-                window.syncDashboardStateFromCockpit();
-            }
-
-            // 4) UI neu rendern
-            renderDashboard(window.dashboardState);
-            return;
-        }
-
-        if (action === "sector") {
-            window.dashboardState = {
-                ...window.dashboardState,
-                industry: null,
-                ticker: null
-            };
-        }
-
-        if (action === "industry") {
-            window.dashboardState = {
-                ...window.dashboardState,
-                ticker: null
-            };
-        }
-
-        renderDashboard(window.dashboardState);
-    });
+    
 }

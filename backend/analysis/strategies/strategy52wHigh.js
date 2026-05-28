@@ -14,33 +14,21 @@
  * Output:
  *   - strategyRank
  *   - strategyValue (z. B. "+2.91%")
- *   - globalRank (aus deinem Hauptsystem)
+ 
  */
 
-function strategy52wHigh(stocks) {
+function strategy52wHigh(finvizRows) {
+    const candidates = finvizRows
+        .filter(row =>
+            row._52w_high > 0 &&
+            !(row.sector === "Financial" && row.industry === "Exchange Traded Fund")
+        )
+        .sort((a, b) => (b._52w_high ?? 0) - (a._52w_high ?? 0));
 
-    // 1) Kandidaten filtern
-    const candidates = stocks
-        .filter(s => s._52w_high != null && s._52w_high > 0)
-        .sort((a, b) =>
-            (b._52w_high ?? 0) - (a._52w_high ?? 0) ||
-            a.ticker.localeCompare(b.ticker)
-        );
-
-    // 2) Strategy-Objekte erzeugen
-    return candidates.map((stock, index) => ({
-        ticker: stock.ticker,
-        sector: stock.sector,
-        industry: stock.industry,
-
+    return candidates.map((row, index) => ({
+        ticker: row.ticker,
         strategyRank: index + 1,
-        strategyValue: `${stock._52w_high.toFixed(2)}%`,
-
-        globalRank: stock.rankWonDb ?? null,
-
-        price: stock.price ?? null,
-        data: stock.data ?? [],
-        anl_datum: stock.anl_datum ?? null
+        strategyValue: row._52w_high
     }));
 }
 

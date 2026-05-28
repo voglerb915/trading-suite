@@ -1,27 +1,33 @@
+// backend/routes/strategy/strategies.js
+
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
-const path = require('path');
-
-// StrategyEngine
 const { runStrategy } = require('../../analysis/strategyEngine.js');
+const { tradingPool, tradingConnect } = require('../../db/connection.js');
 
+// Finviz-Daten (nur letzter Tag)
+async function loadFinviz() {
+    await tradingConnect;
+
+    const result = await tradingPool.request().query(`
+        SELECT ticker, _52w_high, anl_datum
+        FROM dbo.finviz
+        WHERE anl_datum = (SELECT MAX(anl_datum) FROM dbo.finviz)
+        AND _52w_high IS NOT NULL
+    `);
+
+    return result.recordset;
+}
+
+// Strategy-Route
 router.get('/:strategyName', async (req, res) => {
     try {
         const strategyName = req.params.strategyName;
-
-        // 1) Rohdaten laden (JSON)
-        const file = path.join(__dirname, '../json/rs_stocks.json');
-        const baseStocks = JSON.parse(fs.readFileSync(file, 'utf8'));
-
-        // 2) StrategyEngine ausführen
-        const result = runStrategy(baseStocks, strategyName);
-
-        // 3) Nur Strategy-Daten zurückgeben
+        const finvizRows = await loadFinviz();
+        const result = runStrategy(strategyName, finvizRows);
         res.json(result);
 
     } catch (err) {
-        console.error("Strategy-Fehler:", err);
         res.status(500).json({ error: "Strategy konnte nicht ausgeführt werden" });
     }
 });

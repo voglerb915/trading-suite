@@ -1,7 +1,7 @@
 /*----------------------------------
 1. Globaler State
 ----------------------------------*/
-let currentToolId = 'cockpit'; // Start-Tool
+let currentToolId = "cockpit"; // Start-Tool
 
 // Globaler Cockpit-State
 window.cockpitState = {
@@ -14,10 +14,11 @@ window.cockpitState = {
     ticker: null,
     referenceStock: null,
 
-    breadcrumbs: "Alle Sektoren"
+    breadcrumbs: "Alle Sektoren",
+    strategy: "none"
 };
 
-// 🟢 NEU: DataLayer – zentrale Rohdaten
+// 🟢 DataLayer – zentrale Rohdaten
 window.dataStore = {
     baseStocks: [],
     metrics: {},
@@ -27,6 +28,7 @@ window.dataStore = {
     etfs: [],
     strategyCache: new Map()
 };
+
 
 /*----------------------------------
 2. Imports
@@ -40,26 +42,28 @@ import { renderCockpit } from "./js/renderCockpit.js";
 function showTool(toolId) {
     console.log("Wechsle zu:", toolId);
 
-    // Alle Views deaktivieren
-    document.querySelectorAll('.tool-iframe').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.tool-view').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll(".tool-iframe").forEach(el =>
+        el.classList.remove("active")
+    );
+    document.querySelectorAll(".tool-view").forEach(el =>
+        el.classList.remove("active")
+    );
 
-    // Navigation Optik
-    document.querySelectorAll('#main-nav a').forEach(link => link.classList.remove('active-link'));
+    document.querySelectorAll("#main-nav a").forEach(link =>
+        link.classList.remove("active-link")
+    );
     const activeLink = document.querySelector(`#main-nav a[data-tool="${toolId}"]`);
-    if (activeLink) activeLink.classList.add('active-link');
+    if (activeLink) activeLink.classList.add("active-link");
 
-    // Cockpit (native View)
-    if (toolId === 'cockpit') {
-        document.getElementById('cockpit-ui')?.classList.add('active');
+    if (toolId === "cockpit") {
+        document.getElementById("cockpit-ui")?.classList.add("active");
         currentToolId = toolId;
         return;
     }
 
-    // Iframes
     const targetIframe = document.getElementById(`iframe-${toolId}`);
     if (targetIframe) {
-        targetIframe.classList.add('active');
+        targetIframe.classList.add("active");
         currentToolId = toolId;
     } else {
         console.warn(`Kein Container für Tool-ID "${toolId}" gefunden`);
@@ -89,80 +93,137 @@ document.addEventListener("click", (e) => {
     }
 });
 
+
 /*----------------------------------
-5b. Strategy-Handler (NEU)
+5a. Events vom Dashboard → Cockpit
+----------------------------------*/
+
+// Strategy-Wechsel
+document.addEventListener("dashboard:strategyChange", async (e) => {
+    const strategy = e.detail;
+    console.log("EVENT RECEIVED STRATEGY:", strategy);
+
+    window.cockpitState.strategy = strategy;
+
+    await applyStrategy(strategy);
+});
+
+
+// Index-Wechsel
+document.addEventListener("dashboard:indexChange", (e) => {
+    const index = e.detail;
+    window.cockpitState.index = index;
+    applyFiltersAndSort();
+});
+
+// Ticker-Suche
+document.addEventListener("dashboard:search", (e) => {
+    const query = e.detail;
+    window.cockpitState.search = query;
+    applyFiltersAndSort();
+});
+
+
+/*----------------------------------
+5b. Strategy-Handler
 ----------------------------------*/
 
 // 1) Strategy-Daten laden + cachen
 async function loadStrategyStocks(strategyName) {
+    console.log("loadStrategyStocks START:", strategyName);
+
     if (window.dataStore.strategyCache.has(strategyName)) {
-        return window.dataStore.strategyCache.get(strategyName);
+        const cached = window.dataStore.strategyCache.get(strategyName);
+        console.log("CACHED STRATEGY LENGTH:", cached.length);
+        return cached;
     }
 
     const res = await fetch(`/api/strategy/${strategyName}`);
     const strategyItems = await res.json();
 
+    console.log("API STRATEGY LENGTH:", strategyItems.length);
+
     window.dataStore.strategyCache.set(strategyName, strategyItems);
     return strategyItems;
 }
 
-// 2) Strategy + DataLayer mergen
+
+// 2) Strategy + DataLayer mergen (Filter entfernt!)
 function mergeStrategyWithDataLayer(strategyItems) {
     return strategyItems.map(item => {
-        const base = window.dataStore.baseStocks.find(s => s.ticker === item.ticker);
+        const base = window.dataStore.baseStocks.find(s => s.ticker === item.ticker) 
+                  || window.dataStore.etfs.find(e => e.ticker === item.ticker) 
+                  || {};
+
         const m = window.dataStore.metrics[item.ticker] || {};
         const f = window.dataStore.finviz[item.ticker] || {};
 
         return {
             ...base,
-            ...item,
             ...m,
-            ...f
+            ...f,
+            ticker: item.ticker,
+            sector: base.sector ?? f.sector ?? null,
+            industry: base.industry ?? f.industry ?? null,
+            strategyRank: item.strategyRank,
+            strategyValue: item.strategyValue
         };
     });
 }
 
-// 3) Strategy-Wechsel durchführen
+
+// 3) Strategy-Wechsel – wird vom Dashboard aufgerufen
 export async function applyStrategy(strategyName) {
-    console.log("Strategy-Wechsel:", strategyName);
+    console.log("applyStrategy START:", strategyName);
 
-    // Strategy laden
-    const strategyItems = await loadStrategyStocks(strategyName);
+    const isReset = !strategyName || strategyName === "none";
+    let stocks = isReset
+        ? window.dataStore.baseStocks
+        : mergeStrategyWithDataLayer(await loadStrategyStocks(strategyName));
 
-    // Merge durchführen
-    const enriched = mergeStrategyWithDataLayer(strategyItems);
+    // ❗ 200er-Limiter entfernt
 
-    // Cockpit-State aktualisieren
-    window.cockpitState.stocks = enriched;
+    window.cockpitState.stocks = stocks;
 
-    // UI neu rendern
+    console.log("COCKPIT STATE STOCKS LENGTH:", window.cockpitState.stocks.length);
+    console.log("COCKPIT STATE FIRST STOCK:", window.cockpitState.stocks[0]);
+
     renderCockpit(window.cockpitState);
+
+    const dbIframe = document.getElementById("iframe-dashboard");
+    if (dbIframe?.contentWindow) {
+        dbIframe.contentWindow.postMessage({
+            type: "UPDATE_STOCKS",
+            stocks: stocks
+        }, "*");
+    }
 }
 
-/*----------------------------------
-5c. Filter & Sortierung (NEU)
-----------------------------------*/
 
-// 1) Filter anwenden
+/*----------------------------------
+5c. Filter & Sortierung (für Cockpit-UI)
+----------------------------------*/
 function filterStocks(state, stocks) {
     let result = [...stocks];
 
-    // Sektor
     if (state.sector && state.sector !== "all") {
-        result = result.filter(s => s.sector === state.sector);
+        result = result.filter(s => {
+            const stockSector = s.sector || s.sector_name;
+            return stockSector === state.sector;
+        });
     }
 
-    // Industrie
     if (state.industry) {
-        result = result.filter(s => s.industry === state.industry);
+        result = result.filter(s => {
+            const stockIndustry = s.industry || s.industry_name;
+            return stockIndustry === state.industry;
+        });
     }
 
-    // Index
     if (state.index && state.index !== "all") {
         result = result.filter(s => Array.isArray(s.index) && s.index.includes(state.index));
     }
 
-    // Volume > 2x VMA20
     if (state.volFilterActive) {
         result = result.filter(s => {
             const vol = Number(s.volume || 0);
@@ -171,7 +232,6 @@ function filterStocks(state, stocks) {
         });
     }
 
-    // Suche
     if (state.search && state.search.length > 1) {
         const q = state.search.toLowerCase();
         result = result.filter(s =>
@@ -183,7 +243,6 @@ function filterStocks(state, stocks) {
     return result;
 }
 
-// 2) Sortierung anwenden
 function sortStocks(state, stocks) {
     const dir = state.sortDirection === "asc" ? 1 : -1;
 
@@ -194,22 +253,20 @@ function sortStocks(state, stocks) {
     });
 }
 
-// 3) Filter + Sortierung kombinieren
 function applyFiltersAndSort() {
     const filtered = filterStocks(window.cockpitState, window.cockpitState.stocks);
     const sorted = sortStocks(window.cockpitState, filtered);
 
-    // UI aktualisieren
     renderCockpit({
         ...window.cockpitState,
         stocks: sorted
     });
 }
 
+
 /*----------------------------------
 6. Initialisierung
 ----------------------------------*/
-
 async function loadBaseData() {
     const [stocksRes, sectorsRes, industriesRes, etfsRes] = await Promise.all([
         fetch("/api/market/stocks"),
@@ -227,73 +284,64 @@ async function loadBaseData() {
     window.dataStore.finviz  = {};
 }
 
-// Globaler Marker, ob die Daten im RAM liegen
 let isCockpitDataReady = false;
 
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("Cockpit Initialisierung gestartet...");
 
-    // 🟢 1. iFrame-Datenabrufe und System-Status zentral abfangen
     window.addEventListener("message", (event) => {
         if (event.data?.type === "system-status-update") {
             updateHeaderSystemBadge(event.data.badge, event.data.text);
         }
 
-        // Dashboard iFrame meldet sich, dass es bereit ist
         if (event.data?.type === "DASHBOARD_READY") {
             console.log("📥 Dashboard-iFrame hat sich gemeldet.");
-            // Wenn die Daten schon da sind, sofort das Startsignal zurückschicken
             if (isCockpitDataReady) {
                 event.source.postMessage({ type: "COCKPIT_DATA_READY" }, "*");
             }
         }
     });
 
-    // Geräteerkennung
-    fetch('/api/device-info')
+    fetch("/api/device-info")
         .then(res => res.json())
         .then(data => {
-            const logoDiv = document.querySelector('.logo');
+            const logoDiv = document.querySelector(".logo");
             if (!logoDiv) return;
 
-            const deviceInfo = document.createElement('div');
-            deviceInfo.id = 'device-status-info';
-            deviceInfo.style.color = 'white';
-            deviceInfo.style.marginTop = '2px';
-            deviceInfo.style.opacity = '0.7';
-            deviceInfo.style.textTransform = 'uppercase';
+            const deviceInfo = document.createElement("div");
+            deviceInfo.id = "device-status-info";
+            deviceInfo.style.color = "white";
+            deviceInfo.style.marginTop = "2px";
+            deviceInfo.style.opacity = "0.7";
+            deviceInfo.style.textTransform = "uppercase";
 
-            const mode = data.isLaptop ? 'Mobile Mode' : 'Stationary';
+            const mode = data.isLaptop ? "Mobile Mode" : "Stationary";
             deviceInfo.innerHTML = `${data.deviceName} | ${mode} <span id="header-system-badge"></span>`;
 
             logoDiv.appendChild(deviceInfo);
-            logoDiv.style.display = 'flex';
-            logoDiv.style.flexDirection = 'column';
+            logoDiv.style.display = "flex";
+            logoDiv.style.flexDirection = "column";
         });
 
-    // Navigation
-    document.querySelectorAll('#main-nav a').forEach(link => {
-        link.addEventListener('click', (e) => {
+    document.querySelectorAll("#main-nav a").forEach(link => {
+        link.addEventListener("click", (e) => {
             e.preventDefault();
-            const tool = link.getAttribute('data-tool');
+            const tool = link.getAttribute("data-tool");
             if (tool) showTool(tool);
         });
     });
 
-    // 🟢 2. Alle Basisdaten laden
     await loadBaseData();
-    isCockpitDataReady = true; // Daten sind jetzt im RAM!
+    isCockpitDataReady = true;
 
-    // 🟢 Cockpit-State initialisieren
-    window.cockpitState.stocks = window.dataStore.baseStocks;
+    // ❗ BaseStocks nur setzen, wenn KEINE Strategy aktiv ist
+    if (!window.cockpitState.strategy || window.cockpitState.strategy === "none") {
+        window.cockpitState.stocks = window.dataStore.baseStocks;
+        renderCockpit(window.cockpitState);
+    }
 
-    // 🟢 Cockpit rendern
-    renderCockpit(window.cockpitState);
-
-    // 🟢 Cockpit als Startansicht aktivieren
     showTool("cockpit");
-    
-    // 🟢 3. Falls das Dashboard schon gewartet hat, schießen wir das Signal jetzt ab
+
     const dbIframe = document.getElementById("iframe-dashboard");
     if (dbIframe && dbIframe.contentWindow) {
         dbIframe.contentWindow.postMessage({ type: "COCKPIT_DATA_READY" }, "*");

@@ -7,14 +7,24 @@ export function renderEtfsList(etfs, container) {
     }
 
     etfs.forEach(etf => {
+        if (!etf) return;
+
         const row = document.createElement("div");
         row.className = "etf-row";
 
-        // 🟢 Kein Durcheinander mehr: Identische Feldnamen wie im gesamten System!
-        const ticker = etf.ticker || "—";
-        const companyName = etf.company || "—";
-        const rank = etf.rsRank ?? "—";
-        const score = typeof etf.rsScore === "number" ? etf.rsScore.toFixed(2) : "—";
+        // 🟢 Exakt laut Screenshot:
+        const ticker = etf.ticker || "—";       
+        const companyName = etf.name || "—";     
+        
+        // 🟢 Rank heißt laut Screenshot: rankWonDb
+        const rank = etf.rankWonDb !== undefined ? etf.rankWonDb : "—";
+
+        // 🟢 Score heißt laut Screenshot: score
+        let score = "—";
+        if (etf.score !== undefined && etf.score !== null) {
+            const parsedScore = Number(String(etf.score).replace(",", "."));
+            score = !isNaN(parsedScore) ? parsedScore.toFixed(2) : "—";
+        }
 
         row.innerHTML = `
             <div class="etf-left">

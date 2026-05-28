@@ -1,5 +1,4 @@
-import { getSectorClass, getDiffColor, formatDiff, handleSectorClick }
-  from "../helpers/renderHelpers.js";
+import { getSectorClass, getDiffColor, formatDiff } from "../helpers/renderHelpers.js";
 
 export function renderSectorsList(sectors, state) {
   const column = document.getElementById('sectors-won-db');
@@ -15,19 +14,21 @@ export function renderSectorsList(sectors, state) {
   });
 
   const rowsHtml = sortedSectors.map(item => {
-    // KORREKT: Vergleich mit item.sector
     const isSelected = item.sector === state.sector;
     const activeClass = isSelected ? "active-marker" : "";
 
-    // KORREKT: Score-Feld
     const score = (item.rsScore ?? 0).toFixed(2);
 
-    // KORREKT: Stock-Zählung
-    const count = (state.stocks || []).filter(s => s.sector === item.sector).length;
+    // 🟢 OPTIMIERT: Flexibler Filter für die Stock-Zählung (sector oder sector_name)
+    const count = (state.stocks || []).filter(s => {
+      const stockSector = s.sector || s.sector_name;
+      return stockSector === item.sector;
+    }).length;
 
+    // 🟢 GEÄNDERT: Inline-'onclick' entfernt, dafür 'data-sector' hinzugefügt!
     return `
       <div class="grid-row-sector stock-item ${activeClass} ${isSelected ? 'highlight-sector' : ''}"
-           onclick="handleSectorClick('${item.sector}')">
+           data-sector="${item.sector}">
 
         <div class="grid-cell ${getSectorClass(item.sector)}">
           ${isSelected ? '▶ ' : ''}<strong>${item.rsRank ?? '—'}.</strong> ${item.sector} (${score})

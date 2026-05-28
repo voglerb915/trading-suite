@@ -1,5 +1,6 @@
 const { sql, config } = require('../../db/connection');
 const { calculateRsScoreWoNFromDb } = require('./rsScoreWoNFromDb');
+// Wir nutzen dieselbe Filter-Logik aus dem Shared-Bereich
 const { isRealStock } = require('../../../frontend/shared/logic/stockFilter.js');
 
 async function buildEtfRsSnapshot() {
@@ -12,6 +13,7 @@ async function buildEtfRsSnapshot() {
       AND ticker IS NOT NULL;
   `);
 
+  // 🟢 INVERSER FILTER: Wenn es KEINE echte Aktie ist, ist es ein ETF!
   const rows = result.recordset.filter(r => !isRealStock(r));
 
   let etfs = rows.map(row => {
@@ -19,11 +21,12 @@ async function buildEtfRsSnapshot() {
 
     return {
       ticker: row.ticker,
-      company: row.company,      // 🟢 'company' statt 'name' für 1:1 Stock-Gleichheit
-      sector: row.sector,
-      industry: row.industry,
-      rsScore: rs.score,         // 🟢 Gold-Standard: rsScore statt score
-      rsRank: 0,                 // 🟢 Gold-Standard: rsRank statt rankWonDb
+      name: row.company,
+      // Bei ETFs füllen wir Sektor/Industrie oft als "ETF" ab, falls Finviz dort nichts liefert
+      sector: row.sector || "ETF", 
+      industry: row.industry || "ETF",
+      score: rs.score,
+      rankWonDb: 0,
 
       diffD: 0,
       diffW: 0,
@@ -47,11 +50,8 @@ async function buildEtfRsSnapshot() {
     };
   });
 
-  // Nach rsScore sortieren
-  etfs.sort((a, b) => b.rsScore - a.rsScore);
-  
-  // 🟢 Den Rang im Wunschfeld rsRank vergeben
-  etfs.forEach((e, i) => e.rsRank = i + 1);
+  etfs.sort((a, b) => b.score - a.score);
+  etfs.forEach((e, i) => e.rankWonDb = i + 1);
 
   return etfs;
 }

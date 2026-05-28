@@ -1,38 +1,35 @@
-// Globale Fetch-Bremse: Verhindert, dass IRGENDEIN Import heimlich das Netzwerk nutzt
+/*----------------------------------
+1. IMPORTS
+----------------------------------*/
+import { renderDashboard } from "./js/structure/renderDashboard.js";
+import { renderDashboardHeaderLeft } from "./js/header/renderDashboardHeaderLeft.js";
+import { renderDashboardHeaderCenter } from "./js/header/renderDashboardHeaderCenter.js";
+import { renderDashboardHeaderRight } from "./js/header/renderDashboardHeaderRight.js";
+
+
+/*----------------------------------
+2. FETCH-BREMSE (RAM-REDIRECT)
+----------------------------------*/
 const originalFetch = window.fetch;
 window.fetch = function(url, options) {
     if (url.includes('/api/market/')) {
-        console.warn(`🛑 BLOCKIERT: Ein Import wollte '${url}' fetchen! Umgeleitet auf RAM.`);
-        
         const dataStore = window.parent.dataStore;
-        if (!dataStore) {
-            console.warn("⚠️ dataStore noch nicht bereit – gebe leeres Fallback zurück.");
-            // Falls metrics aufgerufen wird, braucht das UI meist ein Objekt {}, kein Array []
-            const defaultFallback = url.includes('metrics') || url.includes('won-db') ? {} : [];
-            return Promise.resolve(new Response(JSON.stringify(defaultFallback)));
-        }
+        let mockData = [];
 
-        // 🟢 FIX: Strukturierte Fallbacks für ALLE deine API-Endpunkte
-        let mockData = null;
-
-        if (url.includes('stocks')) mockData = dataStore.baseStocks;
-        if (url.includes('sectors')) mockData = dataStore.sectors;
-        if (url.includes('industries')) mockData = dataStore.industries;
-        if (url.includes('etfs')) mockData = dataStore.etfs;
-        
-        // Falls metrics oder won-db aufgerufen werden, ein leeres Objekt übergeben statt Array
-        if (mockData === null) {
-            mockData = url.includes('metrics') || url.includes('won-db') ? {} : [];
-        }
+        if (url.includes('stocks')) mockData = dataStore?.baseStocks || [];
+        else if (url.includes('sectors')) mockData = dataStore?.sectors || [];
+        else if (url.includes('industries')) mockData = dataStore?.industries || [];
+        else if (url.includes('etfs')) mockData = dataStore?.etfs || [];
+        else if (url.includes('metrics') || url.includes('won-db')) mockData = {};
 
         return Promise.resolve(new Response(JSON.stringify(mockData)));
     }
     return originalFetch(url, options);
 };
 
-console.log("🔴 DEBUG: dashboard.js MIT FETCH-BREMSE geladen!");
+
 /*----------------------------------
-1. GLOBALER STATE
+3. GLOBALER STATE
 ----------------------------------*/
 window.dashboardState = {
     sectors: [],
@@ -47,49 +44,35 @@ window.dashboardState = {
     strategy: "none"
 };
 
-/*----------------------------------
-2. IMPORTS
-----------------------------------*/
-import { renderDashboard } from "./js/structure/renderDashboard.js";
-import "./js/helpers/renderHelpers.js";
-import { renderDashboardHeaderLeft } from "./js/header/renderDashboardHeaderLeft.js";
-import { renderDashboardHeaderCenter } from "./js/header/renderDashboardHeaderCenter.js";
-import { renderDashboardHeaderRight } from "./js/header/renderDashboardHeaderRight.js";
 
 /*----------------------------------
-3. DATEN LADEN
+4. LOAD DATA (KORREKT)
 ----------------------------------*/
 function loadDashboardData() {
     try {
         const cockpitData = window.parent.dataStore;
         const cockpitState = window.parent.cockpitState || {};
 
-        // 🟢 FIX: Nicht nur prüfen, ob das Objekt existiert, sondern ob auch echte Daten drin sind!
-        if (!cockpitData || !cockpitData.baseStocks || cockpitData.baseStocks.length === 0) {
-            console.warn("⚠️ Cockpit DataStore oder baseStocks noch nicht bereit – Dashboard wartet.");
-            return false;
+        if (!cockpitData) return false;
+
+        let stocks;
+
+        // ⭐ Strategy aktiv → IMMER die Cockpit-Stocks nehmen
+        if (window.dashboardState.strategy !== "none") {
+            stocks = cockpitState.stocks || [];
+        } 
+        // ⭐ Normalmodus → BaseStocks
+        else {
+            stocks = cockpitData.baseStocks || [];
         }
 
-        window.dashboardState.sectors = cockpitData.sectors || [];
-        window.dashboardState.industries = cockpitData.industries || [];
-        window.dashboardState.etfs = cockpitData.etfs || [];
-
-        // 1. Aktien aus dem RAM zuweisen
-        window.dashboardState.stocks =
-            cockpitState.stocks?.length > 0
-                ? cockpitState.stocks
-                : cockpitData.baseStocks;
-
-        // Falls trotz allem die Stocks-Liste leer ankommt, brechen wir ab
-        if (!window.dashboardState.stocks || window.dashboardState.stocks.length === 0) {
-            return false;
-        }
-
-        // 2. Auto-Selection beim Start
-        if (!window.dashboardState.referenceStock && window.dashboardState.stocks.length > 0) {
-            window.dashboardState.referenceStock = window.dashboardState.stocks[0];
-            console.log("🎯 Auto-Selection beim Start: ", window.dashboardState.referenceStock.ticker);
-        }
+        window.dashboardState = {
+            ...window.dashboardState,
+            sectors: cockpitData.sectors || [],
+            industries: cockpitData.industries || [],
+            etfs: cockpitData.etfs || [],
+            stocks
+        };
 
         return true;
 
@@ -100,7 +83,7 @@ function loadDashboardData() {
 }
 
 /*----------------------------------
-4. HEADER RENDERN
+5. HEADER RENDERN
 ----------------------------------*/
 function renderHeader() {
     renderDashboardHeaderLeft(window.dashboardState);
@@ -108,92 +91,146 @@ function renderHeader() {
     renderDashboardHeaderRight(window.dashboardState);
 }
 
-/*----------------------------------
-5. STOCK-KLICK-LOGIK
-----------------------------------*/
-function handleStockClick(ticker) {
-    const state = window.dashboardState;
-    const item = state.stocks.find(s => s.ticker === ticker);
-    if (!item) return;
 
-    window.dashboardState = {
-        ...state,
-        ticker: item.ticker,
-        industry: item.industry,
-        sector: item.sector,
-        referenceStock: item,
-        breadcrumbs: `${item.sector} › ${item.industry} › ${item.ticker}`
-    };
+/*----------------------------------
+6. UPDATE + RENDER (NUR FILTER, KEINE STRATEGY)
+----------------------------------*/
+function updateAndRenderDashboard() {
+    const cockpitState = window.parent?.cockpitState || {};
+    const base = window.parent?.dataStore?.baseStocks || [];
+    let result = [];
+
+    // Hier liegt die Sicherheit: Wenn Strategie → nimm IMMER die Cockpit-Daten
+    if (window.dashboardState.strategy !== "none") {
+        result = cockpitState.stocks || [];
+    } else {
+        // Hier greifen erst deine Filter
+        result = [...base];
+        if (window.dashboardState.sector)
+            result = result.filter(s => (s.sector || s.sector_name) === window.dashboardState.sector);
+        if (window.dashboardState.industry)
+            result = result.filter(s => (s.industry || s.industry_name) === window.dashboardState.industry);
+    }
+
+    window.dashboardState.stocks = result;
 
     renderHeader();
     renderDashboard(window.dashboardState);
 }
-
 /*----------------------------------
-6. EVENT DELEGATION FÜR STOCK-CLICKS
-----------------------------------*/
-document.addEventListener("click", (e) => {
-    const row = e.target.closest("[data-stock]");
-    if (!row) return;
-
-    const ticker = row.getAttribute("data-stock");
-    if (!ticker) return;
-
-    handleStockClick(ticker);
-});
-
-/*----------------------------------
-7. STRATEGY-WECHSEL
+7. EVENTS (KORRIGIERT)
 ----------------------------------*/
 document.addEventListener("dashboard:strategyChange", async (e) => {
-    console.log("Dashboard received strategy change request:", e.detail);
     window.dashboardState.strategy = e.detail;
 
+    // 1. Orchestrator im Parent anweisen, die Daten zu berechnen
     if (window.parent.applyStrategy) {
         await window.parent.applyStrategy(e.detail);
     }
 
-    loadDashboardData();
-    renderHeader();
-    renderDashboard(window.dashboardState);
+    // 2. SOFORTIGE SYNCHRONISATION
+    // Wir ignorieren den alten lokalen State und greifen direkt in den Parent
+    const freshStocks = window.parent.cockpitState?.stocks || [];
+    window.dashboardState.stocks = freshStocks;
+
+    // 3. Update ausführen
+    updateAndRenderDashboard();
+});
+
+document.addEventListener("click", (e) => {
+    const stockRow = e.target.closest("[data-stock]");
+    if (stockRow) {
+        const ticker = stockRow.getAttribute("data-stock");
+        const item = window.dashboardState.stocks.find(s => s.ticker === ticker);
+
+        if (item) {
+            window.dashboardState.sector = item.sector || item.sector_name;
+            window.dashboardState.industry = item.industry || item.industry_name;
+            window.dashboardState.ticker = item.ticker;
+            window.dashboardState.referenceStock = item;
+
+            document.querySelectorAll('.stock-item').forEach(el =>
+                el.classList.toggle('highlight-ticker', el.dataset.stock === ticker)
+            );
+
+            renderHeader();
+            if (typeof window.renderChart === 'function') window.renderChart(ticker);
+        }
+        return;
+    }
+
+    const filterEl = e.target.closest("[data-sector]") || e.target.closest("[data-industry]");
+    if (filterEl) {
+        const type = filterEl.hasAttribute("data-sector") ? "sector" : "industry";
+        const val = filterEl.getAttribute(`data-${type}`);
+        const isBreadcrumb = filterEl.classList.contains('bc-link');
+
+        if (type === "sector") {
+            window.dashboardState.sector = isBreadcrumb ? val : ((window.dashboardState.sector === val) ? null : val);
+            window.dashboardState.industry = null;
+        }
+
+        if (type === "industry") {
+            window.dashboardState.industry = isBreadcrumb ? val : ((window.dashboardState.industry === val) ? null : val);
+
+            if (window.dashboardState.industry) {
+                const allStocks = window.parent?.dataStore?.baseStocks || [];
+                const sample = allStocks.find(s => (s.industry || s.industry_name) === val);
+                if (sample) window.dashboardState.sector = sample.sector || sample.sector_name;
+            }
+        }
+
+        window.dashboardState.ticker = null;
+        updateAndRenderDashboard();
+    }
 });
 
 /*----------------------------------
 8. INITIALISIERUNG
 ----------------------------------*/
-export function initDashboard() {
-    const ok = loadDashboardData();
-    if (!ok) {
-        console.warn("⏳ Dashboard wartet auf Cockpit-Daten…");
-        return;
-    }
+function setupHeaderListeners() {
+    const container = document.getElementById("dashboard-header-center");
+    container?.addEventListener("click", (ev) => {
+        if (ev.target.dataset?.bc === "reset") {
+            Object.assign(window.dashboardState, {
+                sector: null,
+                industry: null,
+                ticker: null,
+                strategy: "none"
+            });
+            updateAndRenderDashboard();
+            document.querySelectorAll('.stock-item').forEach(el => el.classList.remove('highlight-ticker'));
+        }
+    });
+}
 
+export function initDashboard() {
+    if (!loadDashboardData()) return;
     renderHeader();
     renderDashboard(window.dashboardState);
-    console.log("🟢 Dashboard erfolgreich gerendert!");
+    setupHeaderListeners();
 }
 
-// Auf das Startsignal vom Cockpit warten
-window.addEventListener("message", (event) => {
-    if (event.data?.type === "COCKPIT_DATA_READY") {
-        console.log("🚀 Cockpit-Daten sind stabil im RAM. Starte Dashboard Rendering.");
-        initDashboard();
-    }
+window.addEventListener("message", (e) => {
+    if (e.data?.type === "COCKPIT_DATA_READY") initDashboard();
 });
 
-// 🟢 DOPPELBODEN-FIX: Falls das postMessage-Signal wegen Cross-Origin (Port 3000) verpufft,
-// triggern wir den Start nach 1,5 Sekunden einfach hart selbst!
-setTimeout(() => {
-    if (window.dashboardState.stocks.length === 0) {
-        console.log("🔄 Handshake-Timeout: Versuche Direktstart aus dem Cockpit-RAM...");
+const dataPoller = setInterval(() => {
+    if (window.parent?.dataStore?.baseStocks?.length) {
         initDashboard();
+        clearInterval(dataPoller);
     }
-}, 1500);
+}, 500);
 
-// Sobald das iFrame-Skript läuft, klopfen wir beim Cockpit an
-console.log("Dashboard iFrame initialisiert. Sende READY an Cockpit…");
-try {
-    window.parent.postMessage({ type: "DASHBOARD_READY" }, "*");
-} catch(e) {
-    console.error("PostMessage Fehler:", e);
-}
+// Listener für den Orchestrator (cockpit.js)
+window.addEventListener("message", (e) => {
+    if (e.data?.type === "UPDATE_STOCKS") {
+        console.log("📥 DASHBOARD: Nachricht empfangen. Daten:", e.data.stocks);
+        
+        // 1. Lokalen State im iFrame aktualisieren
+        window.dashboardState.stocks = e.data.stocks;
+        
+        // 2. Erzwungenes Rendering nur der Liste
+        renderDashboardStocks(window.dashboardState.stocks, window.dashboardState);
+    }
+});

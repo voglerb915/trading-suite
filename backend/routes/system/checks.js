@@ -153,14 +153,16 @@ router.get("/all", async (req, res) => {
         });
     }
 
+
 // ------------------------------------------------------
 // FINVIZ JSON-Dateien prüfen
 // ------------------------------------------------------
 
-// 🟢 NEU: Zwei Ebenen hochspringen, um den korrekten globalen json-Ordner zu treffen!
+// 🟢 ERWEITERT: Pfad für die ETFs mit aufgenommen!
 const sectorsPath = path.join(__dirname, "../../json/rs_sectors.json");
 const industriesPath = path.join(__dirname, "../../json/rs_industries.json");
 const stocksPath = path.join(__dirname, "../../json/rs_stocks.json");
+const etfsPath = path.join(__dirname, "../../json/rs_etfs.json"); // 🟢 NEU!
 
         // Sectors JSON
         let sectorsLastDate = null;
@@ -173,28 +175,21 @@ const stocksPath = path.join(__dirname, "../../json/rs_stocks.json");
                 const raw = fs.readFileSync(sectorsPath, "utf8");
                 const parsed = JSON.parse(raw);
 
-                // Anzahl bestimmen
                 if (Array.isArray(parsed)) {
                     sectorsCount = parsed.length;
                 } else if (parsed && typeof parsed === "object") {
                     sectorsCount = Object.keys(parsed).length;
                 }
 
-                // anl_datum aus erstem Objekt holen
                 const first = Array.isArray(parsed) ? parsed[0] : null;
 
                 if (first && first.anl_datum) {
-                    const anl = first.anl_datum; // <<< WICHTIG: neuer Name
-
-                    // Sekunden + Z entfernen → SQL-Format
+                    const anl = first.anl_datum;
                     sectorsLastDateStr = anl.slice(0, 19).replace("T", " ");
-
-                    // Für Heatmap intern ok (Date-Objekt)
                     sectorsLastDate = new Date(anl);
                 } else {
                     sectorsOk = false;
                 }
-
             } catch (e) {
                 sectorsOk = false;
             }
@@ -221,88 +216,119 @@ const stocksPath = path.join(__dirname, "../../json/rs_stocks.json");
                 const raw = fs.readFileSync(industriesPath, "utf8");
                 const parsed = JSON.parse(raw);
 
-                // Anzahl bestimmen
                 if (Array.isArray(parsed)) {
                     industriesCount = parsed.length;
                 } else if (parsed && typeof parsed === "object") {
                     industriesCount = Object.keys(parsed).length;
                 }
 
-                // anl_datum aus erstem Objekt holen
-        const first = Array.isArray(parsed) ? parsed[0] : null;
+                const first = Array.isArray(parsed) ? parsed[0] : null;
 
-        if (first && first.anl_datum) {
-            const raw = first.anl_datum;
-
-            industriesLastDateStr = raw.slice(0, 19).replace("T", " ");
-            industriesLastDate = new Date(raw);
-        } else {
-            industriesOk = false;
+                if (first && first.anl_datum) {
+                    const rawDatum = first.anl_datum;
+                    industriesLastDateStr = rawDatum.slice(0, 19).replace("T", " ");
+                    industriesLastDate = new Date(rawDatum);
+                } else {
+                    industriesOk = false;
+                }
+            } catch (e) {
+                industriesOk = false;
+            }
         }
 
+        trading.tables.push({
+            table: "Industries JSON",
+            ok: industriesOk,
+            message: industriesOk ? "OK" : "FEHLT",
+            lastDate: industriesLastDate,
+            lastDateStr: industriesLastDateStr,
+            totalCount: industriesCount,
+            countAtLastDate: industriesCount
+        });
 
-    } catch (e) {
-        industriesOk = false;
-    }
-}
+        // Stocks JSON
+        let stocksLastDate = null;
+        let stocksLastDateStr = null;
+        let stocksCount = null;
+        let stocksOk = fs.existsSync(stocksPath);
 
-trading.tables.push({
-    table: "Industries JSON",
-    ok: industriesOk,
-    message: industriesOk ? "OK" : "FEHLT",
-    lastDate: industriesLastDate,
-    lastDateStr: industriesLastDateStr,
-    totalCount: industriesCount,
-    countAtLastDate: industriesCount
-});
+        if (stocksOk) {
+            try {
+                const raw = fs.readFileSync(stocksPath, "utf8");
+                const parsed = JSON.parse(raw);
 
-// ------------------------------------------------------
-// Stocks JSON
-// ------------------------------------------------------
+                if (Array.isArray(parsed)) {
+                    stocksCount = parsed.length;
+                } else if (parsed && typeof parsed === "object") {
+                    stocksCount = Object.keys(parsed).length;
+                }
 
-let stocksLastDate = null;
-let stocksLastDateStr = null;
-let stocksCount = null;
-let stocksOk = fs.existsSync(stocksPath);
+                const first = Array.isArray(parsed) ? parsed[0] : null;
 
-if (stocksOk) {
-    try {
-        const raw = fs.readFileSync(stocksPath, "utf8");
-        const parsed = JSON.parse(raw);
-
-        // Anzahl bestimmen
-        if (Array.isArray(parsed)) {
-            stocksCount = parsed.length;
-        } else if (parsed && typeof parsed === "object") {
-            stocksCount = Object.keys(parsed).length;
+                if (first && first.anl_datum) {
+                    const anl = first.anl_datum;
+                    stocksLastDateStr = anl.slice(0, 19).replace("T", " ");
+                    stocksLastDate = new Date(anl);
+                } else {
+                    stocksOk = false;
+                }
+            } catch (e) {
+                stocksOk = false;
+            }
         }
 
-        // anl_datum aus erstem Objekt holen
-        const first = Array.isArray(parsed) ? parsed[0] : null;
+        trading.tables.push({
+            table: "Stocks JSON",
+            ok: stocksOk,
+            message: stocksOk ? "OK" : "FEHLT",
+            lastDate: stocksLastDate,
+            lastDateStr: stocksLastDateStr,
+            totalCount: stocksCount,
+            countAtLastDate: stocksCount
+        });
 
-        if (first && first.anl_datum) {
-            const anl = first.anl_datum;
+        // ------------------------------------------------------
+        // 🟢 NEU: ETFs JSON prüfen
+        // ------------------------------------------------------
+        let etfsLastDate = null;
+        let etfsLastDateStr = null;
+        let etfsCount = null;
+        let etfsOk = fs.existsSync(etfsPath);
 
-            stocksLastDateStr = anl.slice(0, 19).replace("T", " ");
-            stocksLastDate = new Date(anl);
-        } else {
-            stocksOk = false;
+        if (etfsOk) {
+            try {
+                const raw = fs.readFileSync(etfsPath, "utf8");
+                const parsed = JSON.parse(raw);
+
+                if (Array.isArray(parsed)) {
+                    etfsCount = parsed.length;
+                } else if (parsed && typeof parsed === "object") {
+                    etfsCount = Object.keys(parsed).length;
+                }
+
+                const first = Array.isArray(parsed) ? parsed[0] : null;
+
+                if (first && first.anl_datum) {
+                    const anl = first.anl_datum;
+                    etfsLastDateStr = anl.slice(0, 19).replace("T", " ");
+                    etfsLastDate = new Date(anl);
+                } else {
+                    etfsOk = false;
+                }
+            } catch (e) {
+                etfsOk = false;
+            }
         }
 
-    } catch (e) {
-        stocksOk = false;
-    }
-}
-
-trading.tables.push({
-    table: "Stocks JSON",
-    ok: stocksOk,
-    message: stocksOk ? "OK" : "FEHLT",
-    lastDate: stocksLastDate,
-    lastDateStr: stocksLastDateStr,
-    totalCount: stocksCount,
-    countAtLastDate: stocksCount
-});
+        trading.tables.push({
+            table: "ETFs JSON",
+            ok: etfsOk,
+            message: etfsOk ? "OK" : "FEHLT",
+            lastDate: etfsLastDate,
+            lastDateStr: etfsLastDateStr,
+            totalCount: etfsCount,
+            countAtLastDate: etfsCount
+        });
 
 
 // ------------------------------------------------------

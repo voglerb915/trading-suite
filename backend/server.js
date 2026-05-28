@@ -57,13 +57,14 @@ app.use("/api/data/downloads", require("./routes/data/loadYahooStocks"));
 app.use("/api/data/excel", require("./routes/data/excelRawData"));
 
 // STRATEGY
-app.use("/api/strategy/short-1", require("./routes/strategy/shortStrategy1"));
+//app.use("/api/strategy/short-1", require("./routes/strategy/shortStrategy1"));
 app.use("/api/strategy", require("./routes/strategy/strategies"));
 
-// RS
+// // RS
 app.use("/api/rs", require("./routes/rs/sectorsRsWriter"));
 app.use("/api/rs", require("./routes/rs/industriesRsWriter"));
 app.use("/api/rs", require("./routes/rs/stocksRsWriter"));
+app.use("/api/rs", require("./routes/rs/etfsRsWriter")); // 🟢 NEU hinzugefügt!
 
 // SYSTEM
 app.use("/api/system/checks", require("./routes/system/checks"));

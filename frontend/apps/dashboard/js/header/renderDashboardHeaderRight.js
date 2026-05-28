@@ -36,28 +36,36 @@ export function renderDashboardHeaderRight(state) {
         </div>
     `;
 
-    // ⭐ Dropdown auf aktuellen State setzen
-    document.getElementById("strategy-select").value = state.strategy;
+// ⭐ Dropdown auf aktuellen State setzen
+document.getElementById("strategy-select").value = state.strategy;
 
-    // ⭐ Events NEU setzen (jedes Mal!)
-    document.getElementById("strategy-select").addEventListener("change", (e) => {
-        document.dispatchEvent(new CustomEvent("dashboard:strategyChange", {
+// ⭐ Events NEU setzen (jedes Mal!)
+document.getElementById("strategy-select").addEventListener("change", (e) => {
+    window.parent.document.dispatchEvent(
+        new CustomEvent("dashboard:strategyChange", {
             detail: e.target.value
-        }));
-    });
+        })
+    );
+});
 
-    document.getElementById("index-select").addEventListener("change", (e) => {
-        document.dispatchEvent(new CustomEvent("dashboard:indexChange", {
+document.getElementById("index-select").addEventListener("change", (e) => {
+    window.parent.document.dispatchEvent(
+        new CustomEvent("dashboard:indexChange", {
             detail: e.target.value
-        }));
-    });
+        })
+    );
+});
 
-    document.getElementById("search-btn").addEventListener("click", () => {
-        const value = document.getElementById("ticker-search").value.trim();
-        if (value.length > 0) {
-            document.dispatchEvent(new CustomEvent("dashboard:search", {
+document.getElementById("search-btn").addEventListener("click", () => {
+    const value = document.getElementById("ticker-search").value.trim();
+    if (value.length > 0) {
+        window.parent.document.dispatchEvent(
+            new CustomEvent("dashboard:search", {
                 detail: value
-            }));
-        }
-    });
+            })
+        );
+    }
+});
+
+
 }

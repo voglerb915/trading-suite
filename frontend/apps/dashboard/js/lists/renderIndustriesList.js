@@ -1,5 +1,4 @@
-import { getSectorClass, getDiffColor, formatDiff } 
-    from "../helpers/renderHelpers.js";
+import { getSectorClass, getDiffColor, formatDiff } from "../helpers/renderHelpers.js";
 
 export function renderIndustriesList(industries, state) {
     const column = document.getElementById("industries-won-db");
@@ -15,19 +14,20 @@ export function renderIndustriesList(industries, state) {
     });
 
     const rowsHtml = sortedIndustries.map(item => {
-        // KORREKT: Vergleich mit item.industry
         const isSelected = item.industry === state.industry;
 
-        // KORREKT: Score-Feld
         const score = (item.rsScore ?? 0).toFixed(2);
 
-        // KORREKT: Stock-Zählung
-        const count = (state.stocks || [])
-            .filter(s => s.industry === item.industry).length;
+        // 🟢 OPTIMIERT: Flexibler Filter für die Stock-Zählung (industry oder industry_name)
+        const count = (state.stocks || []).filter(s => {
+            const stockIndustry = s.industry || s.industry_name;
+            return stockIndustry === item.industry;
+        }).length;
 
+        // 🟢 GEÄNDERT: Inline-'onclick' entfernt, dafür 'data-industry' hinzugefügt!
         return `
             <div class="grid-row-sector stock-item ${isSelected ? "highlight-sector" : ""}"
-                onclick="handleIndustryClick('${item.industry}', '${item.sector}')">
+                 data-industry="${item.industry}">
 
                 <div class="grid-cell ${getSectorClass(item.sector)}">
                     ${isSelected ? '▶ ' : ''}<strong>${item.rsRank ?? '—'}.</strong> ${item.industry} (${score})

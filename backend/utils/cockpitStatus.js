@@ -72,7 +72,15 @@ function updateTileStatus(tile, payload) {
     }
     
     // 🔹 Calculations: einzelne Einträge (wie Downloads)
-    if (tile === "RS_Sectors" || tile === "RS_Industries" || tile === "RS_Stocks") {
+    // 🔹 Calculations: einzelne Einträge (Erweitert um ETFs, ShortStrategy & Metrics)
+    if (
+        tile === "RS_Sectors" || 
+        tile === "RS_Industries" || 
+        tile === "RS_Stocks" || 
+        tile === "RS_ETFs" ||            // 🟢 NEU
+        tile === "ShortStrategy" ||      // 🟢 NEU
+        tile === "Metrics"               // 🟢 NEU
+    ) {
         status.calculations[tile] = {
             ...(status.calculations[tile] || {}),
             ...payload

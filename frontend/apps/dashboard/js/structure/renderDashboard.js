@@ -7,34 +7,40 @@ import { renderDashboardTools } from "./renderDashboardTools.js";
 export function renderDashboard(state) {
 
     // ⭐ GLOBALEN STATE AKTUALISIEREN
-    window.dashboardState = state;
+    // Wir stellen sicher, dass die Stocks immer aus dem aktuellen Orchestrator-State kommen
+    const liveState = {
+        ...state,
+        stocks: window.parent?.cockpitState?.stocks || state.stocks
+    };
+
+    window.dashboardState = liveState;
 
     // ⭐ HEADER AKTUALISIEREN
-    renderDashboardHeaderCenter(state);
+    renderDashboardHeaderCenter(liveState);
 
     // =====================================================
     // 1) SECTORS
     // =====================================================
-    renderDashboardSectors(state.sectors, state);
+    renderDashboardSectors(liveState.sectors, liveState);
 
     // =====================================================
     // 2) INDUSTRIES
     // =====================================================
-    const industriesFiltered = state.sector
-        ? state.industries.filter(ind => ind.sector === state.sector)
-        : state.industries;
+    const industriesFiltered = liveState.sector
+        ? liveState.industries.filter(ind => ind.sector === liveState.sector)
+        : liveState.industries;
 
-    renderDashboardIndustries(industriesFiltered, state);
+    renderDashboardIndustries(industriesFiltered, liveState);
 
     // =====================================================
     // 3) STOCKS
     // =====================================================
     // ❗ WICHTIG: Keine Filter mehr im Dashboard!
     // Cockpit liefert bereits gefilterte + sortierte Stocks.
-    renderDashboardStocks(state.stocks, state);
+    renderDashboardStocks(liveState.stocks, liveState);
 
     // =====================================================
     // 4) TOOLS
     // =====================================================
-    renderDashboardTools(state);
+    renderDashboardTools(liveState);
 }
