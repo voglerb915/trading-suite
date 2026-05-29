@@ -10,10 +10,15 @@ async function loadFinviz() {
     await tradingConnect;
 
     const result = await tradingPool.request().query(`
-        SELECT ticker, _52w_high, anl_datum
+        SELECT 
+            ticker,
+            _52w_high,
+            industry,
+            sector,
+            anl_datum
         FROM dbo.finviz
         WHERE anl_datum = (SELECT MAX(anl_datum) FROM dbo.finviz)
-        AND _52w_high IS NOT NULL
+          AND _52w_high IS NOT NULL
     `);
 
     return result.recordset;
@@ -25,10 +30,23 @@ router.get('/:strategyName', async (req, res) => {
         const strategyName = req.params.strategyName;
         const finvizRows = await loadFinviz();
         const result = runStrategy(strategyName, finvizRows);
-        res.json(result);
+        res.json({
+        count: result.length,
+        data: result
+});
+
 
     } catch (err) {
         res.status(500).json({ error: "Strategy konnte nicht ausgeführt werden" });
+    }
+});
+
+router.get('/raw/finviz', async (req, res) => {
+    try {
+        const rows = await loadFinviz();
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: "Finviz Rohdaten konnten nicht geladen werden" });
     }
 });
 

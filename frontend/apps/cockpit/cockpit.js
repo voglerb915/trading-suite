@@ -39,6 +39,22 @@ import { renderCockpit } from "./js/renderCockpit.js";
 /*----------------------------------
 3. Navigation (Host-System)
 ----------------------------------*/
+// 🔥 Universelles Broadcast-System für alle iFrames
+export function broadcastMessage(type, payload = {}) {
+    const frames = document.querySelectorAll(".tool-iframe");
+
+    frames.forEach(frame => {
+        try {
+            frame.contentWindow.postMessage(
+                { type, ...payload },
+                "*"
+            );
+        } catch (err) {
+            console.warn("Broadcast-Fehler bei Frame:", frame.id, err);
+        }
+    });
+}
+
 function showTool(toolId) {
     console.log("Wechsle zu:", toolId);
 
@@ -139,14 +155,13 @@ async function loadStrategyStocks(strategyName) {
     }
 
     const res = await fetch(`/api/strategy/${strategyName}`);
-    const strategyItems = await res.json();
+    const json = await res.json();
 
-    console.log("API STRATEGY LENGTH:", strategyItems.length);
+    console.log("API STRATEGY LENGTH:", json.count);
 
-    window.dataStore.strategyCache.set(strategyName, strategyItems);
-    return strategyItems;
+    window.dataStore.strategyCache.set(strategyName, json.data);
+    return json.data;
 }
-
 
 // 2) Strategy + DataLayer mergen (Filter entfernt!)
 function mergeStrategyWithDataLayer(strategyItems) {
@@ -162,43 +177,41 @@ function mergeStrategyWithDataLayer(strategyItems) {
             ...base,
             ...m,
             ...f,
+
             ticker: item.ticker,
             sector: base.sector ?? f.sector ?? null,
             industry: base.industry ?? f.industry ?? null,
+
+            // 🔥 Strategy-Werte NACH base/m/f setzen (damit sie NICHT überschrieben werden)
             strategyRank: item.strategyRank,
             strategyValue: item.strategyValue
         };
     });
 }
 
-
 // 3) Strategy-Wechsel – wird vom Dashboard aufgerufen
 export async function applyStrategy(strategyName) {
     console.log("applyStrategy START:", strategyName);
 
     const isReset = !strategyName || strategyName === "none";
-    let stocks = isReset
-        ? window.dataStore.baseStocks
-        : mergeStrategyWithDataLayer(await loadStrategyStocks(strategyName));
 
-    // ❗ 200er-Limiter entfernt
+    if (isReset) {
+        const stocks = window.dataStore.baseStocks;
+        window.cockpitState.stocks = stocks;
+        broadcastMessage("UPDATE_STOCKS", { stocks });
+        renderCockpit(window.cockpitState);
+        return;
+    }
+
+    const strategyItems = await loadStrategyStocks(strategyName);
+    console.log("STRATEGY RAW ITEM:", strategyItems[0]);   // 🔥 HIER
+
+    const stocks = mergeStrategyWithDataLayer(strategyItems);
 
     window.cockpitState.stocks = stocks;
-
-    console.log("COCKPIT STATE STOCKS LENGTH:", window.cockpitState.stocks.length);
-    console.log("COCKPIT STATE FIRST STOCK:", window.cockpitState.stocks[0]);
-
+    broadcastMessage("UPDATE_STOCKS", { stocks });
     renderCockpit(window.cockpitState);
-
-    const dbIframe = document.getElementById("iframe-dashboard");
-    if (dbIframe?.contentWindow) {
-        dbIframe.contentWindow.postMessage({
-            type: "UPDATE_STOCKS",
-            stocks: stocks
-        }, "*");
-    }
 }
-
 
 /*----------------------------------
 5c. Filter & Sortierung (für Cockpit-UI)
@@ -335,10 +348,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     isCockpitDataReady = true;
 
     // ❗ BaseStocks nur setzen, wenn KEINE Strategy aktiv ist
-    if (!window.cockpitState.strategy || window.cockpitState.strategy === "none") {
-        window.cockpitState.stocks = window.dataStore.baseStocks;
-        renderCockpit(window.cockpitState);
-    }
+if (!window.cockpitState.strategy || window.cockpitState.strategy === "none") {
+    window.cockpitState.stocks = window.dataStore.baseStocks;
+    renderCockpit(window.cockpitState);
+}
+
+// 🔥 Broadcast der globalen Daten an ALLE iFrames
+broadcastMessage("MARKET_STATE", { state: window.cockpitState.market });
+broadcastMessage("SECTORS", { sectors: window.cockpitState.sectors });
+broadcastMessage("INDEX_PERFORMANCE", { index: window.cockpitState.index });
+
 
     showTool("cockpit");
 

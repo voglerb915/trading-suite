@@ -16,39 +16,56 @@ export function renderStocksList(stocks, state) {
     const limit = state?.displayLimit || 300;
     const visible = stocks.slice(0, limit);
 
-    const isStrategyMode = state?.strategy && state.strategy !== "none";
-    const isFiltered =
-        isStrategyMode ||
-        state?.sector ||
-        state?.industry ||
-        state?.index ||
-        state?.search;
+    // ❌ NICHT MEHR: const isStrategyMode = state?.strategy && state.strategy !== "none";
+    // 🔥 NEU: Strategy wird über Daten erkannt
+    const isStrategyMode = (item) => item.strategyValue != null;
 
     const html = visible.map((item, idx) => {
         const isSelected = item.ticker === state?.ticker;
         const sectorClass = sectorClasses[item.sector] ?? "";
 
-        // Position links (immer)
         const position = idx + 1;
-
-        // GlobalRank nur anzeigen, wenn Filter aktiv
-        const globalRank = item.globalRank ?? item.rsRank ?? null;
-        const showGlobalRank = isFiltered && globalRank != null;
-
-        // Score rechts
-        const scoreValue = isStrategyMode
-            ? (item.strategyValue != null ? `${item.strategyValue}%` : "—")
-            : (typeof item.rsScore === "number" ? item.rsScore.toFixed(2) : "—");
-
-        // Score-Label abhängig vom Modus
-        const scoreLabel = isStrategyMode ? "Strategy" : "Score";
 
         const displaySector = item.sector ?? "—";
         const displayIndustry = item.industry ?? "—";
 
-        const clickHandler = isStrategyMode
+        // 🔥 Strategy-Mode = kein Klick
+        const clickHandler = isStrategyMode(item)
             ? ""
             : `onclick="handleStockClick('${item.ticker}', '${item.industry}', '${item.sector}')"`;
+
+        // 🔹 Global Rank (immer unten)
+        const globalRank =
+            item.globalRank ??
+            item.rsRank ??
+            item.rank ??
+            null;
+
+        const bottomValue = globalRank != null
+            ? `Global: ${globalRank}`
+            : "Global: —";
+
+        // 🔥 OBERER WERT – DIE ENTSCHEIDENDE STELLE
+        // Wenn StrategyValue existiert → IMMER StrategyValue
+        // Sonst Score
+        const rawTop =
+            item.strategyValue ??
+            item.value ??
+            item.rsScore ??
+            item.score ??
+            null;
+
+        let topValue;
+        if (rawTop != null) {
+            // StrategyValue → Prozent
+            if (item.strategyValue != null || item.value != null) {
+                topValue = `${rawTop.toFixed(2)}%`;
+            } else {
+                topValue = rawTop.toFixed(2);
+            }
+        } else {
+            topValue = "—";
+        }
 
         return `
             <li class="stock-item ${sectorClass} ${isSelected ? 'highlight-ticker' : ''}"
@@ -66,8 +83,8 @@ export function renderStocksList(stocks, state) {
 
                     <!-- RECHTS -->
                     <div class="stock-right">
-                        ${showGlobalRank ? `Global: ${globalRank}<br>` : ""}
-                        ${scoreLabel}: ${scoreValue}
+                        ${topValue}<br>
+                        ${bottomValue}
                     </div>
 
                 </div>

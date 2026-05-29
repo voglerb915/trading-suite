@@ -41,12 +41,12 @@ window.dashboardState = {
     ticker: null,
     referenceStock: null,
     breadcrumbs: "Alle Sektoren",
-    strategy: "none"
+    strategy: "none"   // 🔥 WICHTIG: Strategy bleibt persistent
 };
 
 
 /*----------------------------------
-4. LOAD DATA (KORREKT)
+4. LOAD DATA (KORREKT, FIXED)
 ----------------------------------*/
 function loadDashboardData() {
     try {
@@ -57,15 +57,16 @@ function loadDashboardData() {
 
         let stocks;
 
-        // ⭐ Strategy aktiv → IMMER die Cockpit-Stocks nehmen
+        // 🔥 Strategy aktiv → IMMER Cockpit-Stocks
         if (window.dashboardState.strategy !== "none") {
             stocks = cockpitState.stocks || [];
         } 
-        // ⭐ Normalmodus → BaseStocks
+        // 🔥 Normalmodus → BaseStocks
         else {
             stocks = cockpitData.baseStocks || [];
         }
 
+        // 🔥 Strategy NICHT überschreiben!
         window.dashboardState = {
             ...window.dashboardState,
             sectors: cockpitData.sectors || [],
@@ -82,6 +83,7 @@ function loadDashboardData() {
     }
 }
 
+
 /*----------------------------------
 5. HEADER RENDERN
 ----------------------------------*/
@@ -93,50 +95,38 @@ function renderHeader() {
 
 
 /*----------------------------------
-6. UPDATE + RENDER (NUR FILTER, KEINE STRATEGY)
+6. UPDATE + RENDER
 ----------------------------------*/
 function updateAndRenderDashboard() {
-    const cockpitState = window.parent?.cockpitState || {};
-    const base = window.parent?.dataStore?.baseStocks || [];
-    let result = [];
-
-    // Hier liegt die Sicherheit: Wenn Strategie → nimm IMMER die Cockpit-Daten
-    if (window.dashboardState.strategy !== "none") {
-        result = cockpitState.stocks || [];
-    } else {
-        // Hier greifen erst deine Filter
-        result = [...base];
-        if (window.dashboardState.sector)
-            result = result.filter(s => (s.sector || s.sector_name) === window.dashboardState.sector);
-        if (window.dashboardState.industry)
-            result = result.filter(s => (s.industry || s.industry_name) === window.dashboardState.industry);
-    }
+    const result = window.dashboardState.stocks;
 
     window.dashboardState.stocks = result;
 
     renderHeader();
     renderDashboard(window.dashboardState);
 }
+
+
 /*----------------------------------
-7. EVENTS (KORRIGIERT)
+7. STRATEGY CHANGE (FIXED)
 ----------------------------------*/
 document.addEventListener("dashboard:strategyChange", async (e) => {
     window.dashboardState.strategy = e.detail;
 
-    // 1. Orchestrator im Parent anweisen, die Daten zu berechnen
     if (window.parent.applyStrategy) {
         await window.parent.applyStrategy(e.detail);
     }
 
-    // 2. SOFORTIGE SYNCHRONISATION
-    // Wir ignorieren den alten lokalen State und greifen direkt in den Parent
     const freshStocks = window.parent.cockpitState?.stocks || [];
     window.dashboardState.stocks = freshStocks;
 
-    // 3. Update ausführen
     updateAndRenderDashboard();
 });
 
+
+/*----------------------------------
+8. CLICK EVENTS
+----------------------------------*/
 document.addEventListener("click", (e) => {
     const stockRow = e.target.closest("[data-stock]");
     if (stockRow) {
@@ -185,8 +175,9 @@ document.addEventListener("click", (e) => {
     }
 });
 
+
 /*----------------------------------
-8. INITIALISIERUNG
+9. INITIALISIERUNG (FIXED)
 ----------------------------------*/
 function setupHeaderListeners() {
     const container = document.getElementById("dashboard-header-center");
@@ -211,26 +202,37 @@ export function initDashboard() {
     setupHeaderListeners();
 }
 
+
+/*----------------------------------
+10. MESSAGE HANDLER (FIXED)
+----------------------------------*/
 window.addEventListener("message", (e) => {
-    if (e.data?.type === "COCKPIT_DATA_READY") initDashboard();
+    console.log("📥 RAW MESSAGE IM DASHBOARD:", e.data);
+
+    if (e.data?.type === "UPDATE_STOCKS") {
+        console.log("📥 UPDATE_STOCKS EMPFANGEN");
+        window.dashboardState.stocks = e.data.stocks;
+        renderDashboard(window.dashboardState);
+    }
 });
 
+
+/*----------------------------------
+11. COCKPIT_DATA_READY (FIXED)
+----------------------------------*/
+window.addEventListener("message", (e) => {
+    if (e.data?.type === "COCKPIT_DATA_READY" && window.dashboardState.strategy === "none") {
+        initDashboard();
+    }
+});
+
+
+/*----------------------------------
+12. POLLING (FIXED)
+----------------------------------*/
 const dataPoller = setInterval(() => {
-    if (window.parent?.dataStore?.baseStocks?.length) {
+    if (window.parent?.dataStore?.baseStocks?.length && window.dashboardState.stocks.length === 0) {
         initDashboard();
         clearInterval(dataPoller);
     }
 }, 500);
-
-// Listener für den Orchestrator (cockpit.js)
-window.addEventListener("message", (e) => {
-    if (e.data?.type === "UPDATE_STOCKS") {
-        console.log("📥 DASHBOARD: Nachricht empfangen. Daten:", e.data.stocks);
-        
-        // 1. Lokalen State im iFrame aktualisieren
-        window.dashboardState.stocks = e.data.stocks;
-        
-        // 2. Erzwungenes Rendering nur der Liste
-        renderDashboardStocks(window.dashboardState.stocks, window.dashboardState);
-    }
-});

@@ -1,8 +1,8 @@
 {
   "checks": {
     "status": "green",
-    "lastRun": "2026-05-28T22:58:49.345Z",
-    "duration": "4.08s",
+    "lastRun": "2026-05-29T22:01:52.915Z",
+    "duration": "3.65s",
     "sections": {
       "finviz": {
         "title": "Finviz-Daten",
@@ -11,15 +11,15 @@
           {
             "name": "finviz",
             "status": "success",
-            "lastDateStr": "2026-05-28 22:20:23",
-            "countAtLastDate": 11176,
+            "lastDateStr": "2026-05-29 22:20:23",
+            "countAtLastDate": 11184,
             "isValidation": false,
             "details": null
           },
           {
             "name": "finviz_groups",
             "status": "success",
-            "lastDateStr": "2026-05-28 22:20:20",
+            "lastDateStr": "2026-05-29 22:20:20",
             "countAtLastDate": 155,
             "isValidation": false,
             "details": null
@@ -27,7 +27,7 @@
           {
             "name": "Sectors JSON",
             "status": "success",
-            "lastDateStr": "2026-05-28 22:15:02",
+            "lastDateStr": "2026-05-29 22:15:02",
             "countAtLastDate": 11,
             "isValidation": false,
             "details": null
@@ -35,7 +35,7 @@
           {
             "name": "Industries JSON",
             "status": "success",
-            "lastDateStr": "2026-05-28 22:15:15",
+            "lastDateStr": "2026-05-29 22:15:11",
             "countAtLastDate": 144,
             "isValidation": false,
             "details": null
@@ -43,16 +43,16 @@
           {
             "name": "Stocks JSON",
             "status": "success",
-            "lastDateStr": "2026-05-28 22:15:22",
-            "countAtLastDate": 5586,
+            "lastDateStr": "2026-05-29 22:15:16",
+            "countAtLastDate": 5590,
             "isValidation": false,
             "details": null
           },
           {
             "name": "ETFs JSON",
             "status": "success",
-            "lastDateStr": "2026-05-28 22:15:22",
-            "countAtLastDate": 5590,
+            "lastDateStr": "2026-05-29 22:15:16",
+            "countAtLastDate": 5594,
             "isValidation": false,
             "details": null
           }
@@ -65,23 +65,23 @@
           {
             "name": "Indexes",
             "status": "success",
-            "lastDateStr": "2026-05-28",
-            "countAtLastDate": 15,
+            "lastDateStr": "2026-05-29",
+            "countAtLastDate": 26,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailyHistory",
             "status": "success",
-            "lastDateStr": "2026-05-28",
-            "countAtLastDate": 10869,
+            "lastDateStr": "2026-05-29",
+            "countAtLastDate": 10880,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailySignals",
             "status": "success",
-            "lastDateStr": "2026-05-28",
+            "lastDateStr": "2026-05-29",
             "countAtLastDate": 4589,
             "isValidation": false,
             "details": null
@@ -89,15 +89,15 @@
           {
             "name": "StockMetrics",
             "status": "success",
-            "lastDateStr": "2026-05-28",
-            "countAtLastDate": 10869,
+            "lastDateStr": "2026-05-29",
+            "countAtLastDate": 10880,
             "isValidation": false,
             "details": null
           },
           {
             "name": "Strategies",
             "status": "success",
-            "lastDateStr": "2026-05-28",
+            "lastDateStr": "2026-05-29",
             "countAtLastDate": 360,
             "isValidation": false,
             "details": null
@@ -147,14 +147,14 @@
   "downloads": {
     "IndexHistory": {
       "ok": true,
-      "lastRun": "2026-05-28T22:55:23.136Z",
+      "lastRun": "2026-05-29T21:27:05.444Z",
       "duration": "1s",
       "info": "5 Fehler übersprungen"
     },
     "DailyHistory": {
       "ok": true,
-      "lastRun": "2026-05-28T22:46:09.565Z",
-      "duration": "355s",
+      "lastRun": "2026-05-29T21:33:27.366Z",
+      "duration": "378s",
       "error": "errorCount is not defined",
       "info": "Erfolgreich"
     }

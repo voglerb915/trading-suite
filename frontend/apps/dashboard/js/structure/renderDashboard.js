@@ -10,7 +10,8 @@ export function renderDashboard(state) {
     // Wir stellen sicher, dass die Stocks immer aus dem aktuellen Orchestrator-State kommen
     const liveState = {
         ...state,
-        stocks: window.parent?.cockpitState?.stocks || state.stocks
+        stocks: state.stocks
+
     };
 
     window.dashboardState = liveState;
