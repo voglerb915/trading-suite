@@ -16,10 +16,6 @@ export function renderStocksList(stocks, state) {
     const limit = state?.displayLimit || 300;
     const visible = stocks.slice(0, limit);
 
-    // ❌ NICHT MEHR: const isStrategyMode = state?.strategy && state.strategy !== "none";
-    // 🔥 NEU: Strategy wird über Daten erkannt
-    const isStrategyMode = (item) => item.strategyValue != null;
-
     const html = visible.map((item, idx) => {
         const isSelected = item.ticker === state?.ticker;
         const sectorClass = sectorClasses[item.sector] ?? "";
@@ -29,10 +25,9 @@ export function renderStocksList(stocks, state) {
         const displaySector = item.sector ?? "—";
         const displayIndustry = item.industry ?? "—";
 
-        // 🔥 Strategy-Mode = kein Klick
-        const clickHandler = isStrategyMode(item)
-            ? ""
-            : `onclick="handleStockClick('${item.ticker}', '${item.industry}', '${item.sector}')"`;
+        // 🔥 FIX: Click-Handler ist IMMER aktiv
+        const clickHandler = `onclick="handleStockClick('${item.ticker}', '${item.industry}', '${item.sector}')"`;
+
 
         // 🔹 Global Rank (immer unten)
         const globalRank =
@@ -45,9 +40,7 @@ export function renderStocksList(stocks, state) {
             ? `Global: ${globalRank}`
             : "Global: —";
 
-        // 🔥 OBERER WERT – DIE ENTSCHEIDENDE STELLE
-        // Wenn StrategyValue existiert → IMMER StrategyValue
-        // Sonst Score
+        // 🔥 OBERER WERT – StrategyValue hat Vorrang
         const rawTop =
             item.strategyValue ??
             item.value ??
@@ -69,6 +62,7 @@ export function renderStocksList(stocks, state) {
 
         return `
             <li class="stock-item ${sectorClass} ${isSelected ? 'highlight-ticker' : ''}"
+                data-stock="${item.ticker}"
                 ${clickHandler}>
 
                 <div class="stock-row-inner">
