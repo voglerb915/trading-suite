@@ -29,7 +29,7 @@ export function renderDashboardHeaderRight(state) {
 
             <div id="ticker-search-container">
                 <input id="ticker-search" type="text" placeholder="Ticker search..." autocomplete="off" />
-                <button id="search-btn">Search</button>
+                <button id="delete-btn">Delete</button>
                 <div id="search-suggestions" class="suggestions"></div>
             </div>
 
@@ -61,16 +61,47 @@ document.getElementById("index-select").addEventListener("change", (e) => {
     );
 });
 
-document.getElementById("search-btn").addEventListener("click", () => {
-    const value = document.getElementById("ticker-search").value.trim();
-    if (value.length > 0) {
-        window.parent.document.dispatchEvent(
-            new CustomEvent("dashboard:search", {
-                detail: value
-            })
-        );
-    }
+document.getElementById("ticker-search").addEventListener("input", (e) => {
+    const value = e.target.value.trim().toUpperCase();
+    console.log("DEBUG SEARCH INPUT:", value);
+
+    window.document.dispatchEvent(
+        new CustomEvent("dashboard:searchChange", {
+            detail: value
+        })
+    );
 });
 
+document.getElementById("delete-btn").addEventListener("click", () => {
+    // Search im State löschen
+    window.dashboardState.search = "";
+
+    // Input-Feld leeren
+    const searchInput = document.getElementById("ticker-search");
+    searchInput.value = "";
+
+    // 🟢 WICHTIG: Search-Event feuern, damit die Liste zurückgesetzt wird
+    window.document.dispatchEvent(
+        new CustomEvent("dashboard:searchChange", {
+            detail: ""
+        })
+    );
+
+    // Dashboard neu rendern
+    updateAndRenderDashboard();
+
+    // Fokus wieder ins Feld setzen
+    searchInput.focus();
+});
+
+// 🟢 Search-Feld nach Rendern wiederherstellen + Fokus halten
+const searchInput = document.getElementById("ticker-search");
+searchInput.value = state.search || "";
+
+// Fokus setzen, damit man weiter tippen kann
+if (state.search && state.search.length > 0) {
+    searchInput.focus();
+    searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+}
 
 }

@@ -62,7 +62,8 @@ window.dashboardState = {
     referenceStock: null,
     breadcrumbs: "Alle Sektoren",
     strategy: "none",
-    indexFilter: "all"   // 🟢 NEU
+    indexFilter: "all",
+    search: ""   // 🟢 NEU
 };
 
 /*----------------------------------
@@ -170,6 +171,13 @@ document.addEventListener("dashboard:indexChange", (e) => {
     window.dashboardState.indexFilter = index;
 console.log("DEBUG STATE AFTER SET:", window.dashboardState.indexFilter);
     // Neu rendern
+    updateAndRenderDashboard();
+});
+
+// ticker search
+document.addEventListener("dashboard:searchChange", (e) => {
+    console.log("DEBUG SEARCH EVENT:", e.detail);
+    window.dashboardState.search = e.detail;
     updateAndRenderDashboard();
 });
 

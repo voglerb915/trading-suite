@@ -19,6 +19,13 @@ export function renderStocksList(stocks, state) {
         s.index.includes(state.indexFilter)
     );
 }
+// 🟦 Search-Filter
+if (state.search && state.search.length > 0) {
+    const q = state.search;
+    stocks = stocks.filter(s =>
+        s.ticker?.toUpperCase().includes(q)
+    );
+}
 
     const visible = stocks;
 
