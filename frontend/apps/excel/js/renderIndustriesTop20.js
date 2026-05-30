@@ -33,8 +33,6 @@ function getArrowClass(today, yesterday) {
 
 export function renderIndustriesTop20(targetId, industries, ranking, dates) {
     
-    console.log("DEBUG ranking:", ranking);
-console.log("DEBUG industries:", industries);
     const container = document.getElementById(targetId);
 
     container.innerHTML = `

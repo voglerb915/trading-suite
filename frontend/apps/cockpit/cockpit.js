@@ -197,21 +197,40 @@ export async function applyStrategy(strategyName) {
 
     if (isReset) {
         const stocks = window.dataStore.baseStocks;
+
+        window.cockpitState.strategy = "none";
         window.cockpitState.stocks = stocks;
-        broadcastMessage("UPDATE_STOCKS", { stocks });
+
+        // ✔ Strategy IMMER mitsenden
+        broadcastMessage("UPDATE_STOCKS", { 
+            stocks,
+            strategy: "none"
+        });
+
         renderCockpit(window.cockpitState);
         return;
     }
 
+    // Strategy laden
     const strategyItems = await loadStrategyStocks(strategyName);
-    console.log("STRATEGY RAW ITEM:", strategyItems[0]);   // 🔥 HIER
+    console.log("STRATEGY RAW ITEM:", strategyItems[0]);
 
+    // Strategy + DataLayer mergen
     const stocks = mergeStrategyWithDataLayer(strategyItems);
 
+    // Cockpit-State aktualisieren
+    window.cockpitState.strategy = strategyName;
     window.cockpitState.stocks = stocks;
-    broadcastMessage("UPDATE_STOCKS", { stocks });
+
+    // ✔ Strategy IMMER mitsenden
+    broadcastMessage("UPDATE_STOCKS", { 
+        stocks,
+        strategy: strategyName
+    });
+
     renderCockpit(window.cockpitState);
 }
+
 
 /*----------------------------------
 5c. Filter & Sortierung (für Cockpit-UI)
@@ -310,7 +329,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (event.data?.type === "DASHBOARD_READY") {
             console.log("📥 Dashboard-iFrame hat sich gemeldet.");
             if (isCockpitDataReady) {
-                event.source.postMessage({ type: "COCKPIT_DATA_READY" }, "*");
+                const dbIframe = document.getElementById("iframe-dashboard");
+dbIframe.contentWindow.postMessage({ type: "COCKPIT_DATA_READY" }, "*");
+
             }
         }
     });
@@ -361,8 +382,10 @@ broadcastMessage("INDEX_PERFORMANCE", { index: window.cockpitState.index });
 
     showTool("cockpit");
 
-    const dbIframe = document.getElementById("iframe-dashboard");
-    if (dbIframe && dbIframe.contentWindow) {
-        dbIframe.contentWindow.postMessage({ type: "COCKPIT_DATA_READY" }, "*");
-    }
+const dbIframe = document.getElementById("iframe-new-dashboard");
+if (dbIframe && dbIframe.contentWindow) {
+    console.log("Cockpit → Dashboard: sende COCKPIT_DATA_READY");
+    dbIframe.contentWindow.postMessage({ type: "COCKPIT_DATA_READY" }, "*");
+}
+
 });

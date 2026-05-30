@@ -20,9 +20,9 @@ export function renderDashboardHeaderRight(state) {
                 <label for="index-select">Index:</label>
                 <select id="index-select">
                     <option value="all">All</option>
-                    <option value="DJIA">DJIA</option>
+                    <option value="DJI">DJIA</option>
                     <option value="NDX">NASDAQ-100</option>
-                    <option value="S&P 500">S&P 500</option>
+                    <option value="SP500">S&P 500</option>
                     <option value="RUT">Russell 2000</option>
                 </select>
             </div>
@@ -36,8 +36,11 @@ export function renderDashboardHeaderRight(state) {
         </div>
     `;
 
-// ⭐ Dropdown auf aktuellen State setzen
-document.getElementById("strategy-select").value = state.strategy;
+    // Strategy-Dropdown auf aktuellen State setzen
+    document.getElementById("strategy-select").value = state.strategy;
+
+    // Index-Dropdown auf aktuellen State setzen
+    document.getElementById("index-select").value = state.indexFilter || "all";
 
 // ⭐ Events NEU setzen (jedes Mal!)
 document.getElementById("strategy-select").addEventListener("change", (e) => {
@@ -48,8 +51,10 @@ document.getElementById("strategy-select").addEventListener("change", (e) => {
     );
 });
 
+
 document.getElementById("index-select").addEventListener("change", (e) => {
-    window.parent.document.dispatchEvent(
+    window.document.dispatchEvent(
+
         new CustomEvent("dashboard:indexChange", {
             detail: e.target.value
         })

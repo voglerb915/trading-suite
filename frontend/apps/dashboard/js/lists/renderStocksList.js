@@ -12,9 +12,15 @@ export function renderStocksList(stocks, state) {
         `;
         return;
     }
+    // 🟦 Index-Filter aktivieren
+    if (state.indexFilter && state.indexFilter !== "all") {
+    stocks = stocks.filter(s =>
+        Array.isArray(s.index) &&
+        s.index.includes(state.indexFilter)
+    );
+}
 
-    const limit = state?.displayLimit || 300;
-    const visible = stocks.slice(0, limit);
+    const visible = stocks;
 
     const html = visible.map((item, idx) => {
         const isSelected = item.ticker === state?.ticker;
@@ -25,7 +31,6 @@ export function renderStocksList(stocks, state) {
         const displaySector = item.sector ?? "—";
         const displayIndustry = item.industry ?? "—";
 
-        // 🔥 FIX: Click-Handler ist IMMER aktiv
         const clickHandler = `onclick="handleStockClick('${item.ticker}', '${item.industry}', '${item.sector}')"`;
 
 
@@ -40,7 +45,7 @@ export function renderStocksList(stocks, state) {
             ? `Global: ${globalRank}`
             : "Global: —";
 
-        // 🔥 OBERER WERT – StrategyValue hat Vorrang
+        // 🔥 OBERER WERT – StrategyValue hat Vorrang + FETT bei Strategy
         const rawTop =
             item.strategyValue ??
             item.value ??
@@ -50,12 +55,15 @@ export function renderStocksList(stocks, state) {
 
         let topValue;
         if (rawTop != null) {
-            // StrategyValue → Prozent
-            if (item.strategyValue != null || item.value != null) {
-                topValue = `${rawTop.toFixed(2)}%`;
-            } else {
-                topValue = rawTop.toFixed(2);
-            }
+            const formatted = (item.strategyValue != null || item.value != null)
+                ? `${rawTop.toFixed(2)}%`
+                : rawTop.toFixed(2);
+
+            topValue = state.strategy && state.strategy !== "none"
+                ? `<strong class="strategy-value-strong">${formatted}</strong>`
+                : formatted;
+
+
         } else {
             topValue = "—";
         }
@@ -69,6 +77,7 @@ export function renderStocksList(stocks, state) {
 
                     <!-- LINKS -->
                     <div class="stock-left">
+                        ${isSelected ? '▶ ' : ''}
                         <strong>${position}. ${item.ticker}</strong><br>
                         <span class="stock-sub">
                             ${displaySector} | ${displayIndustry}
