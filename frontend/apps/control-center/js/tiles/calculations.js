@@ -9,7 +9,8 @@ export function renderCalculationsTable(state = {}) {
         { key: "RS_Sectors", label: "RS Sectors JSON", action: "rssectors" },
         { key: "RS_Industries", label: "RS Industries JSON", action: "rsindustries" },
         { key: "RS_Stocks", label: "RS Stocks JSON", action: "rsstocks" },
-        { key: "RS_ETFs", label: "RS ETFs JSON", action: "rsetfs" }, // 🟢 NEU in der Tabelle!
+        { key: "RS_ETFs", label: "RS ETFs JSON", action: "rsetfs" }, 
+        { key: "Signals", label: "Signals Engine", action: "signals" }, // 🟢 NEU in der Tabelle!
         { key: "ShortStrategy", label: "Short-Strategie", action: "short" },
         { key: "Metrics", label: "Update-Metrics", action: "metrics" }
     ];
@@ -60,12 +61,15 @@ export function renderCalculationsTable(state = {}) {
 
         let promise;
 
-        if (action === "short") promise = runShortStrategyAction();
-        if (action === "metrics") promise = runMetricsAction();
-        if (action === "rssectors") promise = runRsSectorsWriter();
-        if (action === "rsindustries") promise = runRsIndustriesWriter();
-        if (action === "rsstocks") promise = runRsStocksWriter();
-        if (action === "rsetfs") promise = runRsEtfsWriter(); // 🟢 NEU verknüpft!
+            if (action === "short") promise = runShortStrategyAction();
+            if (action === "metrics") promise = runMetricsAction();
+            if (action === "rssectors") promise = runRsSectorsWriter();
+            if (action === "rsindustries") promise = runRsIndustriesWriter();
+            if (action === "rsstocks") promise = runRsStocksWriter();
+            if (action === "rsetfs") promise = runRsEtfsWriter();
+
+            // 🟢 NEU
+            if (action === "signals") promise = runSignalsEngine();
 
         promise.finally(() => {
             el.style.opacity = "1";
@@ -253,6 +257,36 @@ async function runRsEtfsWriter() {
     } catch (err) {
         await saveTileStatus("calculations", {
             RS_ETFs: {
+                status: "error",
+                lastRun: new Date(),
+                duration: "–"
+            }
+        });
+    }
+
+    await loadPersistedStatus();
+}
+/* ============================================================
+   🟢 ACTION: Signals in DB (NEU)
+============================================================ */
+async function runSignalsEngine() {
+    const start = performance.now();
+
+    try {
+        const res = await fetch("http://localhost:4000/api/signals/generate-signals");
+        const data = await res.json();
+
+        await saveTileStatus("calculations", {
+            Signals: {
+                status: data.success ? "success" : "error",
+                lastRun: new Date(),
+                duration: ((performance.now() - start) / 1000).toFixed(1) + "s"
+            }
+        });
+
+    } catch (err) {
+        await saveTileStatus("calculations", {
+            Signals: {
                 status: "error",
                 lastRun: new Date(),
                 duration: "–"

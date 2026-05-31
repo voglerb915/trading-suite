@@ -1,6 +1,3 @@
-// WICHTIG: renderDashboard importieren
-import { renderDashboard } from "../structure/renderDashboard.js";
-
 export function renderDashboardHeaderCenter(state) {
     const container = document.getElementById("dashboard-header-center");
     if (!container) return;
@@ -9,11 +6,8 @@ export function renderDashboardHeaderCenter(state) {
 
     parts.push(`<span class="bc-link" data-bc="reset">All Sectors</span>`);
 
-    // In renderDashboardHeaderCenter.js:
-    // Ändere deine `parts.push` Logik für Sektoren:
     if (state.sector) {
         parts.push(`<span class="bc-sep">›</span>`);
-        // WICHTIG: data-sector Attribut hier setzen!
         parts.push(`<span class="bc-link" data-sector="${state.sector}">${state.sector}</span>`);
     }
 
@@ -35,9 +29,22 @@ export function renderDashboardHeaderCenter(state) {
                 ${parts.join("")}
             </div>
 
-            <button id="reset-btn" class="reset-btn" data-bc="reset">Reset</button>
+            <button id="reset-btn" class="reset-btn">Reset</button>
         </div>
     `;
 
-    
+    const resetBtn = container.querySelector("#reset-btn");
+
+    resetBtn.addEventListener("click", () => {
+        
+        const dashboardFrame = window.parent.document.getElementById("iframe-new-dashboard");
+
+        if (dashboardFrame) {
+            dashboardFrame.contentWindow.document.dispatchEvent(
+                new CustomEvent("dashboard:reset")
+            );
+        } else {
+            console.error("Dashboard iframe 'iframe-new-dashboard' not found");
+        }
+    });
 }

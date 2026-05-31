@@ -62,7 +62,7 @@ document.getElementById("index-select").addEventListener("change", (e) => {
 });
 
 document.getElementById("ticker-search").addEventListener("input", (e) => {
-    const value = e.target.value.trim().toUpperCase();
+    const value = e.target.value.toUpperCase();
     console.log("DEBUG SEARCH INPUT:", value);
 
     window.document.dispatchEvent(

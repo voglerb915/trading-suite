@@ -1,3 +1,4 @@
+
 const express = require('express');
 const compression = require('compression');
 const path = require('path');
@@ -58,7 +59,12 @@ app.use("/api/data/excel", require("./routes/data/excelRawData"));
 
 // STRATEGY
 //app.use("/api/strategy/short-1", require("./routes/strategy/shortStrategy1"));
+// STRATEGY
 app.use("/api/strategy", require("./routes/strategy/strategies"));
+
+// SIGNALS ENGINE (NEU)
+app.use("/api/signals", require("./routes/strategy/signalsRoute"));
+
 
 // // RS
 app.use("/api/rs", require("./routes/rs/sectorsRsWriter"));

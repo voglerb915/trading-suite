@@ -12,20 +12,37 @@ export function renderStocksList(stocks, state) {
         `;
         return;
     }
+
     // 🟦 Index-Filter aktivieren
     if (state.indexFilter && state.indexFilter !== "all") {
-    stocks = stocks.filter(s =>
-        Array.isArray(s.index) &&
-        s.index.includes(state.indexFilter)
-    );
-}
-// 🟦 Search-Filter
-if (state.search && state.search.length > 0) {
-    const q = state.search;
-    stocks = stocks.filter(s =>
-        s.ticker?.toUpperCase().includes(q)
-    );
-}
+        stocks = stocks.filter(s =>
+            Array.isArray(s.index) &&
+            s.index.includes(state.indexFilter)
+        );
+    }
+
+    // 🟦 Search-Filter (Ticker + Name)
+    if (state.search && state.search.length > 0) {
+        const q = state.search.toUpperCase().split(" ");
+
+        stocks = stocks.filter(s => {
+            const ticker = s.ticker?.toUpperCase() || "";
+            const company = s.company?.toUpperCase() || "";
+
+            return q.every(part =>
+                ticker.includes(part) ||
+                company.includes(part)
+            );
+        });
+    }
+
+    // 🟢 Stocks-Pille aktualisieren (nach allen Filtern!)
+    const pillContainer = document.getElementById("stocks-pill-container");
+    if (pillContainer) {
+        pillContainer.innerHTML = `
+            <span class="pill pill-small">${stocks.length}</span>
+        `;
+    }
 
     const visible = stocks;
 
@@ -69,8 +86,6 @@ if (state.search && state.search.length > 0) {
             topValue = state.strategy && state.strategy !== "none"
                 ? `<strong class="strategy-value-strong">${formatted}</strong>`
                 : formatted;
-
-
         } else {
             topValue = "—";
         }

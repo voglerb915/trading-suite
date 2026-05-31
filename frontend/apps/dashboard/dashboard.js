@@ -181,6 +181,27 @@ document.addEventListener("dashboard:searchChange", (e) => {
     updateAndRenderDashboard();
 });
 
+// 🟢 HIER KOMMT RESET HIN
+document.addEventListener("dashboard:reset", () => {
+    console.log("RESET EVENT RECEIVED");
+    window.dashboardState = {
+        ...window.dashboardState,
+        sector: null,
+        industry: null,
+        ticker: null,
+        strategy: "none",
+        indexFilter: "all",
+        search: ""
+    };
+
+    // Search-Feld im Header leeren
+    document.dispatchEvent(
+        new CustomEvent("dashboard:searchChange", { detail: "" })
+    );
+
+    updateAndRenderDashboard();
+});
+
 
 /*----------------------------------
 8. CLICK EVENTS (OPTIMIERT)

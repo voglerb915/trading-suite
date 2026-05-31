@@ -1,7 +1,7 @@
 import { getSectorClass, getDiffColor, formatDiff } from "../helpers/renderHelpers.js";
 
 export function renderSectorsList(sectors, state) {
-  const column = document.getElementById('sectors-won-db');
+  const column = document.getElementById('sectors');
   const container = document.getElementById('sector-list-container');
   
   if (!column || !container) return;
