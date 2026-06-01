@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const logger = require('../utils/logger');
-const exportService = require('../utils/exportService');
 const { sql, yahooPool, tradingPool } = require('../db/connection');
 
 let isCalculating = false;
@@ -35,88 +34,92 @@ function getPhase(close, sma200, ema50, ema21) {
     return "0";
 }
 
-router.get('/generate-signals', async (req, res) => {
-    if (isCalculating) {
-        return res.status(429).json({ success: false, message: 'Signal-Berechnung läuft bereits.' });
-    }
+async function runSignalsEngine() {
+    if (isCalculating) throw new Error('Signal-Berechnung läuft bereits.');
 
     try {
         isCalculating = true;
         const yPool = await yahooPool;
         const tPool = await tradingPool;
-        
+
         logger.info('SIGNAL', 'Starte High-Performance Engine (Update-Signals)...');
 
-        // 1. INDEX-DATEN VORBEREITEN (Einmal berechnen für alle Ticker)
+        // 1. INDEX-DATEN
         const indexCalculated = {};
         const indices = ['^GSPC', '^GDAXI'];
         for (const idx of indices) {
-            const resIdx = await yPool.request().input('i', idx).query(
-                "SELECT [Close], [Date] FROM DailyHistory WHERE ticker = @i ORDER BY [Date] ASC"
-            );
+            const resIdx = await yPool.request().input('i', idx).query(`
+                SELECT [Close], [Date] FROM (
+                    SELECT [Close], [Date], ROW_NUMBER() OVER (ORDER BY [Date] DESC) as rn 
+                    FROM DailyHistory WHERE ticker = @i
+                ) t WHERE rn <= 300 ORDER BY [Date] ASC
+            `);
             const data = resIdx.recordset;
             const statsMap = {};
-            
             for (let i = 199; i < data.length; i++) {
                 const slice = data.slice(0, i + 1).map(r => r.Close).reverse();
                 const dateKey = data[i].Date.toISOString().split('T')[0];
-
                 statsMap[dateKey] = {
                     close: data[i].Close,
                     sma200: SMA(slice, 200),
                     ema50: EMA(slice, 50),
                     ema21: EMA(slice, 21),
-
-                    // Für RS korrekt:
-                    sma65: SMA(slice, 65),  // Index-SMA65
-                    sma10: SMA(slice, 10)   // Index-SMA10
+                    sma65: SMA(slice, 65),
+                    sma10: SMA(slice, 10)
                 };
             }
-
             indexCalculated[idx] = statsMap;
         }
 
-        // 2. TICKER-LISTE (OHNE ETFs)
-        const tickerRes = await tPool.request().query(`
-            SELECT DISTINCT Ticker FROM [trading].[dbo].[finviz] 
-            WHERE Industry != 'Exchange Traded Fund'
-        `);
+        // 2. TICKER-LISTE
+        const tickerRes = await tPool.request().query(`SELECT DISTINCT Ticker FROM [trading].[dbo].[finviz] WHERE Industry != 'Exchange Traded Fund'`);
         const tickers = tickerRes.recordset.map(r => r.Ticker);
 
-        // 3. ALLE LETZTEN SIGNALE LADEN
+        // 3. LAST SIGNALS
         const lastSigAllRes = await yPool.request().query(`
             SELECT s.ticker, s.date, s.signal_type, s.days_in_trend
-            FROM DailySignals s
-            INNER JOIN (SELECT ticker, MAX(date) AS max_date FROM DailySignals GROUP BY ticker) x
+            FROM DailySignals s INNER JOIN (SELECT ticker, MAX(date) AS max_date FROM DailySignals GROUP BY ticker) x
             ON s.ticker = x.ticker AND s.date = x.max_date
         `);
         const lastSignalMap = {};
-        lastSigAllRes.recordset.forEach(r => {
-            lastSignalMap[r.ticker] = r;
+        lastSigAllRes.recordset.forEach(r => lastSignalMap[r.ticker] = r);
+
+        // 4. HISTORY-LOAD
+        const allHistoryRes = await yPool.request().query(`
+            SELECT ticker, [Close], [Date] FROM (
+                SELECT ticker, [Close], [Date], ROW_NUMBER() OVER (PARTITION BY ticker ORDER BY [Date] DESC) as rn
+                FROM DailyHistory
+            ) t WHERE rn <= 250 ORDER BY ticker, [Date] ASC
+        `);
+        const fullHistoryMap = {};
+        allHistoryRes.recordset.forEach(row => {
+            if (!fullHistoryMap[row.ticker]) fullHistoryMap[row.ticker] = [];
+            fullHistoryMap[row.ticker].push(row);
         });
 
-        // 4. CHUNKING (RAM SCHONEN)
-        const chunkSize = 1000;
+        // 6. CHUNK-LOOP
+        const chunkSize = 500;
         for (let offset = 0; offset < tickers.length; offset += chunkSize) {
             const chunk = tickers.slice(offset, offset + chunkSize);
-            logger.info('SIGNAL', `Verarbeite Chunk: ${offset} bis ${offset + chunk.length}`);
+            const table = new sql.Table('DailySignals');
+            table.create = false;
+            table.columns.add('ticker', sql.NVarChar(50), { nullable: false });
+            table.columns.add('date', sql.Date, { nullable: false });
+            table.columns.add('ref_index_symbol', sql.NVarChar(50));
+            table.columns.add('signal_type', sql.NVarChar(10));
+            table.columns.add('is_new_signal', sql.Bit);
+            table.columns.add('days_in_trend', sql.Int);
+            table.columns.add('phase_stock', sql.NVarChar(10));
+            table.columns.add('phase_index', sql.NVarChar(10));
+            table.columns.add('rs_slow', sql.Decimal(18,4));
+            table.columns.add('rs_fast', sql.Decimal(18,4));
+            table.columns.add('dist_sma200', sql.Decimal(18,2));
 
-            const allHistoryRes = await yPool.request().query(`
-                SELECT ticker, [Close], [Date] FROM DailyHistory
-                WHERE ticker IN (${chunk.map(t => `'${t.replace("'", "''")}'`).join(',')})
-                ORDER BY ticker, [Date] ASC
-            `);
+            const tickersInChunk = []; 
 
-            const historyMap = {};
-            allHistoryRes.recordset.forEach(row => {
-                if (!historyMap[row.ticker]) historyMap[row.ticker] = [];
-                historyMap[row.ticker].push(row);
-            });
-
-            // 5. DER OPTIMIERTE LOOP
             for (const symbol of chunk) {
                 try {
-                    const sRecords = historyMap[symbol];
+                    const sRecords = fullHistoryMap[symbol];
                     if (!sRecords || sRecords.length < 210) continue;
 
                     const indexSymbol = symbol.endsWith('.DE') ? '^GDAXI' : '^GSPC';
@@ -133,109 +136,66 @@ router.get('/generate-signals', async (req, res) => {
 
                     if (startIndex === -1 || startIndex >= sRecords.length) continue;
 
-                    let batchRows = [];
+                    let addedToChunk = false; 
+
                     for (let i = startIndex; i < sRecords.length; i++) {
                         const currentStock = sRecords[i];
                         const dateKey = currentStock.Date.toISOString().split('T')[0];
                         const curI = iStatsMap[dateKey];
-
                         if (!curI) continue;
 
                         const sCloseSlice = sRecords.slice(0, i + 1).map(r => r.Close).reverse();
                         const sma200 = SMA(sCloseSlice, 200);
                         const ema50 = EMA(sCloseSlice, 50);
                         const ema21 = EMA(sCloseSlice, 21);
+                        const sma65 = SMA(sCloseSlice, 65);
+                        const sma10 = SMA(sCloseSlice, 10);
 
-                        // RS-Berechnung OHNE Filter (blitzschnell)
-                        const rs_slow = (currentStock.Close / SMA(sCloseSlice, 65)) / (curI.close / curI.sma65);
-                        const rs_fast = (currentStock.Close / SMA(sCloseSlice, 10)) / (curI.close / curI.sma10);
+                        if (sma200 === null || ema50 === null || ema21 === null || sma65 === null || sma10 === null || !curI.sma65 || !curI.sma10) continue;
+
+                        const rs_slow = (currentStock.Close / sma65) / (curI.close / curI.sma65);
+                        const rs_fast = (currentStock.Close / sma10) / (curI.close / curI.sma10);
+
+                        if (isNaN(rs_slow) || isNaN(rs_fast) || !isFinite(rs_slow) || !isFinite(rs_fast)) continue;
 
                         let newTrend = (rs_slow > rs_fast) ? 'LONG' : 'EXIT';
                         let isNew = (newTrend !== lastTrend) ? 1 : 0;
                         trendDays = isNew ? 1 : trendDays + 1;
                         lastTrend = newTrend;
 
-                        batchRows.push({
-                            ticker: symbol,
-                            date: currentStock.Date,
-                            ref_index_symbol: indexSymbol,
-                            signal_type: newTrend,
-                            is_new_signal: isNew,
-                            days_in_trend: trendDays,
-                            phase_stock: getPhase(currentStock.Close, sma200, ema50, ema21),
-                            phase_index: getPhase(curI.close, curI.sma200, curI.ema50, curI.ema21),
-                            rs_slow, rs_fast,
-                            dist_sma200: ((currentStock.Close - sma200) / sma200) * 100
-                        });
+                        table.rows.add(
+                            symbol, currentStock.Date, indexSymbol, newTrend,
+                            isNew, trendDays, getPhase(currentStock.Close, sma200, ema50, ema21),
+                            getPhase(curI.close, curI.sma200, curI.ema50, curI.ema21),
+                            rs_slow, rs_fast, ((currentStock.Close - sma200) / sma200) * 100
+                        );
+                        addedToChunk = true;
                     }
-
-                    // 6. BULK INSERT PRO TICKER
-                    if (batchRows.length > 0) {
-                        const table = new sql.Table('DailySignals');
-                        table.create = false;
-                        table.columns.add('ticker', sql.NVarChar(50), { nullable: false });
-                        table.columns.add('date', sql.Date, { nullable: false });
-                        table.columns.add('ref_index_symbol', sql.NVarChar(50));
-                        table.columns.add('signal_type', sql.NVarChar(10));
-                        table.columns.add('is_new_signal', sql.Bit);
-                        table.columns.add('days_in_trend', sql.Int);
-                        table.columns.add('phase_stock', sql.NVarChar(10));
-                        table.columns.add('phase_index', sql.NVarChar(10));
-                        table.columns.add('rs_slow', sql.Decimal(18,4));
-                        table.columns.add('rs_fast', sql.Decimal(18,4));
-                        table.columns.add('dist_sma200', sql.Decimal(18,2));
-
-                        batchRows.forEach(r => table.rows.add(r.ticker, r.date, r.ref_index_symbol, r.signal_type, r.is_new_signal, r.days_in_trend, r.phase_stock, r.phase_index, r.rs_slow, r.rs_fast, r.dist_sma200));
-                        // Börsentag bestimmen (aus dem ersten Eintrag des Batch)
-                        const tradingDate = batchRows[0].date;
-
-                        // Vorherige Einträge für diesen Börsentag löschen
-                        await yPool.request()
-                            .input('d', sql.Date, tradingDate)
-                            .query("DELETE FROM DailySignals WHERE date = @d");
-
-                        // Jetzt Bulk-Insert
-                        await yPool.request().bulk(table);
-
-                    }
+                    if (addedToChunk) tickersInChunk.push(symbol);
                 } catch (err) {
                     logger.error('SIGNAL', `Fehler bei ${symbol}: ${err.message}`);
                 }
             }
-        }
 
-        // --- EXPORT (Wie gehabt) ---
-        const finalDateRes = await yPool.request().query("SELECT MAX(date) as d FROM DailySignals");
-        const lastSignalDate = finalDateRes.recordset[0].d;
-        
-        if (lastSignalDate) {
-            const tradingDateStr = new Date(lastSignalDate).toISOString().split('T')[0];
-            const exportConfig = [
-                { type: 'LONG', file: 'long_signals' },
-                { type: 'EXIT', file: 'exit_signals' }
-            ];
-
-            for (const cfg of exportConfig) {
-                const sigs = (await yPool.request().input('d', sql.Date, lastSignalDate).query(`
-                    SELECT TOP 200 ticker, days_in_trend, rs_slow FROM DailySignals 
-                    WHERE date = @d AND signal_type = '${cfg.type}' ORDER BY days_in_trend ASC, rs_slow DESC
-                `)).recordset;
-
-                await exportService.generate('TV_SIGNALS', {
-                    header: [`# YAHOO TOP 200 ${cfg.type} - ${tradingDateStr}`, `# Sort: Frische & Stärke`],
-                    data: sigs 
-                }, { filename: cfg.file });
+            if (table.rows.length > 0 && tickersInChunk.length > 0) {
+                const request = yPool.request();
+                await request.query(`
+                    DELETE FROM DailySignals 
+                    WHERE ticker IN ('${tickersInChunk.join("','")}') 
+                    AND date = (SELECT MAX(date) FROM DailyHistory)
+                `);
+                await request.bulk(table);
             }
         }
 
-        res.json({ success: true, message: "Abgeschlossen." });
-
+        logger.info("SIGNAL", "Engine abgeschlossen.");
+        return { success: true };
     } catch (err) {
         logger.error('SIGNAL', err.message);
-        if (!res.headersSent) res.status(500).json({ success: false, error: err.message });
+        throw err;
     } finally {
         isCalculating = false;
     }
-});
+}
 
-module.exports = router;
+module.exports = { runSignalsEngine };

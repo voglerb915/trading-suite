@@ -13,28 +13,39 @@ export function renderStocksList(stocks, state) {
         return;
     }
 
-    // 🟦 Index-Filter aktivieren
-    if (state.indexFilter && state.indexFilter !== "all") {
-        stocks = stocks.filter(s =>
-            Array.isArray(s.index) &&
-            s.index.includes(state.indexFilter)
+    // 1. Sector
+if (state.sector && state.sector !== "all") {
+    stocks = stocks.filter(s => s.sector === state.sector);
+}
+
+// 2. Industry
+if (state.industry && state.industry !== "all") {
+    stocks = stocks.filter(s => s.industry === state.industry);
+}
+
+// 3. Index
+if (state.indexFilter && state.indexFilter !== "all") {
+    stocks = stocks.filter(s =>
+        Array.isArray(s.index) &&
+        s.index.includes(state.indexFilter)
+    );
+}
+
+// 4. Search
+if (state.search && state.search.length > 0) {
+    const q = state.search.toUpperCase().split(" ");
+
+    stocks = stocks.filter(s => {
+        const ticker = s.ticker?.toUpperCase() || "";
+        const company = s.company?.toUpperCase() || "";
+
+        return q.every(part =>
+            ticker.includes(part) ||
+            company.includes(part)
         );
-    }
+    });
+}
 
-    // 🟦 Search-Filter (Ticker + Name)
-    if (state.search && state.search.length > 0) {
-        const q = state.search.toUpperCase().split(" ");
-
-        stocks = stocks.filter(s => {
-            const ticker = s.ticker?.toUpperCase() || "";
-            const company = s.company?.toUpperCase() || "";
-
-            return q.every(part =>
-                ticker.includes(part) ||
-                company.includes(part)
-            );
-        });
-    }
 
     // 🟢 Stocks-Pille aktualisieren (nach allen Filtern!)
     const pillContainer = document.getElementById("stocks-pill-container");

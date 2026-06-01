@@ -273,7 +273,7 @@ async function runSignalsEngine() {
     const start = performance.now();
 
     try {
-        const res = await fetch("http://localhost:4000/api/signals/generate-signals");
+        const res = await fetch("http://localhost:4000/api/signals/run-engine");
         const data = await res.json();
 
         await saveTileStatus("calculations", {

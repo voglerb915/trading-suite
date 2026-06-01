@@ -70,7 +70,7 @@ app.use("/api/signals", require("./routes/strategy/signalsRoute"));
 app.use("/api/rs", require("./routes/rs/sectorsRsWriter"));
 app.use("/api/rs", require("./routes/rs/industriesRsWriter"));
 app.use("/api/rs", require("./routes/rs/stocksRsWriter"));
-app.use("/api/rs", require("./routes/rs/etfsRsWriter")); // 🟢 NEU hinzugefügt!
+app.use("/api/rs", require("./routes/rs/etfsRsWriter")); 
 
 // SYSTEM
 app.use("/api/system/checks", require("./routes/system/checks"));

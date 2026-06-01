@@ -2,19 +2,32 @@
  * signalsRoute.js
  * ----------------
  * Aufgabe:
- *  - prepareSignals() importieren
- *  - GET /signals → prepareSignals() ausführen
- *  - Ergebnis als JSON zurückgeben
+ *  - Engine starten (runSignalsEngine)
+ *  - Dashboard-Formatter (prepareSignals) bereitstellen
  */
+
 console.log("🔥 signalsRoute LOADED");
 
 const express = require('express');
 const router = express.Router();
 const logger = require('../../utils/logger');
-const { prepareSignals } = require('../../services/prepareSignals');
 
-// GET /signals
-router.get('/generate-signals', async (req, res) => {
+const { prepareSignals } = require('../../services/prepareSignals');
+const { runSignalsEngine } = require('../../workers/signalsEngine');
+
+// ENGINE STARTEN (Control-Center)
+router.get('/run-engine', async (req, res) => {
+    try {
+        const result = await runSignalsEngine();
+        res.json({ success: true, result });
+    } catch (err) {
+        logger.error('SIGNALS-ENGINE', `Fehler: ${err.message}`);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// DASHBOARD-DATEN (iframe Dashboard)
+router.get('/get-latest', async (req, res) => {
     try {
         const data = await prepareSignals();
         res.json(data);
