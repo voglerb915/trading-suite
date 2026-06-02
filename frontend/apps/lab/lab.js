@@ -55,3 +55,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderIndexes("lab-index-base", indexData);
 
 });
+
+// ------------------------------------------------------
+// LAB Tabs – korrigierte Selektoren
+// ------------------------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+    // Suche nach der Klasse, nicht nach der ID
+    const buttons = document.querySelectorAll(".lab-tabs .tab-btn");
+    // Suche direkt nach allen Elementen mit der Klasse tab-content
+    const contents = document.querySelectorAll(".tab-content");
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const target = btn.dataset.tab;
+
+            // Buttons umschalten
+            buttons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            // Inhalte umschalten
+            contents.forEach(c => {
+                // Hier prüfen wir, ob die ID des Inhalts "tab-" + das Ziel ist
+                c.style.display = (c.id === `tab-${target}`) ? "block" : "none";
+            });
+        });
+    });
+});

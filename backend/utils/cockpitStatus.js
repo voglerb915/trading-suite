@@ -2,28 +2,17 @@ const fs = require("fs");
 const path = require("path");
 const os = require("os");
 
-// 🔥 Hostname des Geräts (Laptop / Desktop)
 const HOST = os.hostname();
+const STATUS_FILE = path.join(__dirname, "../db", `cockpit_status_${HOST}.json`);
 
-// 🔥 Jede Maschine bekommt ihre eigene Datei
-const STATUS_FILE = path.join(
-    __dirname,
-    "../db",
-    `cockpit_status_${HOST}.json`
-);
-
+console.log("HOSTNAME:", os.hostname()); // Debugging
+console.log("STATUS_FILE Pfad:", STATUS_FILE); // Debugging
 // ------------------------------------------------------
 // Status lesen
 // ------------------------------------------------------
 function readStatusFile() {
     try {
-        if (!fs.existsSync(STATUS_FILE)) {
-            return {};
-        }
-
-        const raw = fs.readFileSync(STATUS_FILE, "utf8");
-        return JSON.parse(raw);
-
+        return fs.existsSync(STATUS_FILE) ? JSON.parse(fs.readFileSync(STATUS_FILE, "utf8")) : {};
     } catch (err) {
         console.error("Fehler beim Lesen der Status-Datei:", err);
         return {};
@@ -35,73 +24,49 @@ function readStatusFile() {
 // ------------------------------------------------------
 function writeStatusFile(data) {
     try {
-        const json = JSON.stringify(data, null, 2);
-
-        const tmpFile = STATUS_FILE + ".tmp";
-        fs.writeFileSync(tmpFile, json, "utf8");
+        const tmpFile = `${STATUS_FILE}.tmp`;
+        fs.writeFileSync(tmpFile, JSON.stringify(data, null, 2), "utf8");
         fs.renameSync(tmpFile, STATUS_FILE);
-
     } catch (err) {
         console.error("Fehler beim Schreiben der Status-Datei:", err);
     }
 }
 
 // ------------------------------------------------------
-// Einzelnen Tile-Status aktualisieren
+// Einzelnen Tile-Status aktualisieren (DYNAMISCH)
 // ------------------------------------------------------
-function updateTileStatus(tile, payload) {
+function updateTileStatus(category, payload) {
+    console.log("DEBUG Payload:", JSON.stringify(payload, null, 2)); // <--- HIER EINFÜGEN
     const status = readStatusFile();
 
-    status.downloads = status.downloads || {};
-    status.calculations = status.calculations || {};
-    status.checks = status.checks || {};
+    // Initiale Struktur sicherstellen
+    status[category] = status[category] || {};
 
-    if (tile === "downloads") {
-        console.trace("❌ ILLEGALER updateTileStatus('downloads') AUFRUF");
-        return;
-    }
-
-    // 🔹 Downloads: einzelne Einträge
-    if (tile === "IndexHistory" || tile === "DailyHistory") {
-        status.downloads[tile] = {
-            ...(status.downloads[tile] || {}),
-            ...payload
-        };
-        writeStatusFile(status);
-        return;
-    }
+    // 🔹 DYNAMISCHE LOGIK:
+    // Wenn 'payload' verschachtelt ist (z.B. { Signals: {...} }), 
+    // mergen wir jeden Key einzeln (gut für 'calculations' und 'downloads').
+    // Wenn es ein direktes Objekt ist (wie bei 'checks'), überschreiben wir es.
     
-    // 🔹 Calculations: einzelne Einträge (wie Downloads)
-    // 🔹 Calculations: einzelne Einträge (Erweitert um ETFs, ShortStrategy & Metrics)
-    if (
-        tile === "RS_Sectors" || 
-        tile === "RS_Industries" || 
-        tile === "RS_Stocks" || 
-        tile === "RS_ETFs" ||            // 🟢 NEU
-        tile === "ShortStrategy" ||      // 🟢 NEU
-        tile === "Metrics"               // 🟢 NEU
-    ) {
-        status.calculations[tile] = {
-            ...(status.calculations[tile] || {}),
-            ...payload
-        };
-        writeStatusFile(status);
-        return;
-    }
-    // 🔹 Checks: komplette Struktur
-    if (tile === "checks") {
+    if (category === "checks") {
         status.checks = payload;
-        writeStatusFile(status);
-        return;
+    } else {
+        // 🔹 DYNAMISCHE LOGIK:
+        Object.keys(payload).forEach(key => {
+            const incomingData = payload[key];
+            const existingData = status[category][key] || {};
+
+            // Wir erstellen ein neues Objekt, aber ignorieren den Strich beim Mergen
+            const mergedData = { ...existingData, ...incomingData };
+            
+            if (incomingData.duration === "–") {
+                delete mergedData.duration; // Löscht den Strich, damit das alte Feld bleibt
+            }
+
+            status[category][key] = mergedData;
+        });
     }
 
-    // Fallback (falls später weitere Tiles kommen)
     writeStatusFile(status);
 }
 
-
-module.exports = {
-    readStatusFile,
-    writeStatusFile,
-    updateTileStatus
-};
+module.exports = { readStatusFile, writeStatusFile, updateTileStatus };

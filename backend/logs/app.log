@@ -2851,3 +2851,75 @@
 [2026-06-01T23:19:44.357Z] [SIGNAL] [INFO] Engine abgeschlossen.
 [2026-06-01T23:34:49.628Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
 [2026-06-01T23:35:30.192Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-06-02T10:27:03.207Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T11:32:22.611Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-06-02T11:32:46.645Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-06-02T11:34:53.577Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T11:35:24.643Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-06-02T11:35:51.315Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-06-02T11:43:38.471Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T11:49:27.659Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T11:51:12.652Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T11:51:33.207Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-06-02T11:52:00.294Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-06-02T12:05:51.230Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T12:06:15.826Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-06-02T12:06:40.128Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-06-02T19:29:00.476Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:29:00.577Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:30:34.035Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:30:58.118Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:32:17.913Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:33:33.588Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:34:06.662Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:34:39.276Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:34:45.906Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:40:09.888Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:40:16.801Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:45:39.527Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:49:51.460Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:52:06.694Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:53:58.934Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:54:12.261Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T19:56:41.668Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T20:00:44.823Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T20:00:59.949Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T20:01:11.825Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T20:02:36.567Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T20:06:42.665Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T20:07:59.585Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T20:08:27.488Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T20:12:21.082Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T20:14:09.528Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T20:17:00.554Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T20:32:50.713Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T20:34:42.368Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T20:46:55.173Z] [COCKPIT-METRICS] [INFO] Erfolgreich 331 Zeilen für Cockpit geladen.
+[2026-06-02T20:52:47.237Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid object name 'marketScores'.
+[2026-06-02T20:52:51.196Z] [COCKPIT-METRICS] [INFO] Erfolgreich 334 Zeilen für Cockpit geladen.
+[2026-06-02T21:19:37.482Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid object name 'marketScores'.
+[2026-06-02T21:19:38.564Z] [COCKPIT-METRICS] [INFO] Erfolgreich 334 Zeilen für Cockpit geladen.
+[2026-06-02T21:21:55.590Z] [COCKPIT-METRICS] [INFO] Erfolgreich 349 Zeilen für Cockpit geladen.
+[2026-06-02T21:24:26.765Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid object name 'marketScores'.
+[2026-06-02T21:24:28.268Z] [COCKPIT-METRICS] [INFO] Erfolgreich 334 Zeilen für Cockpit geladen.
+[2026-06-02T21:54:51.209Z] [SERVER] [ERROR] GET /api/rs/write-sectors → Cannot read properties of null (reading 'duration')
+[2026-06-02T21:54:57.581Z] [SERVER] [ERROR] GET /api/rs/write-industries → Cannot read properties of null (reading 'duration')
+[2026-06-02T21:55:04.924Z] [SERVER] [ERROR] GET /api/rs/write-stocks → Cannot read properties of null (reading 'duration')
+[2026-06-02T21:55:11.807Z] [SERVER] [ERROR] GET /api/rs/write-etfs → Cannot read properties of null (reading 'duration')
+[2026-06-02T21:55:13.901Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-06-02T21:55:51.804Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-06-02T21:56:33.191Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-06-02T21:56:54.548Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-06-02T22:09:38.516Z] [SERVER] [ERROR] GET /api/rs/write-sectors → Cannot read properties of null (reading 'duration')
+[2026-06-02T22:10:23.206Z] [SERVER] [ERROR] GET /api/rs/write-sectors → Cannot read properties of null (reading 'duration')
+[2026-06-02T22:16:55.403Z] [SERVER] [ERROR] GET /api/rs/write-sectors → Cannot read properties of null (reading 'duration')
+[2026-06-02T22:16:57.050Z] [SERVER] [ERROR] GET /api/rs/write-industries → Cannot read properties of null (reading 'duration')
+[2026-06-02T22:17:47.406Z] [SERVER] [ERROR] GET /api/rs/write-stocks → Cannot read properties of null (reading 'duration')
+[2026-06-02T22:17:50.907Z] [SERVER] [ERROR] GET /api/rs/write-etfs → Cannot read properties of null (reading 'duration')
+[2026-06-02T22:20:11.469Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-06-02T22:20:39.541Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-06-02T22:29:06.806Z] [SERVER] [ERROR] GET /api/rs/write-sectors → Cannot read properties of null (reading 'duration')
+[2026-06-02T22:29:11.358Z] [SERVER] [ERROR] GET /api/rs/write-sectors → Cannot read properties of null (reading 'duration')
+[2026-06-02T22:29:46.277Z] [SERVER] [ERROR] GET /api/rs/write-sectors → Cannot read properties of null (reading 'duration')
+[2026-06-02T22:45:06.984Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-02T22:54:59.541Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.

@@ -1,12 +1,8 @@
 /* ======================================================
    LAB.CSS – Strukturelles Fundament der LAB
-   Enthält NUR Basis-Layout, Typografie, Grid & Tabellen
 ====================================================== */
 
-
-/* ----------------------------------------------
-   1) BASIS & TYPOGRAFIE
----------------------------------------------- */
+/* 1) BASIS & TYPOGRAFIE */
 body {
     margin: 0;
     padding: 0;
@@ -14,68 +10,87 @@ body {
     color: #ffffff;
     font-family: 'Segoe UI', Arial, sans-serif;
     font-size: 14px;
-    overflow: hidden; /* LAB scrollt über Spalten, nicht über body */
+    overflow: hidden; /* Body scrollt nicht, Tabs übernehmen das */
 }
 
-
-/* ----------------------------------------------
-   2) TOOL-VIEW (LAB-spezifisch)
----------------------------------------------- */
-.tool-view {
-    display: block !important;
-    width: 100vw;
-    height: 100vh;
-}
-
-
-/* ----------------------------------------------
-   3) LAB-CONTAINER (3-Spalten-Layout fixiert)
----------------------------------------------- */
-#lab-container {
-    display: grid;
-    /* Definiert alle 3 Spalten: 25vw, 40vw und der Rest (35vw) */
-    grid-template-columns: 30vw 5vw 1fr; 
-    width: 100vw;
-    height: 100vh;
+/* 2) TAB-SYSTEM */
+.lab-tabs {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    background: #1e1e1e;
+    height: 50px;
     box-sizing: border-box;
 }
 
-/* ----------------------------------------------
-   4) ÜBERSCHRIFTEN
----------------------------------------------- */
-h2, h3, .column-title {
-    font-size: 2.8rem;
-    color: #ffffff;
-    margin-top: 15px;
-    margin-bottom: 30px;
-    font-weight: 800;
-    letter-spacing: -1px;
-    line-height: 1.1;
+.lab-tabs .tab-btn {
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 4px;
+    color: #ccc;
+    transition: background 0.2s;
+    
+    /* NEU: Flexbox-Zentrierung für den Inhalt der Buttons */
+    display: flex;
+    align-items: center;      /* Vertikale Zentrierung */
+    justify-content: center;  /* Horizontale Zentrierung */
+    gap: 8px;                 /* Abstand zwischen Icon und Text */
+    
+    /* Deine Schrift-Anpassungen */
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap;      /* Verhindert Umbruch */
 }
 
+.lab-tabs .tab-btn.active {
+    background: #ffa600;
+    color: white;
+}
 
-/* ----------------------------------------------
-   5) SPALTEN-CONTAINER
----------------------------------------------- */
+/* Scrollbare Tab-Inhalte: Nimmt den restlichen Platz unter der Tab-Leiste ein */
+.tab-content {
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+/* 3) LAB-CONTAINER (GRID) */
+#lab-container {
+    display: grid;
+    grid-template-columns: 30vw 30vw 1fr;
+    width: 100vw;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* 4) SPALTEN-CONTAINER */
 #col-1, #col-2 {
     overflow-y: auto;
-    height: 100vh;
-    padding: 0px 20px 20px 20px;
+    height: 100%;
+    padding: 20px;
     border-right: 1px solid #252525;
     box-sizing: border-box;
 }
+
 #col-3 {
     overflow-y: auto;
-    height: 100vh;
-    padding: 5px;
+    height: 100%;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    box-sizing: border-box;
 }
 
-/* ----------------------------------------------
-   6) TABELLEN-GRUNDOPTIK
----------------------------------------------- */
+/* 5) OVERVIEWS / KONTEXT-CONTAINER */
+#col-3-overviews {
+    padding: 20px;
+    box-sizing: border-box;
+    max-width: 1200px; /* Optional: verhindert, dass es auf Ultra-Wide zu breit wird */
+}
+
+/* 6) TABELLEN-GRUNDOPTIK */
 .vt-header {
     background: #1e1e1e;
     color: #ffffff;
@@ -92,7 +107,6 @@ h2, h3, .column-title {
     padding: 10px 5px;
 }
 
-
 /* Sticky Header für Journal-Tabellen */
 #journal-table > div:first-child {
     position: sticky;
@@ -102,10 +116,7 @@ h2, h3, .column-title {
     border-bottom: 1px solid #444;
 }
 
-
-/* ----------------------------------------------
-   7) SCROLLBARS (LAB-weit)
----------------------------------------------- */
+/* 7) SCROLLBARS */
 ::-webkit-scrollbar {
     width: 10px;
 }

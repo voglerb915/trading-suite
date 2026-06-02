@@ -10,17 +10,13 @@ export function renderCalculationsTable(state = {}) {
         { key: "RS_Industries", label: "RS Industries JSON", action: "rsindustries" },
         { key: "RS_Stocks", label: "RS Stocks JSON", action: "rsstocks" },
         { key: "RS_ETFs", label: "RS ETFs JSON", action: "rsetfs" }, 
-        { key: "Signals", label: "Signals Engine", action: "signals" }, // 🟢 NEU in der Tabelle!
+        { key: "Signals", label: "Signals Engine", action: "signals" },
         { key: "ShortStrategy", label: "Short-Strategie", action: "short" },
         { key: "Metrics", label: "Update-Metrics", action: "metrics" }
     ];
 
     root.innerHTML = `
         <table class="downloads-table">
-            <colgroup>
-                <col><col><col><col><col>
-            </colgroup>
-
             <thead>
                 <tr>
                     <th>Berechnung</th>
@@ -30,14 +26,11 @@ export function renderCalculationsTable(state = {}) {
                     <th style="text-align: center;">Aktion</th>
                 </tr>
             </thead>
-
             <tbody>
                 ${rows.map(r => {
                     const s = state[r.key] || {};
-
                     const ok = s.ok === true || s.status === "success";
                     const isError = s.ok === false || s.status === "error";
-
                     return `
                         <tr class="${ok ? "success" : (isError ? "error" : "")}">
                             <td>${r.label}</td>
@@ -52,230 +45,44 @@ export function renderCalculationsTable(state = {}) {
         </table>
     `;
 
-    root.onclick = (e) => {
+    root.onclick = async (e) => {
         const el = e.target.closest(".calc-action");
         if (!el) return;
 
         const action = el.dataset.action;
         el.style.opacity = "0.5";
 
-        let promise;
+        try {
+            const actions = {
+                "short": runShortStrategyAction,
+                "metrics": runMetricsAction,
+                "rssectors": runRsSectorsWriter,
+                "rsindustries": runRsIndustriesWriter,
+                "rsstocks": runRsStocksWriter,
+                "rsetfs": runRsEtfsWriter,
+                "signals": runSignalsEngine
+            };
 
-            if (action === "short") promise = runShortStrategyAction();
-            if (action === "metrics") promise = runMetricsAction();
-            if (action === "rssectors") promise = runRsSectorsWriter();
-            if (action === "rsindustries") promise = runRsIndustriesWriter();
-            if (action === "rsstocks") promise = runRsStocksWriter();
-            if (action === "rsetfs") promise = runRsEtfsWriter();
-
-            // 🟢 NEU
-            if (action === "signals") promise = runSignalsEngine();
-
-        promise.finally(() => {
+            if (actions[action]) await actions[action]();
+        } catch (err) {
+            console.error("Fehler beim Prozess:", err);
+        } finally {
             el.style.opacity = "1";
-            const nextState = window.__persistedState?.calculations ?? state;
-            renderCalculationsTable(nextState);
-        });
+            await loadPersistedStatus();
+            renderCalculationsTable(window.__persistedState?.calculations || {});
+        }
     };
 }
 
 /* ============================================================
-   ACTION: SHORT-STRATEGIE
+   ACTION FUNKTIONEN
 ============================================================ */
-async function runShortStrategyAction() {
-    const start = performance.now();
 
-    try {
-        // 🟢 Pfad angepasst an server.js: app.use("/api/strategy/short-1", ...)
-        const res = await fetch("http://localhost:4000/api/strategy/short-1/update-short-strategy");
-        if (!res.ok) throw new Error(await res.text());
-
-        await saveTileStatus("calculations", {
-            ShortStrategy: {
-                status: "success",
-                lastRun: new Date(),
-                duration: ((performance.now() - start) / 1000).toFixed(1) + "s"
-            }
-        });
-
-    } catch (err) {
-        await saveTileStatus("calculations", {
-            ShortStrategy: {
-                status: "error",
-                lastRun: new Date(),
-                duration: "–"
-            }
-        });
-    }
-
-    await loadPersistedStatus();
-}
-
-/* ============================================================
-   ACTION: METRICS
-============================================================ */
-async function runMetricsAction() {
-    const start = performance.now();
-
-    try {
-        // 🟢 Pfad angepasst an server.js: app.use("/api/data/volume-metrics", ...)
-        const res = await fetch("http://localhost:4000/api/data/volume-metrics");
-        if (!res.ok) throw new Error(await res.text());
-
-        await saveTileStatus("calculations", {
-            Metrics: {
-                status: "success",
-                lastRun: new Date(),
-                duration: ((performance.now() - start) / 1000).toFixed(1) + "s"
-            }
-        });
-
-    } catch (err) {
-        await saveTileStatus("calculations", {
-            Metrics: {
-                status: "error",
-                lastRun: new Date(),
-                duration: "–"
-            }
-        });
-    }
-
-    await loadPersistedStatus();
-}
-
-/* ============================================================
-   ACTION: RS Sectors WRITER
-============================================================ */
-async function runRsSectorsWriter() {
-    const start = performance.now();
-
-    try {
-        const res = await fetch("http://localhost:4000/api/rs/write-sectors");
-        const data = await res.json();
-
-        await saveTileStatus("calculations", {
-            RS_Sectors: {
-                status: data.success ? "success" : "error",
-                lastRun: new Date(),
-                duration: ((performance.now() - start) / 1000).toFixed(1) + "s"
-            }
-        });
-
-    } catch (err) {
-        await saveTileStatus("calculations", {
-            RS_Sectors: {
-                status: "error",
-                lastRun: new Date(),
-                duration: "–"
-            }
-        });
-    }
-
-    await loadPersistedStatus();
-}
-
-/* ============================================================
-   ACTION: RS Industries WRITER
-============================================================ */
-async function runRsIndustriesWriter() {
-    const start = performance.now();
-
-    try {
-        const res = await fetch("http://localhost:4000/api/rs/write-industries");
-        const data = await res.json();
-
-        await saveTileStatus("calculations", {
-            RS_Industries: {
-                status: data.success ? "success" : "error",
-                lastRun: new Date(),
-                duration: ((performance.now() - start) / 1000).toFixed(1) + "s"
-            }
-        });
-
-    } catch (err) {
-        await saveTileStatus("calculations", {
-            RS_Industries: {
-                status: "error",
-                lastRun: new Date(),
-                duration: "–"
-            }
-        });
-    }
-
-    await loadPersistedStatus();
-}
-
-/* ============================================================
-   ACTION: RS Stocks WRITER
-============================================================ */
-async function runRsStocksWriter() {
-    const start = performance.now();
-
-    try {
-        const res = await fetch("http://localhost:4000/api/rs/write-stocks");
-        const data = await res.json();
-
-        await saveTileStatus("calculations", {
-            RS_Stocks: {
-                status: data.success ? "success" : "error",
-                lastRun: new Date(),
-                duration: ((performance.now() - start) / 1000).toFixed(1) + "s"
-            }
-        });
-
-    } catch (err) {
-        await saveTileStatus("calculations", {
-            RS_Stocks: {
-                status: "error",
-                lastRun: new Date(),
-                duration: "–"
-            }
-        });
-    }
-
-    await loadPersistedStatus();
-}
-
-/* ============================================================
-   🟢 ACTION: RS ETFs WRITER (NEU)
-============================================================ */
-async function runRsEtfsWriter() {
-    const start = performance.now();
-
-    try {
-        const res = await fetch("http://localhost:4000/api/rs/write-etfs");
-        const data = await res.json();
-
-        await saveTileStatus("calculations", {
-            RS_ETFs: {
-                status: data.success ? "success" : "error",
-                lastRun: new Date(),
-                duration: ((performance.now() - start) / 1000).toFixed(1) + "s"
-            }
-        });
-
-    } catch (err) {
-        await saveTileStatus("calculations", {
-            RS_ETFs: {
-                status: "error",
-                lastRun: new Date(),
-                duration: "–"
-            }
-        });
-    }
-
-    await loadPersistedStatus();
-}
-/* ============================================================
-   🟢 ACTION: Signals in DB (NEU)
-============================================================ */
 async function runSignalsEngine() {
     const start = performance.now();
-
     try {
         const res = await fetch("http://localhost:4000/api/signals/run-engine");
         const data = await res.json();
-
         await saveTileStatus("calculations", {
             Signals: {
                 status: data.success ? "success" : "error",
@@ -283,16 +90,87 @@ async function runSignalsEngine() {
                 duration: ((performance.now() - start) / 1000).toFixed(1) + "s"
             }
         });
-
     } catch (err) {
         await saveTileStatus("calculations", {
-            Signals: {
-                status: "error",
-                lastRun: new Date(),
-                duration: "–"
-            }
+            Signals: { status: "error", lastRun: new Date(), duration: "–" }
         });
     }
+}
 
-    await loadPersistedStatus();
+async function runShortStrategyAction() {
+    const start = performance.now();
+    try {
+        const res = await fetch("http://localhost:4000/api/strategy/short-1/update-short-strategy");
+        if (!res.ok) throw new Error();
+        await saveTileStatus("calculations", {
+            ShortStrategy: { status: "success", lastRun: new Date(), duration: ((performance.now() - start) / 1000).toFixed(1) + "s" }
+        });
+    } catch (err) {
+        await saveTileStatus("calculations", { ShortStrategy: { status: "error", lastRun: new Date(), duration: "–" } });
+    }
+}
+
+async function runMetricsAction() {
+    const start = performance.now();
+    try {
+        const res = await fetch("http://localhost:4000/api/data/volume-metrics");
+        if (!res.ok) throw new Error();
+        await saveTileStatus("calculations", {
+            Metrics: { status: "success", lastRun: new Date(), duration: ((performance.now() - start) / 1000).toFixed(1) + "s" }
+        });
+    } catch (err) {
+        await saveTileStatus("calculations", { Metrics: { status: "error", lastRun: new Date(), duration: "–" } });
+    }
+}
+
+async function runRsSectorsWriter() {
+    const start = performance.now();
+    try {
+        const res = await fetch("http://localhost:4000/api/rs/write-sectors");
+        const data = await res.json();
+        await saveTileStatus("calculations", {
+            RS_Sectors: { status: data.success ? "success" : "error", lastRun: new Date(), duration: ((performance.now() - start) / 1000).toFixed(1) + "s" }
+        });
+    } catch (err) {
+        await saveTileStatus("calculations", { RS_Sectors: { status: "error", lastRun: new Date(), duration: "–" } });
+    }
+}
+
+async function runRsIndustriesWriter() {
+    const start = performance.now();
+    try {
+        const res = await fetch("http://localhost:4000/api/rs/write-industries");
+        const data = await res.json();
+        await saveTileStatus("calculations", {
+            RS_Industries: { status: data.success ? "success" : "error", lastRun: new Date(), duration: ((performance.now() - start) / 1000).toFixed(1) + "s" }
+        });
+    } catch (err) {
+        await saveTileStatus("calculations", { RS_Industries: { status: "error", lastRun: new Date(), duration: "–" } });
+    }
+}
+
+async function runRsStocksWriter() {
+    const start = performance.now();
+    try {
+        const res = await fetch("http://localhost:4000/api/rs/write-stocks");
+        const data = await res.json();
+        await saveTileStatus("calculations", {
+            RS_Stocks: { status: data.success ? "success" : "error", lastRun: new Date(), duration: ((performance.now() - start) / 1000).toFixed(1) + "s" }
+        });
+    } catch (err) {
+        await saveTileStatus("calculations", { RS_Stocks: { status: "error", lastRun: new Date(), duration: "–" } });
+    }
+}
+
+async function runRsEtfsWriter() {
+    const start = performance.now();
+    try {
+        const res = await fetch("http://localhost:4000/api/rs/write-etfs");
+        const data = await res.json();
+        await saveTileStatus("calculations", {
+            RS_ETFs: { status: data.success ? "success" : "error", lastRun: new Date(), duration: ((performance.now() - start) / 1000).toFixed(1) + "s" }
+        });
+    } catch (err) {
+        await saveTileStatus("calculations", { RS_ETFs: { status: "error", lastRun: new Date(), duration: "–" } });
+    }
 }

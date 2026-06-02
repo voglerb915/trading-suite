@@ -72,33 +72,30 @@ export function renderDownloadsStatus(downloads) {
 
 export async function runIndexHistory() {
     updateTile("downloads", { status: "running", progress: 0 });
+    
+    // 🟢 STARTZEIT MESSEN
+    const startTime = performance.now(); 
 
     return new Promise((resolve) => {
-        // 🟢 NEU: Pfad um '/data/downloads' erweitert, passend zur server.js
         const evtSource = new EventSource("http://localhost:4000/api/data/downloads/stream");
 
         evtSource.addEventListener("progress", (e) => {
-            const data = JSON.parse(e.data);
-            const percent = data.total > 0
-                ? Math.round((data.current / data.total) * 100)
-                : 0;
-
-            updateTile("downloads", {
-                progress: percent,
-                status: `Lade ${data.current}/${data.total} (${data.ticker})`
-            });
+            // ... (dein restlicher Code)
         });
 
         evtSource.addEventListener("done", async () => {
             evtSource.close();
 
-            // 🟢 HINWEIS: Falls saveTileStatus intern gegen /api/cockpit geschossen hat, 
-            // stellt die Funktion das im logic.js-Core hoffentlich ebenfalls auf /api/system/cockpit um.
+            // 🟢 DAUER BERECHNEN
+            const endTime = performance.now();
+            const durationInSeconds = Math.round((endTime - startTime) / 1000);
+            const durationString = `${durationInSeconds}s`;
+
             await saveTileStatus("downloads", {
                 IndexHistory: {
                     ok: true,
                     lastRun: new Date(),
-                    duration: "–"
+                    duration: durationString // 🟢 Hier wird jetzt der berechnete Wert gesendet!
                 }
             });
 
@@ -111,8 +108,10 @@ export async function runIndexHistory() {
 export async function runDailyHistory() {
     updateTile("downloads", { status: "running", progress: 0 });
 
+    // 🟢 STARTZEIT MESSEN
+    const startTime = performance.now();
+
     return new Promise((resolve) => {
-        // 🟢 NEU: Pfad um '/data/downloads' erweitert, passend zur server.js
         const evtSource = new EventSource("http://localhost:4000/api/data/downloads/stream-daily");
 
         evtSource.addEventListener("progress", (e) => {
@@ -128,11 +127,16 @@ export async function runDailyHistory() {
         evtSource.addEventListener("done", async () => {
             evtSource.close();
 
+            // 🟢 DAUER BERECHNEN
+            const endTime = performance.now();
+            const durationInSeconds = Math.round((endTime - startTime) / 1000);
+            const durationString = `${durationInSeconds}s`;
+
             await saveTileStatus("downloads", {
                 DailyHistory: {
                     ok: true,
                     lastRun: new Date(),
-                    duration: "–"
+                    duration: durationString // 🟢 Hier wird jetzt der berechnete Wert gesendet
                 }
             });
 

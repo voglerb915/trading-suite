@@ -2,14 +2,14 @@
   "downloads": {
     "IndexHistory": {
       "ok": true,
-      "lastRun": "2026-06-01T23:08:57.754Z",
-      "duration": "3s",
-      "info": "7 Fehler übersprungen"
+      "lastRun": "2026-06-02T21:20:43.302Z",
+      "info": "7 Fehler übersprungen",
+      "duration": "5s"
     },
     "DailyHistory": {
       "ok": true,
-      "lastRun": "2026-06-01T23:15:55.422Z",
-      "duration": "412s",
+      "lastRun": "2026-06-02T21:29:04.472Z",
+      "duration": "419s",
       "error": "errorCount is not defined",
       "info": "Erfolgreich"
     }
@@ -17,32 +17,37 @@
   "calculations": {
     "RS_Sectors": {
       "status": "success",
-      "lastRun": "2026-06-01T23:18:33.822Z",
-      "duration": "0.25s",
+      "lastRun": "2026-06-02T22:30:38.468Z",
+      "duration": "0.1s",
       "error": "sql.request is not a function"
     },
     "RS_Industries": {
       "status": "success",
-      "lastRun": "2026-06-01T23:18:36.511Z",
-      "duration": "0.74s",
+      "lastRun": "2026-06-02T22:30:44.766Z",
+      "duration": "0.8s",
       "error": "Invalid column name 'sector'."
     },
     "RS_Stocks": {
       "status": "success",
-      "lastRun": "2026-06-01T23:18:51.740Z",
-      "duration": "10.71s",
+      "lastRun": "2026-06-02T21:57:58.141Z",
+      "duration": "13.3s",
       "error": "Timeout: Request failed to complete in 60000ms"
     },
     "RS_ETFs": {
       "status": "success",
-      "lastRun": "2026-06-01T23:19:06.803Z",
-      "duration": "12.59s"
+      "lastRun": "2026-06-02T21:58:31.426Z",
+      "duration": "11.9s"
+    },
+    "Signals": {
+      "status": "success",
+      "lastRun": "2026-06-02T21:56:54.559Z",
+      "duration": "21.4s"
     }
   },
   "checks": {
     "status": "green",
-    "lastRun": "2026-06-01T23:21:15.302Z",
-    "duration": "2.86s",
+    "lastRun": "2026-06-02T22:00:41.353Z",
+    "duration": "6.61s",
     "sections": {
       "finviz": {
         "title": "Finviz-Daten",
@@ -51,15 +56,15 @@
           {
             "name": "finviz",
             "status": "success",
-            "lastDateStr": "2026-06-01 22:15:46",
-            "countAtLastDate": 11166,
+            "lastDateStr": "2026-06-02 22:15:44",
+            "countAtLastDate": 11184,
             "isValidation": false,
             "details": null
           },
           {
             "name": "finviz_groups",
             "status": "success",
-            "lastDateStr": "2026-06-01 22:15:37",
+            "lastDateStr": "2026-06-02 22:15:33",
             "countAtLastDate": 155,
             "isValidation": false,
             "details": null
@@ -67,7 +72,7 @@
           {
             "name": "Sectors JSON",
             "status": "success",
-            "lastDateStr": "2026-06-01 22:15:01",
+            "lastDateStr": "2026-06-02 22:15:01",
             "countAtLastDate": 11,
             "isValidation": false,
             "details": null
@@ -75,7 +80,7 @@
           {
             "name": "Industries JSON",
             "status": "success",
-            "lastDateStr": "2026-06-01 22:15:37",
+            "lastDateStr": "2026-06-02 22:15:33",
             "countAtLastDate": 144,
             "isValidation": false,
             "details": null
@@ -83,7 +88,7 @@
           {
             "name": "Stocks JSON",
             "status": "success",
-            "lastDateStr": "2026-06-01 22:15:46",
+            "lastDateStr": "2026-06-02 22:15:44",
             "countAtLastDate": 5580,
             "isValidation": false,
             "details": null
@@ -91,8 +96,8 @@
           {
             "name": "ETFs JSON",
             "status": "success",
-            "lastDateStr": "2026-06-01 22:15:46",
-            "countAtLastDate": 5586,
+            "lastDateStr": "2026-06-02 22:15:44",
+            "countAtLastDate": 5604,
             "isValidation": false,
             "details": null
           }
@@ -105,40 +110,40 @@
           {
             "name": "Indexes",
             "status": "success",
-            "lastDateStr": "2026-06-01",
-            "countAtLastDate": 18,
+            "lastDateStr": "2026-06-02",
+            "countAtLastDate": 32,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailyHistory",
             "status": "success",
-            "lastDateStr": "2026-06-01",
-            "countAtLastDate": 10921,
+            "lastDateStr": "2026-06-02",
+            "countAtLastDate": 10881,
             "isValidation": false,
             "details": null
           },
           {
             "name": "DailySignals",
             "status": "success",
-            "lastDateStr": "2026-06-01",
-            "countAtLastDate": 5595,
+            "lastDateStr": "2026-06-02",
+            "countAtLastDate": 5584,
             "isValidation": false,
             "details": null
           },
           {
             "name": "StockMetrics",
             "status": "success",
-            "lastDateStr": "2026-06-01",
-            "countAtLastDate": 10921,
+            "lastDateStr": "2026-06-02",
+            "countAtLastDate": 10881,
             "isValidation": false,
             "details": null
           },
           {
             "name": "Strategies",
             "status": "success",
-            "lastDateStr": "2026-06-01",
-            "countAtLastDate": 388,
+            "lastDateStr": "2026-06-02",
+            "countAtLastDate": 402,
             "isValidation": false,
             "details": null
           }
@@ -182,6 +187,184 @@
           }
         ]
       }
+    }
+  },
+  "RS_Sectors": {
+    "status": {
+      "0": "s",
+      "1": "u",
+      "2": "c",
+      "3": "c",
+      "4": "e",
+      "5": "s",
+      "6": "s"
+    },
+    "lastRun": {
+      "0": "2",
+      "1": "0",
+      "2": "2",
+      "3": "6",
+      "4": "-",
+      "5": "0",
+      "6": "6",
+      "7": "-",
+      "8": "0",
+      "9": "2",
+      "10": "T",
+      "11": "2",
+      "12": "2",
+      "13": ":",
+      "14": "3",
+      "15": "0",
+      "16": ":",
+      "17": "3",
+      "18": "8",
+      "19": ".",
+      "20": "4",
+      "21": "4",
+      "22": "8",
+      "23": "Z"
+    },
+    "duration": {
+      "0": "0",
+      "1": ".",
+      "2": "1",
+      "3": "0",
+      "4": "s"
+    }
+  },
+  "RS_Industries": {
+    "status": {
+      "0": "s",
+      "1": "u",
+      "2": "c",
+      "3": "c",
+      "4": "e",
+      "5": "s",
+      "6": "s"
+    },
+    "lastRun": {
+      "0": "2",
+      "1": "0",
+      "2": "2",
+      "3": "6",
+      "4": "-",
+      "5": "0",
+      "6": "6",
+      "7": "-",
+      "8": "0",
+      "9": "2",
+      "10": "T",
+      "11": "2",
+      "12": "2",
+      "13": ":",
+      "14": "3",
+      "15": "0",
+      "16": ":",
+      "17": "4",
+      "18": "4",
+      "19": ".",
+      "20": "7",
+      "21": "4",
+      "22": "7",
+      "23": "Z"
+    },
+    "duration": {
+      "0": "0",
+      "1": ".",
+      "2": "7",
+      "3": "8",
+      "4": "s"
+    }
+  },
+  "RS_Stocks": {
+    "status": {
+      "0": "s",
+      "1": "u",
+      "2": "c",
+      "3": "c",
+      "4": "e",
+      "5": "s",
+      "6": "s"
+    },
+    "lastRun": {
+      "0": "2",
+      "1": "0",
+      "2": "2",
+      "3": "6",
+      "4": "-",
+      "5": "0",
+      "6": "6",
+      "7": "-",
+      "8": "0",
+      "9": "2",
+      "10": "T",
+      "11": "2",
+      "12": "1",
+      "13": ":",
+      "14": "5",
+      "15": "7",
+      "16": ":",
+      "17": "5",
+      "18": "8",
+      "19": ".",
+      "20": "1",
+      "21": "1",
+      "22": "4",
+      "23": "Z"
+    },
+    "duration": {
+      "0": "1",
+      "1": "3",
+      "2": ".",
+      "3": "2",
+      "4": "7",
+      "5": "s"
+    }
+  },
+  "RS_ETFs": {
+    "status": {
+      "0": "s",
+      "1": "u",
+      "2": "c",
+      "3": "c",
+      "4": "e",
+      "5": "s",
+      "6": "s"
+    },
+    "lastRun": {
+      "0": "2",
+      "1": "0",
+      "2": "2",
+      "3": "6",
+      "4": "-",
+      "5": "0",
+      "6": "6",
+      "7": "-",
+      "8": "0",
+      "9": "2",
+      "10": "T",
+      "11": "2",
+      "12": "1",
+      "13": ":",
+      "14": "5",
+      "15": "8",
+      "16": ":",
+      "17": "3",
+      "18": "1",
+      "19": ".",
+      "20": "4",
+      "21": "0",
+      "22": "2",
+      "23": "Z"
+    },
+    "duration": {
+      "0": "1",
+      "1": "1",
+      "2": ".",
+      "3": "5",
+      "4": "7",
+      "5": "s"
     }
   }
 }

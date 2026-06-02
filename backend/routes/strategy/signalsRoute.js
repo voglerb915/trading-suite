@@ -16,12 +16,22 @@ const { prepareSignals } = require('../../services/prepareSignals');
 const { runSignalsEngine } = require('../../workers/signalsEngine');
 
 // ENGINE STARTEN (Control-Center)
+// SIGNALS ROUTE
 router.get('/run-engine', async (req, res) => {
     try {
+        // 1. Engine ausführen
         const result = await runSignalsEngine();
-        res.json({ success: true, result });
+        
+        // 2. Antwort an das Frontend (calculations.js)
+        // WICHTIG: Das Frontend sucht nach "success: true"
+        res.json({ 
+            success: true, 
+            message: "Engine erfolgreich ausgeführt",
+            data: result // Falls die Engine Details zurückgibt
+        });
     } catch (err) {
         logger.error('SIGNALS-ENGINE', `Fehler: ${err.message}`);
+        // Das Frontend sieht "success: false" und setzt das ❌
         res.status(500).json({ success: false, error: err.message });
     }
 });
