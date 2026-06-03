@@ -2923,3 +2923,45 @@
 [2026-06-02T22:29:46.277Z] [SERVER] [ERROR] GET /api/rs/write-sectors → Cannot read properties of null (reading 'duration')
 [2026-06-02T22:45:06.984Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
 [2026-06-02T22:54:59.541Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T10:20:30.902Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T10:33:45.680Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T10:46:24.267Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T11:47:33.958Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T11:48:48.706Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T11:54:56.620Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T12:06:51.730Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T12:08:35.706Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T12:17:38.342Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T12:18:18.779Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T12:20:01.791Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T12:20:49.718Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T12:21:17.461Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T12:25:03.085Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T12:29:21.707Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T12:29:54.062Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T12:42:40.413Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T12:43:31.990Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T13:11:29.109Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T13:12:33.412Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T13:14:58.716Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T15:18:48.092Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Incorrect syntax near the keyword 'AND'.
+[2026-06-03T15:19:11.618Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Incorrect syntax near the keyword 'AND'.
+[2026-06-03T15:20:29.632Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Incorrect syntax near the keyword 'AND'.
+[2026-06-03T15:21:39.512Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Incorrect syntax near the keyword 'AND'.
+[2026-06-03T15:21:39.522Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Incorrect syntax near the keyword 'AND'.
+[2026-06-03T15:25:07.254Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Incorrect syntax near the keyword 'AND'.
+[2026-06-03T15:28:36.115Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Incorrect syntax near the keyword 'AND'.
+[2026-06-03T15:28:53.060Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Incorrect syntax near the keyword 'AND'.
+[2026-06-03T15:37:32.115Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Incorrect syntax near the keyword 'AND'.
+[2026-06-03T15:40:36.169Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Incorrect syntax near the keyword 'AND'.
+[2026-06-03T15:42:44.024Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Incorrect syntax near the keyword 'AND'.
+[2026-06-03T15:46:50.899Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Incorrect syntax near the keyword 'close'.
+[2026-06-03T15:51:23.079Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T15:58:01.983Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T16:10:09.204Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T16:10:47.569Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T16:18:26.572Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T16:21:02.830Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T16:28:09.264Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T16:30:56.599Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T17:02:36.508Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.

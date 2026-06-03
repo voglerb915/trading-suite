@@ -112,6 +112,12 @@ async function writeEtfsJson() {
   // ---------------------------------------------------------
   const { sql, config } = require('../../db/connection');
   const pool = await sql.connect(config);
+  await pool.request()
+      .input('datum', sql.DateTime, new Date(latestDate))
+      .input('type', sql.VarChar, 'etf') 
+      .query(`DELETE FROM trading.dbo.marketScores 
+              WHERE type = @type 
+              AND CAST(anl_datum AS DATE) = CAST(@datum AS DATE)`);
 
   const insertSql = `
       INSERT INTO trading.dbo.marketScores (

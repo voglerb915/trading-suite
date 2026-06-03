@@ -106,51 +106,58 @@ async function writeStocksJson() {
   const stocksWithDiffs = computeDiffs(stocks, historyFiles);
 
   // ---------------------------------------------------------
-    // marketScores: Insert Stocks into DB
-    // ---------------------------------------------------------
-    const { sql, config } = require('../../db/connection');
-    const pool = await sql.connect(config);
+  // marketScores: Insert Stocks into DB
+  // ---------------------------------------------------------
+  const { sql, config } = require('../../db/connection');
+  const pool = await sql.connect(config);
+  // 1. DELETE: Entfernt nur die Industrie-Einträge von heute
+  await pool.request()
+      .input('datum', sql.DateTime, new Date(latestDate))
+      .input('type', sql.VarChar, 'stock')
+      .query(`DELETE FROM trading.dbo.marketScores 
+              WHERE type = @type 
+              AND CAST(anl_datum AS DATE) = CAST(@datum AS DATE)`);
 
-    const insertSql = `
-        INSERT INTO trading.dbo.marketScores (
-            type,
-            name,
-            score,
-            rank_db,
-            diffD,
-            diffW,
-            diffM,
-            diffQ,
-            anl_datum
-        )
-        VALUES (
-            @type,
-            @name,
-            @score,
-            @rank_db,
-            @diffD,
-            @diffW,
-            @diffM,
-            @diffQ,
-            @anl_datum
-        )
-    `;
+  const insertSql = `
+      INSERT INTO trading.dbo.marketScores (
+          type,
+          name,
+          score,
+          rank_db,
+          diffD,
+          diffW,
+          diffM,
+          diffQ,
+          anl_datum
+      )
+      VALUES (
+          @type,
+          @name,
+          @score,
+          @rank_db,
+          @diffD,
+          @diffW,
+          @diffM,
+          @diffQ,
+          @anl_datum
+      )
+  `;
 
-    for (const item of stocksWithDiffs) {
-        await pool.request()
-            .input('type', sql.VarChar, 'stock')
-            .input('name', sql.VarChar, item.ticker)          // wichtig: Stocks haben Ticker
-            .input('score', sql.Float, item.score)
-            .input('rank_db', sql.Int, item.rankWonDb)
-            .input('diffD', sql.Int, item.diffD)
-            .input('diffW', sql.Int, item.diffW)
-            .input('diffM', sql.Int, item.diffM)
-            .input('diffQ', sql.Int, item.diffQ)
-            .input('anl_datum', sql.DateTime, item.anl_datum)
-            .query(insertSql);
-    }
+  for (const item of stocksWithDiffs) {
+      await pool.request()
+          .input('type', sql.VarChar, 'stock')
+          .input('name', sql.VarChar, item.ticker)          // wichtig: Stocks haben Ticker
+          .input('score', sql.Float, item.score)
+          .input('rank_db', sql.Int, item.rankWonDb)
+          .input('diffD', sql.Int, item.diffD)
+          .input('diffW', sql.Int, item.diffW)
+          .input('diffM', sql.Int, item.diffM)
+          .input('diffQ', sql.Int, item.diffQ)
+          .input('anl_datum', sql.DateTime, item.anl_datum)
+          .query(insertSql);
+  }
 
-    console.log(`📥 marketScores: ${stocksWithDiffs.length} Stock‑Einträge gespeichert`);
+  console.log(`📥 marketScores: ${stocksWithDiffs.length} Stock‑Einträge gespeichert`);
 
   // Snapshot + History schreiben
   fs.writeFileSync(snapshotFile, JSON.stringify(stocksWithDiffs, null, 2));

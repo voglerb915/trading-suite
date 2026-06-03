@@ -1,124 +1,61 @@
-// =========================================================
-//  Cockpit Renderer
-//  (UI für die Cockpit-App, NICHT der globale Controller)
-// =========================================================
+export function renderCockpit() {
+    const container = document.getElementById("cockpit-root");
+    if (!container) return;
 
-// ---------------------------------------------------------
-//  1) Root Renderer
-// ---------------------------------------------------------
-export function renderCockpit(state) {
-    renderCockpitHeader(state);
-    renderCockpitTop20(state);
-    renderCockpitIndexPerformance(state);
-    renderCockpitSectorOverview(state);
-}
+    container.innerHTML = `
+        <div id="cockpit-grid" 
+            style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-rows: auto auto;
+                gap: 20px;
+                padding: 20px;
+            "
+        >
 
+            <!-- ⭐ 1/1 VolumeExtract -->
+            <div id="col-1" style="background:#111; border:1px solid #333; border-radius:6px; padding:10px;">
+            </div>
 
+            <!-- ⭐ 1/2 Top 20 Stocks -->
+            <div id="col-2" style="background:#111; border:1px solid #333; border-radius:6px; padding:10px;">
+            </div>
 
-// ---------------------------------------------------------
-//  2) Header (Systemstatus + Breadcrumbs + Datum)
-// ---------------------------------------------------------
-function renderCockpitHeader(state) {
-    const el = document.getElementById("cockpit-header");
-    if (!el) return;
+            <!-- ⭐ 1/3 Systemstatus -->
+            <div id="col-3" style="background:#111; border:1px solid #333; border-radius:6px; padding:10px;">
+            </div>
 
-    el.innerHTML = `
-        <div class="cockpit-header-left">
-            <h2>System Status</h2>
-            <div id="cockpit-system-status">—</div>
+            <!-- ⭐ 2/1 Index Performance -->
+            <div id="col-4" style="background:#111; border:1px solid #333; border-radius:6px; padding:10px;">
+            </div>
+
+            <!-- ⭐ 2/2 Sector Overview -->
+            <div id="col-5" style="background:#111; border:1px solid #333; border-radius:6px; padding:10px;">
+            </div>
+
+            <!-- ⭐ 2/3 Industries Overview -->
+            <div id="col-6" style="background:#111; border:1px solid #333; border-radius:6px; padding:10px;">
+            </div>
+
         </div>
-
-        <div class="cockpit-header-right">
-            <div class="cockpit-breadcrumbs">${state.breadcrumbs}</div>
-            <div class="cockpit-date">${new Date().toLocaleDateString()}</div>
-        </div>
     `;
-}
 
+    // ⭐ Render-Funktionen aufrufen
+    // 1/1 VolumeExtract
+    renderVolumeExtract(GlobalState.get("volumeData"));
 
+    // 1/2 Top 20 Stocks
+    renderVolumeTable(GlobalState.get("volumeData"), "col-2");
 
-// ---------------------------------------------------------
-//  3) Top 20 Stocks (aus globalem State)
-// ---------------------------------------------------------
-function renderCockpitTop20(state) {
-    const el = document.getElementById("cockpit-top20");
-    if (!el) return;
+    // 1/3 Systemstatus
+    renderSystemStatus("col-3");
 
-    const top20 = [...state.stocks]
-        .sort((a, b) => (b.rsScore ?? 0) - (a.rsScore ?? 0))
-        .slice(0, 20);
+    // 2/1 Index Performance
+    renderIndexPerformance("col-4");
 
-    el.innerHTML = `
-        <h3>Top 20 Stocks</h3>
-        <ul class="cockpit-list">
-            ${top20.map(s => `
-                <li>
-                    <span class="ticker">${s.ticker}</span>
-                    <span class="score">${(s.rsScore ?? 0).toFixed(2)}</span>
-                </li>
-            `).join("")}
-        </ul>
-    `;
-}
+    // 2/2 Sector Overview
+    renderSectorOverview("col-5");
 
-
-
-// ---------------------------------------------------------
-//  4) Index Performance (Tagesperformance)
-// ---------------------------------------------------------
-function renderCockpitIndexPerformance(state) {
-    const el = document.getElementById("cockpit-index-performance");
-    if (!el) return;
-
-    // Beispiel: später ersetzt durch echte Index-Daten
-    const mockIndexes = [
-        { name: "NASDAQ", perf: 1.23 },
-        { name: "S&P 500", perf: 0.87 },
-        { name: "DAX", perf: -0.12 }
-    ];
-
-    el.innerHTML = `
-        <h3>Index Performance</h3>
-        <ul class="cockpit-list">
-            ${mockIndexes.map(i => `
-                <li>
-                    <span class="index">${i.name}</span>
-                    <span class="perf" style="color:${i.perf >= 0 ? '#4caf50' : '#f44336'}">
-                        ${i.perf >= 0 ? '+' : ''}${i.perf}%
-                    </span>
-                </li>
-            `).join("")}
-        </ul>
-    `;
-}
-
-
-
-// ---------------------------------------------------------
-//  5) Sector Overview (Mini-Chart oder Liste)
-// ---------------------------------------------------------
-function renderCockpitSectorOverview(state) {
-    const el = document.getElementById("cockpit-sectors");
-    if (!el) return;
-
-    // Beispiel: später ersetzt durch echte Sector-Daten
-    const mockSectors = [
-        { name: "Technology", perf: 2.1 },
-        { name: "Energy", perf: -0.4 },
-        { name: "Healthcare", perf: 0.9 }
-    ];
-
-    el.innerHTML = `
-        <h3>Sector Overview</h3>
-        <ul class="cockpit-list">
-            ${mockSectors.map(s => `
-                <li>
-                    <span class="sector">${s.name}</span>
-                    <span class="perf" style="color:${s.perf >= 0 ? '#4caf50' : '#f44336'}">
-                        ${s.perf >= 0 ? '+' : ''}${s.perf}%
-                    </span>
-                </li>
-            `).join("")}
-        </ul>
-    `;
+    // 2/3 Industries Overview
+    renderIndustryOverview("col-6");
 }

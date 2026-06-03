@@ -330,6 +330,40 @@ const etfsPath = path.join(__dirname, "../../json/rs_etfs.json"); // 🟢 NEU!
             countAtLastDate: etfsCount
         });
 
+// ------------------------------------------------------
+// 🟢 NEU: marketScores Datenbank direkt prüfen
+// ------------------------------------------------------
+const msQuery = `
+    SELECT 
+        m.type, 
+        m.anl_datum as lastDate, 
+        (SELECT COUNT(*) 
+         FROM trading.dbo.marketScores sub 
+         WHERE sub.type = m.type 
+         AND CAST(sub.anl_datum AS DATE) = CAST(m.anl_datum AS DATE)
+        ) as countAtLastDate
+    FROM trading.dbo.marketScores m
+    WHERE m.anl_datum = (
+        SELECT MAX(anl_datum) 
+        FROM trading.dbo.marketScores 
+        WHERE type = m.type
+    )
+    GROUP BY m.type, m.anl_datum
+`;
+
+const msResult = await tradingPool.request().query(msQuery);
+
+for (const row of msResult.recordset) {
+    trading.tables.push({
+        table: `marketScores (${row.type})`,
+        ok: true,
+        message: "OK",
+        lastDate: row.lastDate,
+        lastDateStr: row.lastDate.toISOString().slice(0, 19).replace("T", " "),
+        totalCount: row.countAtLastDate, // Wir zeigen hier den aktuellen Stand
+        countAtLastDate: row.countAtLastDate
+    });
+}
 
 // ------------------------------------------------------
 // YAHOO – alle Zeitreihen-Tabellen

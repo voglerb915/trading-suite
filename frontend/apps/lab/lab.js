@@ -4,6 +4,7 @@ import { getVolumeMetrics } from "../../shared/api/volume.js";
 import GlobalState from "../../shared/state/globalState.js";
 import { renderVolumeTable } from "./render/renderVolumeTable.js";
 import { renderIndexes } from "./render/renderIndexes.js";
+import { renderVolumeExtract } from "./render/renderVolumeExtract.js";
 
 // --------------------------------------------------
 // API: IndexHistory laden
@@ -26,7 +27,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const volume = await getVolumeMetrics();
     const filtered = volume.filter(v => v.turnover >= 10_000_000);
     GlobalState.set("volumeData", filtered);
-    renderVolumeTable(filtered);
+    renderVolumeTable(filtered);          // col-1 (sortierbar)
+    renderVolumeExtract(filtered);   // col-2 (1:1 Kopie)
 
     // -----------------------------
     // 2) Index-Basistabelle

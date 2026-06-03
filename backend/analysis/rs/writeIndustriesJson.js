@@ -107,11 +107,20 @@ async function writeIndustriesJson() {
   const historyFiles = loadHistoryFiles();
   const industriesWithDiffs = computeDiffs(industries, historyFiles);
 
+
   // ---------------------------------------------------------
   // marketScores: Insert Industries into DB
   // ---------------------------------------------------------
   const { sql, config } = require('../../db/connection');
   const pool = await sql.connect(config);
+
+  // 1. DELETE: Entfernt nur die Industrie-Einträge von heute 
+  await pool.request()
+      .input('datum', sql.DateTime, new Date(latestDate))
+      .input('type', sql.VarChar, 'industry') 
+      .query(`DELETE FROM trading.dbo.marketScores 
+              WHERE type = @type 
+              AND CAST(anl_datum AS DATE) = CAST(@datum AS DATE)`);
 
   const insertSql = `
       INSERT INTO trading.dbo.marketScores (
@@ -140,7 +149,7 @@ async function writeIndustriesJson() {
 
   for (const item of industriesWithDiffs) {
       await pool.request()
-          .input('type', sql.VarChar, 'industry')
+          .input('type', sql.VarChar, 'industry') // Hier ist es korrekt
           .input('name', sql.VarChar, item.name)
           .input('score', sql.Float, item.score)
           .input('rank_db', sql.Int, item.rankWonDb)

@@ -104,12 +104,21 @@ async function writeSectorsJson() {
   // Diffs berechnen
   const historyFiles = loadHistoryFiles();
   const sectorsWithDiffs = computeDiffs(sectors, historyFiles);
+
   // ---------------------------------------------------------
   // marketScores Insert
   // ---------------------------------------------------------
   const { sql, config } = require('../../db/connection');
   const pool = await sql.connect(config);
 
+  // ⭐ NEU: Lösche alle Daten für den heutigen Tag, damit keine Dubletten entstehen!
+  await pool.request()
+      .input('datum', sql.DateTime, new Date(latestDate)) // Konvertiere latestDate passend
+      .input('type', sql.VarChar, 'sector')
+      .query(`DELETE FROM trading.dbo.marketScores 
+              WHERE type = @type 
+              AND CAST(anl_datum AS DATE) = CAST(@datum AS DATE)`);
+              
   const insertSql = `
       INSERT INTO trading.dbo.marketScores (
           type,
