@@ -4,41 +4,31 @@
     <meta charset="UTF-8">
     <title>Excel Cockpit</title>
 
-    <!-- Tabellen (Tabs 1–4) -->
+    
     <link rel="stylesheet" href="/apps/excel/css/tables.css">
-
-    <!-- Kachelmatrix (Tab 5) -->
     <link rel="stylesheet" href="/apps/excel/css/matrix.css">
+    <link rel="stylesheet" href="/shared/css/tabs.css">
+
 </head>
 
-<body style="background:#121212;">
+<body style="background:#121212; margin: 0; padding: 0;">
 
-    <div id="excel-container">
+    <div id="excel-main-container">
 
-        
-        <div class="excel-tabs">
-            <div class="tab-btn active" data-tab="sectors-performance">📊 Perf. %</div>
-                <div class="tab-btn" data-tab="sectors-ranking">📊 Rank</div>
-
-                <div class="tab-btn" data-tab="industries-performance">🏭 Perf. %</div>
-                <div class="tab-btn" data-tab="industries-ranking">🏭 Rank</div>
-
-                <!-- NEUER TAB (Position 5) -->
-                <div class="tab-btn" data-tab="industries-top20">🏭 Top20%</div>
-
-                <div class="tab-btn" data-tab="sectors-overview">🧩 Next</div>
-
+        <div class="tab-bar">
+            <div class="tab active" data-tab="sectors-performance">📊 Perf. %</div>
+            <div class="tab" data-tab="sectors-ranking">📊 Rank</div>
+            <div class="tab" data-tab="industries-performance">🏭 Perf. %</div>
+            <div class="tab" data-tab="industries-ranking">🏭 Rank</div>
+            <div class="tab" data-tab="industries-top20">🏭 Top20%</div>
+            <div class="tab" data-tab="sectors-overview">🧩 Next</div>
         </div>
 
         <div id="tab-sectors-performance" class="tab-content"></div>
         <div id="tab-sectors-ranking" class="tab-content" style="display:none;"></div>
-
         <div id="tab-industries-performance" class="tab-content" style="display:none;"></div>
         <div id="tab-industries-ranking" class="tab-content" style="display:none;"></div>
-
-        <!-- NEUER TAB-CONTENT -->
         <div id="tab-industries-top20" class="tab-content" style="display:none;"></div>
-
         <div id="tab-sectors-overview" class="tab-content" style="display:none;"></div>
 
     </div>

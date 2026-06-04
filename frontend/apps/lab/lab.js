@@ -62,9 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 // LAB Tabs – korrigierte Selektoren
 // ------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
-    // Suche nach der Klasse, nicht nach der ID
-    const buttons = document.querySelectorAll(".lab-tabs .tab-btn");
-    // Suche direkt nach allen Elementen mit der Klasse tab-content
+    const buttons = document.querySelectorAll(".tab-bar .tab");
     const contents = document.querySelectorAll(".tab-content");
 
     buttons.forEach(btn => {
@@ -77,9 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Inhalte umschalten
             contents.forEach(c => {
-                // Hier prüfen wir, ob die ID des Inhalts "tab-" + das Ziel ist
                 c.style.display = (c.id === `tab-${target}`) ? "block" : "none";
             });
         });
     });
 });
+

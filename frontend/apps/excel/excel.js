@@ -92,20 +92,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderSectorsOverview("tab-sectors-overview", sectors, industriesData);
 
     // -----------------------------
-    // TAB-LOGIK
+    // TAB-LOGIK (ANGESPASST AN NEUE STRUKTUR)
     // -----------------------------
     document.addEventListener("click", (e) => {
-        if (!e.target.classList.contains("tab-btn")) return;
+        // Wir suchen jetzt nach der Klasse "tab" statt "tab-btn"
+        if (!e.target.classList.contains("tab")) return;
 
         const tab = e.target.dataset.tab;
 
-        document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+        // Alle Tabs deaktivieren
+        document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
         e.target.classList.add("active");
 
+        // Alle Inhalte verstecken
         document.querySelectorAll(".tab-content").forEach(div => {
             div.style.display = "none";
         });
 
-        document.getElementById(`tab-${tab}`).style.display = "block";
+        // Den gewählten Tab anzeigen
+        const targetTab = document.getElementById(`tab-${tab}`);
+        if (targetTab) {
+            targetTab.style.display = "block";
+        }
     });
 });

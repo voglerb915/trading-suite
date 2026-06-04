@@ -2,6 +2,7 @@
    1. ZENTRALE TYPOGRAFIE & EXCEL-BASIS (Gilt für ALLE Kacheln im Grid)
    ========================================================================== */
 
+
 .sector-tile,
 .industries-tile {
     background: #ffffff;
@@ -29,6 +30,31 @@
     border-bottom: 1px solid #c8ced3;
 }
 
+/* ==========================================================================
+   MATRIX.CSS – Ergänzung für den Container-Namespace
+   ========================================================================== */
+
+#excel-main-container .matrix-dashboard-wrapper {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 15px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+#excel-main-container .sectors-tile-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)); 
+    gap: 15px;
+    padding: 15px;
+    background-color: #f2f2f2;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Alle anderen Regeln deiner Datei bleiben exakt wie sie sind 
+   und werden durch die oben stehende Kapselung nun sauber 
+   in das neue Excel-Main-Layout eingereiht. */
 /* ==========================================================================
    2. SPALTENÜBERSCHRIFTEN & RANG-SKALA (Zentral gesteuert für alle Kacheln)
    ========================================================================== */

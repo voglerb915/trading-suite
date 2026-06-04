@@ -41,10 +41,3 @@
     box-sizing: border-box;
 }
 
-/* Korrektur für die Tabs, damit diese keinen Leerraum beim Scrollen erzeugen */
-.tab-content {
-    padding: 0; /* Padding auf 0, Abstände werden durch td/th geregelt */
-    height: calc(100vh - 70px);
-    overflow-y: auto;
-    box-sizing: border-box;
-}

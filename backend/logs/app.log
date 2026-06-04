@@ -2965,3 +2965,61 @@
 [2026-06-03T16:28:09.264Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
 [2026-06-03T16:30:56.599Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
 [2026-06-03T17:02:36.508Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T17:12:17.556Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T17:13:14.852Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T17:13:48.690Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T18:16:08.002Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T18:16:52.977Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T18:19:01.757Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T18:40:28.710Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T18:41:46.449Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T18:42:17.482Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T18:43:48.617Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T18:50:12.914Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T18:52:26.349Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T18:53:22.805Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T18:54:28.930Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T19:02:13.207Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T19:04:36.543Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T19:10:13.452Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T19:12:44.969Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T19:16:29.570Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T19:20:02.380Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T19:20:08.259Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T19:24:11.574Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T19:24:20.642Z] [COCKPIT-METRICS] [INFO] Erfolgreich 299 Zeilen für Cockpit geladen.
+[2026-06-03T20:01:11.565Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid object name 'marketScores'.
+[2026-06-03T20:01:13.705Z] [COCKPIT-METRICS] [INFO] Erfolgreich 311 Zeilen für Cockpit geladen.
+[2026-06-03T21:01:52.610Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-06-03T21:02:18.495Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-06-03T21:06:34.913Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid object name 'marketScores'.
+[2026-06-03T21:06:36.143Z] [COCKPIT-METRICS] [INFO] Erfolgreich 260 Zeilen für Cockpit geladen.
+[2026-06-03T21:12:37.998Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-06-03T21:13:00.239Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-06-04T09:36:05.299Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T10:00:52.253Z] [SERVER] [ERROR] GET /api/market/stocks → Invalid object name 'marketScores'.
+[2026-06-04T10:00:55.215Z] [COCKPIT-METRICS] [INFO] Erfolgreich 260 Zeilen für Cockpit geladen.
+[2026-06-04T12:12:38.636Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-06-04T12:13:30.640Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-06-04T15:26:59.736Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T16:28:10.292Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T16:28:42.922Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T16:32:53.243Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T16:50:21.692Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T17:00:29.397Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T17:01:05.776Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T17:02:47.867Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T17:07:15.943Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T17:07:26.832Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T17:09:16.422Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T17:31:00.246Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T17:38:54.258Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T17:41:21.010Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T17:56:49.171Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T18:54:33.632Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T18:54:47.693Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T18:57:13.525Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T19:02:26.845Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T19:17:54.416Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T19:20:10.780Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.
+[2026-06-04T19:23:42.831Z] [COCKPIT-METRICS] [INFO] Erfolgreich 266 Zeilen für Cockpit geladen.

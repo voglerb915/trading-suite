@@ -4,45 +4,46 @@
     <meta charset="UTF-8">
     <title>Lab</title>
 
-    <!-- Basis-LAB -->
     <link rel="stylesheet" href="/apps/lab/css/lab.css">
-
-    <!-- Volume Modul -->
     <link rel="stylesheet" href="/apps/lab/css/volume.css">
-    <!-- Index Übersicht Tab Overview -->
     <link rel="stylesheet" href="/apps/lab/css/indexes.css">
+    <link rel="stylesheet" href="/shared/css/tabs.css">
+
 </head>
 
-<body style="background:#121212;">
+<body style="background:#121212; margin: 0; padding: 0;">
 
-    <div class="lab-tabs">
-        <div class="tab-btn active" data-tab="lists">📄 Lists</div>
-        <div class="tab-btn" data-tab="charts">📈 Charts</div>
-        <div class="tab-btn" data-tab="strategies">🧠 Strategies</div>
-        <div class="tab-btn" data-tab="overviews">🗂️ Overviews</div>
-    </div>
+    <div id="lab-main-container">
 
-    <div id="tab-lists" class="tab-content">
-        <div id="lab-container">
-            <div id="col-1"></div>
-            <div id="col-2"></div>
-            <div id="col-3"></div>
+        <div class="tab-bar">
+            <div class="tab active" data-tab="lists">📄 Lists</div>
+            <div class="tab" data-tab="charts">📈 Charts</div>
+            <div class="tab" data-tab="strategies">🧠 Strategies</div>
+            <div class="tab" data-tab="overviews">🗂️ Overviews</div>
         </div>
-    </div>
 
-    <div id="tab-charts" class="tab-content" style="display:none;">
-        <div class="content-placeholder">Charts kommen hierhin</div>
-    </div>
-    
-    <div id="tab-strategies" class="tab-content" style="display:none;">...</div>
-    <div id="tab-overviews" class="tab-content" style="display:none;">
-        <div id="col-3-overviews">
-            <div id="sql-status-root"></div>
-            <div id="lab-content"></div>
-            <div id="lab-index-base"></div>
+        <div id="tab-lists" class="tab-content">
+            <div id="lab-container">
+                <div id="col-1"></div>
+                <div id="col-2"></div>
+                <div id="col-3"></div>
+            </div>
         </div>
-    </div>
-    <script type="module" src="/apps/lab/lab.js"></script>
+
+        <div id="tab-charts" class="tab-content" style="display:none;">
+            <div class="content-placeholder">Charts kommen hierhin</div>
+        </div>
+        
+        <div id="tab-strategies" class="tab-content" style="display:none;">...</div>
+
+        <div id="tab-overviews" class="tab-content" style="display:none;">
+            <div id="col-3-overviews">
+                <div id="sql-status-root"></div>
+                <div id="lab-content"></div>
+                <div id="lab-index-base"></div>
+            </div>
+        </div>
+
+    </div> <script type="module" src="/apps/lab/lab.js"></script>
 </body>
-
 </html>
