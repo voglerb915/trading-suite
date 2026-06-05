@@ -26,6 +26,12 @@
     font-weight: 500;
 }
 
+.tab-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
 /* Hover */
 .tab:hover {
     background: #524f4f;

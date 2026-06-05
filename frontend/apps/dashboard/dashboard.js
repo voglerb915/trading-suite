@@ -56,6 +56,7 @@ window.dashboardState = {
     industries: [],
     stocks: [],
     etfs: [],
+    signals: [],      // ⭐ HIER MUSS ES REIN (Initial als leeres Array)
     sector: null,
     industry: null,
     ticker: null,
@@ -63,7 +64,7 @@ window.dashboardState = {
     breadcrumbs: "Alle Sektoren",
     strategy: "none",
     indexFilter: "all",
-    search: ""   // 🟢 NEU
+    search: ""
 };
 
 /*----------------------------------
@@ -324,26 +325,37 @@ export function initDashboard() {
 }
 
 /*----------------------------------
-10. MESSAGE HANDLER (FINAL)
+10. MESSAGE HANDLER (ROBUST & ERWEITERT)
 ----------------------------------*/
 window.addEventListener("message", (e) => {
+    const { type, stocks, signals, strategy, payload } = e.data || {};
+    
+    console.log(`📥 Message empfangen: ${type}`);
+
+    // Fallback: Manchmal stecken Signale im 'payload' Objekt statt direkt in 'e.data'
+    const finalSignals = Array.isArray(signals) ? signals : (Array.isArray(payload?.signals) ? payload.signals : null);
 
     // -----------------------------
-    // UPDATE_STOCKS
+    // UPDATE_STOCKS (oder UPDATE_DASHBOARD)
     // -----------------------------
-    if (e.data?.type === "UPDATE_STOCKS") {
+    if (type === "UPDATE_STOCKS" || type === "UPDATE_DASHBOARD") {
 
-        // Strategy übernehmen (Pflicht)
-        if (typeof e.data.strategy === "string") {
-            window.dashboardState.strategy = e.data.strategy;
+        // 1. Strategy
+        if (typeof strategy === "string") {
+            window.dashboardState.strategy = strategy;
         }
 
-        // Stocks übernehmen
-        window.dashboardState.stocks = Array.isArray(e.data.stocks)
-            ? e.data.stocks
-            : [];
+        // 2. Stocks
+        window.dashboardState.stocks = Array.isArray(stocks) ? stocks : (window.dashboardState.stocks || []);
 
-        // Dashboard neu rendern
+        // 3. Signale (Hier greift unser "Robust-Check")
+        if (finalSignals !== null) {
+            console.log("✅ Signale erfolgreich gesetzt:", finalSignals.length);
+            window.dashboardState.signals = finalSignals;
+        } else {
+            console.log("⚠️ UPDATE_STOCKS erhalten, aber KEINE Signale gefunden.");
+        }
+
         updateAndRenderDashboard();
         return;
     }
@@ -351,13 +363,12 @@ window.addEventListener("message", (e) => {
     // -----------------------------
     // COCKPIT_DATA_READY
     // -----------------------------
-    if (e.data?.type === "COCKPIT_DATA_READY") {
+    if (type === "COCKPIT_DATA_READY") {
         if (window.dashboardState.strategy !== "none") return;
         initDashboard();
         return;
     }
 });
-
 
 /*----------------------------------
 12. MESSAGE BUFFER FLUSH

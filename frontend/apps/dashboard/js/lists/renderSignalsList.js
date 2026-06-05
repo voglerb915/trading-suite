@@ -1,95 +1,82 @@
 import { sectorClasses } from "../../../../shared/logic/sectorColors.js";
 
 export function renderSignalsList(signals = [], state = {}) {
+    console.log("DEBUG: renderSignalsList wurde aufgerufen. Signale erhalten:", signals);
     const listEl = document.getElementById("tools-tab-content");
     const pillContainer = document.getElementById("tools-pill-container");
 
     if (!listEl) return;
 
-    // 🟢 Pille aktualisieren (Anzahl Signale)
+    // 🟢 Pille aktualisieren
     if (pillContainer) {
-        pillContainer.innerHTML = `
-            <span class="pill pill-small">${signals.length}</span>
-        `;
+        pillContainer.innerHTML = `<span class="pill pill-small">${signals.length || 0}</span>`;
     }
 
+    // Container leeren (sauberer als innerHTML = "")
+    listEl.innerHTML = "";
+
     // 🟡 Keine Signale
-    if (!signals.length) {
-        listEl.innerHTML = `
-            <li class="stock-item empty">Keine Signale verfügbar</li>
-        `;
+    if (!signals || signals.length === 0) {
+        listEl.innerHTML = "<p>Keine Signale verfügbar.</p>";
         return;
     }
 
-    // 🟢 Sortierung nach signal_age_index
+    // 🟢 Sortierung
     const sorted = [...signals].sort(
         (a, b) => Number(a.signal_age_index) - Number(b.signal_age_index)
     );
 
-    // 🟢 Liste rendern
-    const html = sorted.map(item => {
-        const ticker = item.ticker ?? "—";
-        const sector = item.sector ?? "";
-        const industry = item.industry ?? "—";
-        const isSelected = ticker === state.ticker;
+    // 🟢 Liste als Ul-Container erstellen
+    const ul = document.createElement("ul");
+    ul.className = "stock-list";
 
-        const sectorClass = sectorClasses[sector] ?? "";
+    sorted.forEach(item => {
+        const li = document.createElement("li");
+        const sectorClass = sectorClasses[item.sector] ?? "";
+        const isSelected = item.ticker === state.ticker;
+        
+        li.className = `stock-item ${sectorClass} ${isSelected ? "highlight-ticker" : ""}`;
+        li.dataset.stock = item.ticker;
 
-        // Phase Badge
-        const phase = item.market_phase ?? "—";
-        const phaseColor = item.phase_color ?? "gray";
-
-        // Age Bars
+        // Bars erstellen
         const bars = [1, 2, 3, 4, 5].map(i => {
             const active = i === Number(item.signal_age_index);
-            const color = active
-                ? (item.signal_type === "LONG" ? "bg-green" : "bg-red")
-                : "";
+            const color = active ? (item.signal_type === "LONG" ? "bg-green" : "bg-red") : "";
             return `<div class="bar bar-${i} ${color}"></div>`;
         }).join("");
 
-        return `
-            <li class="stock-item ${sectorClass} ${isSelected ? "highlight-ticker" : ""}"
-                onclick="handleStockClick('${ticker}')">
-
-                <div class="stock-row-inner">
-
-                    <!-- LINKS -->
-                    <div class="stock-left">
-                        ${isSelected ? "▶ " : ""}
-                        <strong>${ticker}</strong>
-
-                        <span class="signal-chart-icon" title="Chart öffnen">
-                            <i class="fa-solid fa-chart-line"></i>
-                        </span>
-
-                        <br>
-                        <span class="stock-sub">${sector} | ${industry}</span>
-                    </div>
-
-                    <!-- RECHTS -->
-                    <div class="stock-right signal-right">
-                        <div class="phase-badge bg-${phaseColor}"
-                             onclick="event.stopPropagation(); handleMarketPhaseClick('${phase}')">
-                             ${phase}
-                        </div>
-
-                        <div class="signal-visual">${bars}</div>
-                    </div>
-
+        li.innerHTML = `
+            <div class="stock-row-inner">
+                <div class="stock-left">
+                    <strong>${item.ticker ?? "—"}</strong>
+                    <span class="signal-chart-icon" title="Chart öffnen">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </span>
+                    <br>
+                    <span class="stock-sub">${item.sector ?? ""} | ${item.industry ?? "—"}</span>
                 </div>
-            </li>
+                <div class="stock-right signal-right">
+                    <div class="phase-badge bg-${item.phase_color ?? "gray"}">
+                        ${item.market_phase ?? "—"}
+                    </div>
+                    <div class="signal-visual">${bars}</div>
+                </div>
+            </div>
         `;
-    }).join("");
 
-    listEl.innerHTML = html;
-
-    // 🟢 Chart‑Icons aktivieren
-    listEl.querySelectorAll(".signal-chart-icon").forEach(icon => {
-        icon.addEventListener("click", e => {
+        // Event: Chart öffnen
+        li.querySelector(".signal-chart-icon").onclick = (e) => {
             e.stopPropagation();
-            const ticker = icon.closest("li").querySelector("strong").innerText.trim();
-            updateChart(ticker);
-        });
+            if (typeof window.updateChart === "function") window.updateChart(item.ticker);
+        };
+
+        // Event: Stock Click
+        li.onclick = () => {
+            if (typeof window.handleStockClick === "function") window.handleStockClick(item.ticker);
+        };
+
+        ul.appendChild(li);
     });
+
+    listEl.appendChild(ul);
 }

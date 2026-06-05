@@ -36,8 +36,13 @@
 }
 
 /* Container-Layout (Kein Padding hier, damit der Sticky Header keinen Abstand hat) */
+#tab-overviews {
+    height: 100vh;
+    overflow-y: auto;
+}
+
 #col-3-overviews {
-    padding: 0; 
-    box-sizing: border-box;
+    min-height: 100%;
+    padding: 0;
 }
 

@@ -2,66 +2,43 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Trading Cockpit</title>
+    <title>Cockpit UI</title>
+
+    <!-- Cockpit-spezifisches CSS -->
     <link rel="stylesheet" href="/apps/cockpit/css/cockpit.css">
 </head>
 
 <body>
 
-<header id="topbar">
-    <div class="logo">Trading Cockpit</div>
+<!-- Cockpit Grid -->
+<div id="cockpit-grid">
 
-    <nav id="main-nav">
-        <a href="#" data-tool="cockpit">Cockpit</a>
-        <a href="#" data-tool="lab">Lab</a>
-        <a href="#" data-tool="dashboard">Dashboard (Current)</a> 
-        <a href="#" data-tool="new-dashboard">New Dashboard</a>
-        
-        <a href="#" data-tool="journal">Journal</a>
-        <a href="#" data-tool="charting">Charting</a>
+    <!-- 1. Header -->
+    <div id="cockpit-header"></div>
 
-        <!-- NEU: Excel -->
-        <a href="#" data-tool="excel">Excel</a>
+    <!-- 2. Top 20 -->
+    <div id="cockpit-top20"></div>
 
-        <a href="#" data-tool="control">Control-Center</a>
-    </nav>
-</header>
+    <!-- 3. Index Performance -->
+    <div id="cockpit-index-performance"></div>
 
-<main id="content">
+    <!-- 4. Sector Overview -->
+    <div id="cockpit-sectors"></div>
 
-    <!-- ⭐ NATIVES COCKPIT-UI -->
-    <div id="cockpit-ui" class="tool-view">
-        <div id="cockpit-grid">
+</div>
 
-            <!-- ⭐ Cockpit Widgets -->
-            
-            <div id="cockpit-header"></div>
-            <div id="cockpit-top20"></div>
-            <div id="cockpit-index-performance"></div>
-            <div id="cockpit-sectors"></div>
-
-        </div>
-    </div>
-
-    <!-- ⭐ IFRAME-TOOLS -->
-    <iframe id="iframe-lab" src="/apps/lab/index.html" class="tool-iframe"></iframe>
-    <iframe id="iframe-dashboard" src="http://localhost:3000" class="tool-iframe active"></iframe> 
-    <iframe id="iframe-new-dashboard" src="/apps/dashboard/index.html" class="tool-iframe"></iframe>
-    <iframe id="iframe-journal" src="/apps/journal/index.html" class="tool-iframe"></iframe>
-    <iframe id="iframe-charting" src="/apps/charting-tool/index.html" class="tool-iframe"></iframe>
-
-    <!-- NEU: Excel -->
-    <iframe id="iframe-excel" src="/apps/excel/index.html" class="tool-iframe"></iframe>
-
-    <iframe id="iframe-control" src="/apps/control-center/index.html" class="tool-iframe"></iframe>
-
-</main>
-
-<!-- ⭐ WICHTIG: Cockpit-Controller -->
-<script type="module" src="/apps/cockpit/cockpit.js"></script>
-
-<!-- ⭐ NEU: Cockpit-Renderer -->
+<!-- Renderer läuft IM iFrame -->
 <script type="module" src="/apps/cockpit/js/renderCockpit.js"></script>
+
+<!-- Listener für Host-Daten -->
+<script>
+    window.addEventListener("message", (event) => {
+        if (event.data.type === "COCKPIT_DATA") {
+            // renderCockpit kommt aus renderCockpit.js
+            renderCockpit(event.data.state);
+        }
+    });
+</script>
 
 </body>
 </html>

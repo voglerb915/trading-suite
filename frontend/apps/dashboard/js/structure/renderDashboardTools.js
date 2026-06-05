@@ -12,43 +12,35 @@ export function renderDashboardTools(state) {
 
     if (!tabHeaders || !tabContent) return;
 
-    // Wir entfernen alte Listener (Cleanup), falls die Spalte neu rendert
     tabHeaders.forEach(tab => {
-        // Neuen Klick-Listener registrieren
         tab.onclick = function() {
             // 1. Alle Tabs visuell deaktivieren
             tabHeaders.forEach(t => t.classList.remove("active"));
-            
-            // 2. Geklickten Tab aktivieren
             this.classList.add("active");
 
-            // 3. Welcher Tab wurde geklickt?
+            // 2. Ziel-Tab ermitteln
             const targetTab = this.getAttribute("data-tab");
-
-            // 4. Inhalts-Wechsel loggen & steuern
-            if (targetTab === "etfs") {
-                console.log("📊 Tab ETFs aktiv. Hole Daten aus dem Dashboard-State...");
-                
-                // 🟢 Hier rufen wir deine renderEtfsList auf und füttern sie mit den RAM-Daten
-                renderEtfsList(state.etfs || [], tabContent);
-            } else {
-                // Platzhalter für deine anderen Tabs (Signals, Watch, Open, Active)
-                tabContent.innerHTML = `<p>Inhalt für '${targetTab}' wird geladen...</p>`;
-            }
+            
+            // 3. Zentrale Render-Funktion aufrufen
+            console.log(`📊 Tab '${targetTab}' aktiv. Lade Daten...`);
+            renderActiveTab(targetTab, state, tabContent);
         };
     });
 
-    // 🟢 DOPPELBODEN: Falls beim kompletten Dashboard-Neu-Render der ETF-Tab 
-    // bereits als 'active' markiert ist, rendern wir die Daten direkt rein!
+    // 🟢 DOPPELBODEN: Beim initialen Laden (wenn schon eine Klasse 'active' im HTML ist)
     const activeTab = document.querySelector(".tab-header .tab-item.active");
-    if (activeTab && activeTab.getAttribute("data-tab") === "etfs") {
-        renderEtfsList(state.etfs || [], tabContent);
+    if (activeTab) {
+        renderActiveTab(activeTab.getAttribute("data-tab"), state, tabContent);
     }
 }
+
+// ... import Statements ...
+
 function renderActiveTab(tabName, state, content) {
     switch (tabName) {
         case "signals":
-            renderSignalsList(state, content);
+            // Übergabe des Arrays + des State-Objekts
+            renderSignalsList(state.signals || [], state);
             break;
 
         case "watchlist":
@@ -64,7 +56,7 @@ function renderActiveTab(tabName, state, content) {
             break;
 
         case "etfs":
-            renderEtfsList(window.dataStore.etfs, content);
+            renderEtfsList(state.etfs || [], content);
             break;
 
         default:

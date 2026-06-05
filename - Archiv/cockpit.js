@@ -8,8 +8,6 @@ window.cockpitState = {
     stocks: [],
     sectors: [],
     industries: [],
-    market: {},
-    index: "all",
 
     sector: null,
     industry: null,
@@ -28,7 +26,6 @@ window.dataStore = {
     sectors: [],
     industries: [],
     etfs: [],
-    signals: [],
     strategyCache: new Map()
 };
 
@@ -42,6 +39,7 @@ import { renderCockpit } from "./js/renderCockpit.js";
 /*----------------------------------
 3. Navigation (Host-System)
 ----------------------------------*/
+// 🔥 Universelles Broadcast-System für alle iFrames
 export function broadcastMessage(type, payload = {}) {
     const frames = document.querySelectorAll(".tool-iframe");
 
@@ -57,33 +55,35 @@ export function broadcastMessage(type, payload = {}) {
     });
 }
 
-
-/*----------------------------------
-3b. showTool() – FINAL & STABIL
-----------------------------------*/
 function showTool(toolId) {
     console.log("Wechsle zu:", toolId);
 
-    // 1) Alles deaktivieren
     document.querySelectorAll(".tool-iframe").forEach(el =>
         el.classList.remove("active")
     );
+    document.querySelectorAll(".tool-view").forEach(el =>
+        el.classList.remove("active")
+    );
 
-    // 2) Menü aktualisieren
     document.querySelectorAll("#main-nav a").forEach(link =>
         link.classList.remove("active-link")
     );
     const activeLink = document.querySelector(`#main-nav a[data-tool="${toolId}"]`);
     if (activeLink) activeLink.classList.add("active-link");
 
-    // 3) iFrame aktivieren
-    const targetIframe = document.getElementById(`iframe-${toolId}`);
-    if (targetIframe) {
-        targetIframe.classList.add("active");
+    if (toolId === "cockpit") {
+        document.getElementById("cockpit-ui")?.classList.add("active");
+        currentToolId = toolId;
         return;
     }
 
-    console.warn("Tool nicht gefunden:", toolId);
+    const targetIframe = document.getElementById(`iframe-${toolId}`);
+    if (targetIframe) {
+        targetIframe.classList.add("active");
+        currentToolId = toolId;
+    } else {
+        console.warn(`Kein Container für Tool-ID "${toolId}" gefunden`);
+    }
 }
 
 
@@ -113,19 +113,29 @@ document.addEventListener("click", (e) => {
 /*----------------------------------
 5a. Events vom Dashboard → Cockpit
 ----------------------------------*/
+
+// Strategy-Wechsel
 document.addEventListener("dashboard:strategyChange", async (e) => {
     const strategy = e.detail;
+    console.log("EVENT RECEIVED STRATEGY:", strategy);
+
     window.cockpitState.strategy = strategy;
+
     await applyStrategy(strategy);
 });
 
+
+// Index-Wechsel
 document.addEventListener("dashboard:indexChange", (e) => {
-    window.cockpitState.index = e.detail;
+    const index = e.detail;
+    window.cockpitState.index = index;
     applyFiltersAndSort();
 });
 
+// Ticker-Suche
 document.addEventListener("dashboard:search", (e) => {
-    window.cockpitState.search = e.detail;
+    const query = e.detail;
+    window.cockpitState.search = query;
     applyFiltersAndSort();
 });
 
@@ -133,22 +143,31 @@ document.addEventListener("dashboard:search", (e) => {
 /*----------------------------------
 5b. Strategy-Handler
 ----------------------------------*/
+
+// 1) Strategy-Daten laden + cachen
 async function loadStrategyStocks(strategyName) {
+    console.log("loadStrategyStocks START:", strategyName);
+
     if (window.dataStore.strategyCache.has(strategyName)) {
-        return window.dataStore.strategyCache.get(strategyName);
+        const cached = window.dataStore.strategyCache.get(strategyName);
+        console.log("CACHED STRATEGY LENGTH:", cached.length);
+        return cached;
     }
 
     const res = await fetch(`/api/strategy/${strategyName}`);
     const json = await res.json();
 
+    console.log("API STRATEGY LENGTH:", json.count);
+
     window.dataStore.strategyCache.set(strategyName, json.data);
     return json.data;
 }
 
+// 2) Strategy + DataLayer mergen (Filter entfernt!)
 function mergeStrategyWithDataLayer(strategyItems) {
     return strategyItems.map(item => {
-        const base = window.dataStore.baseStocks.find(s => s.ticker === item.ticker)
-                  || window.dataStore.etfs.find(e => e.ticker === item.ticker)
+        const base = window.dataStore.baseStocks.find(s => s.ticker === item.ticker) 
+                  || window.dataStore.etfs.find(e => e.ticker === item.ticker) 
                   || {};
 
         const m = window.dataStore.metrics[item.ticker] || {};
@@ -158,16 +177,22 @@ function mergeStrategyWithDataLayer(strategyItems) {
             ...base,
             ...m,
             ...f,
+
             ticker: item.ticker,
             sector: base.sector ?? f.sector ?? null,
             industry: base.industry ?? f.industry ?? null,
+
+            // 🔥 Strategy-Werte NACH base/m/f setzen (damit sie NICHT überschrieben werden)
             strategyRank: item.strategyRank,
             strategyValue: item.strategyValue
         };
     });
 }
 
+// 3) Strategy-Wechsel – wird vom Dashboard aufgerufen
 export async function applyStrategy(strategyName) {
+    console.log("applyStrategy START:", strategyName);
+
     const isReset = !strategyName || strategyName === "none";
 
     if (isReset) {
@@ -176,26 +201,31 @@ export async function applyStrategy(strategyName) {
         window.cockpitState.strategy = "none";
         window.cockpitState.stocks = stocks;
 
-        broadcastMessage("UPDATE_STOCKS", {
+        // ✔ Strategy IMMER mitsenden
+        broadcastMessage("UPDATE_STOCKS", { 
             stocks,
-            strategy: "none",
-            signals: window.dataStore.signals || []
+            strategy: "none"
         });
 
         renderCockpit(window.cockpitState);
         return;
     }
 
+    // Strategy laden
     const strategyItems = await loadStrategyStocks(strategyName);
+    console.log("STRATEGY RAW ITEM:", strategyItems[0]);
+
+    // Strategy + DataLayer mergen
     const stocks = mergeStrategyWithDataLayer(strategyItems);
 
+    // Cockpit-State aktualisieren
     window.cockpitState.strategy = strategyName;
     window.cockpitState.stocks = stocks;
 
-    broadcastMessage("UPDATE_STOCKS", {
+    // ✔ Strategy IMMER mitsenden
+    broadcastMessage("UPDATE_STOCKS", { 
         stocks,
-        strategy: strategyName,
-        signals: window.dataStore.signals || []
+        strategy: strategyName
     });
 
     renderCockpit(window.cockpitState);
@@ -203,17 +233,23 @@ export async function applyStrategy(strategyName) {
 
 
 /*----------------------------------
-5c. Filter & Sortierung
+5c. Filter & Sortierung (für Cockpit-UI)
 ----------------------------------*/
 function filterStocks(state, stocks) {
     let result = [...stocks];
 
     if (state.sector && state.sector !== "all") {
-        result = result.filter(s => (s.sector || s.sector_name) === state.sector);
+        result = result.filter(s => {
+            const stockSector = s.sector || s.sector_name;
+            return stockSector === state.sector;
+        });
     }
 
     if (state.industry) {
-        result = result.filter(s => (s.industry || s.industry_name) === state.industry);
+        result = result.filter(s => {
+            const stockIndustry = s.industry || s.industry_name;
+            return stockIndustry === state.industry;
+        });
     }
 
     if (state.index && state.index !== "all") {
@@ -264,38 +300,42 @@ function applyFiltersAndSort() {
 6. Initialisierung
 ----------------------------------*/
 async function loadBaseData() {
-    const responses = await Promise.all([
+    const [stocksRes, sectorsRes, industriesRes, etfsRes] = await Promise.all([
         fetch("/api/market/stocks"),
         fetch("/api/market/sectors"),
         fetch("/api/market/industries"),
-        fetch("/api/market/etfs"),
-        fetch("/api/signals/get-latest")
+        fetch("/api/market/etfs")
     ]);
 
-    const [stocks, sectors, industries, etfs, signals] = await Promise.all(
-        responses.map(r => r.json())
-    );
-
-    window.dataStore.baseStocks = stocks;
-    window.dataStore.sectors = sectors;
-    window.dataStore.industries = industries;
-    window.dataStore.etfs = etfs;
-    window.dataStore.signals = signals;
+    window.dataStore.baseStocks  = await stocksRes.json();
+    window.dataStore.sectors     = await sectorsRes.json();
+    window.dataStore.industries  = await industriesRes.json();
+    window.dataStore.etfs        = await etfsRes.json();
 
     window.dataStore.metrics = {};
-    window.dataStore.finviz = {};
+    window.dataStore.finviz  = {};
 }
 
 let isCockpitDataReady = false;
 
-
-/*----------------------------------
-7. DOMContentLoaded – FINAL
-----------------------------------*/
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("Cockpit Initialisierung gestartet...");
 
-    // Device Info
+    window.addEventListener("message", (event) => {
+        if (event.data?.type === "system-status-update") {
+            updateHeaderSystemBadge(event.data.badge, event.data.text);
+        }
+
+        if (event.data?.type === "DASHBOARD_READY") {
+            console.log("📥 Dashboard-iFrame hat sich gemeldet.");
+            if (isCockpitDataReady) {
+                const dbIframe = document.getElementById("iframe-dashboard");
+dbIframe.contentWindow.postMessage({ type: "COCKPIT_DATA_READY" }, "*");
+
+            }
+        }
+    });
+
     fetch("/api/device-info")
         .then(res => res.json())
         .then(data => {
@@ -317,7 +357,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             logoDiv.style.flexDirection = "column";
         });
 
-    // Navigation aktivieren
     document.querySelectorAll("#main-nav a").forEach(link => {
         link.addEventListener("click", (e) => {
             e.preventDefault();
@@ -326,30 +365,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     });
 
-    // Basisdaten laden
     await loadBaseData();
     isCockpitDataReady = true;
 
-    // Cockpit initial rendern
-    if (!window.cockpitState.strategy || window.cockpitState.strategy === "none") {
-        window.cockpitState.stocks = window.dataStore.baseStocks;
-        renderCockpit(window.cockpitState);
-    }
+    // ❗ BaseStocks nur setzen, wenn KEINE Strategy aktiv ist
+if (!window.cockpitState.strategy || window.cockpitState.strategy === "none") {
+    window.cockpitState.stocks = window.dataStore.baseStocks;
+    renderCockpit(window.cockpitState);
+}
 
-    // Broadcasts
-    broadcastMessage("MARKET_STATE", { state: window.cockpitState.market });
-    broadcastMessage("SECTORS", { sectors: window.dataStore.sectors });
-    broadcastMessage("INDEX_PERFORMANCE", { index: window.cockpitState.index });
+// 🔥 Broadcast der globalen Daten an ALLE iFrames
+broadcastMessage("MARKET_STATE", { state: window.cockpitState.market });
+broadcastMessage("SECTORS", { sectors: window.cockpitState.sectors });
+broadcastMessage("INDEX_PERFORMANCE", { index: window.cockpitState.index });
 
-    // Dashboard informieren
-    const dbIframe = document.getElementById("iframe-new-dashboard");
-    if (dbIframe && dbIframe.contentWindow) {
-        dbIframe.contentWindow.postMessage({
-            type: "COCKPIT_DATA_READY",
-            signals: window.dataStore.signals || []
-        }, "*");
-    }
 
-    // Routing starten
     showTool("cockpit");
+
+const dbIframe = document.getElementById("iframe-new-dashboard");
+if (dbIframe && dbIframe.contentWindow) {
+    console.log("Cockpit → Dashboard: sende COCKPIT_DATA_READY");
+    dbIframe.contentWindow.postMessage({ type: "COCKPIT_DATA_READY" }, "*");
+}
+
 });
