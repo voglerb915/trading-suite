@@ -1,32 +1,62 @@
 import { renderSectorTile } from "./renderSectorsTile.js";
 import { renderIndustriesTile } from "./renderIndustriesTile.js";
 import { calculateRanking } from "../../../shared/logic/calculateRanking.js";
+import { buildIndustriesOverviewData } from "../../../shared/logic/industriesOverview.js";
 
-export function renderSectorsOverview(targetId, sectors, industriesData) {
+import { calculateSectorStats } from "../../../shared/logic/sectorStats.js";
+import { renderSectorStats } from "./renderSectorStats.js";
+
+export function renderSectorsOverview(targetId, sectors, industries) {
     const container = document.getElementById(targetId);
     container.innerHTML = "";
 
-    // 1) Wir bauen ein neues, geschütztes Zwischen-Element (Wrapper)
-    const gridWrapper = document.createElement("div");
-    gridWrapper.className = "matrix-dashboard-wrapper"; // Nutzt das unkaputtbare Grid
+    // 1) Industries in Array umwandeln
+    const industriesArray = Object.values(industries);
 
-    // 2) Ränge berechnen
-    const rankingData = calculateRanking(sectors);
-    const sectorNames = Object.keys(rankingData);
+// 2) Industries normalisieren
+const normalizedIndustries = industriesArray.map(ind => ({
+    ...ind,
+    week_rank_series: ind.week,
+    month_rank_series: ind.month,
+    quarter_rank_series: ind.quarter
+}));
 
-    // 3) Die 11 Sektoren erzeugen und in den WRAPPER hängen
-    sectorNames.forEach(sectorName => {
-        const data = rankingData[sectorName];
-        const tile = renderSectorTile(sectorName, data);
-        gridWrapper.appendChild(tile);
-    });
+// 2b) Industries-Overview DATEN berechnen (nur Daten!)
+const industriesOverview = buildIndustriesOverviewData(normalizedIndustries);
 
-    // 4) Industries-Kachel einbauen
+const gridWrapper = document.createElement("div");
+gridWrapper.className = "matrix-dashboard-wrapper";
+
+// 3) Sektoren-Ranking
+const rankingData = calculateRanking(sectors);
+const sectorNames = Object.keys(rankingData);
+
+sectorNames.forEach(sectorName => {
+    const data = rankingData[sectorName];
+
+    const tile = renderSectorTile(sectorName, data);
+
+    const sectorIndustries = normalizedIndustries.filter(
+        ind => ind.sector === sectorName
+    );
+
+    const overviewEntry = industriesOverview.find(o => o.sector === sectorName);
+
     
-    const industriesTile = renderIndustriesTile(industriesData);
-    gridWrapper.appendChild(industriesTile);
+    const top29Count = overviewEntry.topCount;
+
+    const stats = calculateSectorStats(sectorIndustries, top29Count);
+
+    renderSectorStats(tile, stats);
+
+    gridWrapper.appendChild(tile);
+});
 
 
-    // 5) Erst jetzt hängen wir den kompletten Wrapper in den echten Tab-Container
-    container.appendChild(gridWrapper);
+// 8) IndustriesTile GANZ AM ENDE rendern
+const industriesTile = renderIndustriesTile(industriesOverview);
+gridWrapper.appendChild(industriesTile);
+
+container.appendChild(gridWrapper);
+
 }

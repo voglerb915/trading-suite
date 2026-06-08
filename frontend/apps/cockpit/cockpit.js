@@ -32,11 +32,36 @@ window.dataStore = {
     strategyCache: new Map()
 };
 
+import { computeVolumeExtract } from "/shared/utils/volumeExtract.js";
+console.log("HOST: cockpit.js geladen", performance.now());
+
+
+if (window !== window.parent) {
+    // Wir sind im Cockpit-iFrame
+    window.parent.postMessage({ type: "COCKPIT_READY" }, "*");
+}
+if (window === window.parent) {
+    // Wir sind im Host
+    window.addEventListener("message", (event) => {
+        if (event.data?.type === "COCKPIT_READY") {
+            console.log("HOST: Cockpit meldet READY → sende Daten");
+            sendCockpitData();
+        }
+    });
+}
 
 /*----------------------------------
-2. Imports
+2. Messaging: Cockpit-Daten senden
 ----------------------------------*/
-import { renderCockpit } from "./js/renderCockpit.js";
+function sendCockpitData() {
+    const frame = document.getElementById("iframe-cockpit");
+    if (!frame || !frame.contentWindow) return;
+
+    frame.contentWindow.postMessage({
+        type: "COCKPIT_DATA",
+        state: window.cockpitState
+    }, "*");
+}
 
 
 /*----------------------------------
@@ -116,19 +141,36 @@ document.addEventListener("click", (e) => {
 document.addEventListener("dashboard:strategyChange", async (e) => {
     const strategy = e.detail;
     window.cockpitState.strategy = strategy;
+
     await applyStrategy(strategy);
+
+    // NEU
+    window.cockpitState.volumeExtract = computeVolumeExtract(window.cockpitState.stocks);
+
+    sendCockpitData();
 });
 
 document.addEventListener("dashboard:indexChange", (e) => {
     window.cockpitState.index = e.detail;
+
     applyFiltersAndSort();
+
+    // NEU
+    window.cockpitState.volumeExtract = computeVolumeExtract(window.cockpitState.stocks);
+
+    sendCockpitData();
 });
 
 document.addEventListener("dashboard:search", (e) => {
     window.cockpitState.search = e.detail;
-    applyFiltersAndSort();
-});
 
+    applyFiltersAndSort();
+
+    // NEU
+    window.cockpitState.volumeExtract = computeVolumeExtract(window.cockpitState.stocks);
+
+    sendCockpitData();
+});
 
 /*----------------------------------
 5b. Strategy-Handler
@@ -175,6 +217,8 @@ export async function applyStrategy(strategyName) {
 
         window.cockpitState.strategy = "none";
         window.cockpitState.stocks = stocks;
+        window.cockpitState.volumeExtract = computeVolumeExtract(stocks);
+
 
         broadcastMessage("UPDATE_STOCKS", {
             stocks,
@@ -182,7 +226,7 @@ export async function applyStrategy(strategyName) {
             signals: window.dataStore.signals || []
         });
 
-        renderCockpit(window.cockpitState);
+        sendCockpitData();
         return;
     }
 
@@ -191,6 +235,8 @@ export async function applyStrategy(strategyName) {
 
     window.cockpitState.strategy = strategyName;
     window.cockpitState.stocks = stocks;
+    window.cockpitState.volumeExtract = computeVolumeExtract(stocks);
+
 
     broadcastMessage("UPDATE_STOCKS", {
         stocks,
@@ -198,7 +244,7 @@ export async function applyStrategy(strategyName) {
         signals: window.dataStore.signals || []
     });
 
-    renderCockpit(window.cockpitState);
+    sendCockpitData();
 }
 
 
@@ -253,12 +299,13 @@ function applyFiltersAndSort() {
     const filtered = filterStocks(window.cockpitState, window.cockpitState.stocks);
     const sorted = sortStocks(window.cockpitState, filtered);
 
-    renderCockpit({
-        ...window.cockpitState,
-        stocks: sorted
-    });
-}
+    window.cockpitState.stocks = sorted;
 
+    // NEU
+    window.cockpitState.volumeExtract = computeVolumeExtract(sorted);
+
+    sendCockpitData();
+}
 
 /*----------------------------------
 6. Initialisierung
@@ -276,6 +323,7 @@ async function loadBaseData() {
         responses.map(r => r.json())
     );
 
+    // 1) DataStore füllen
     window.dataStore.baseStocks = stocks;
     window.dataStore.sectors = sectors;
     window.dataStore.industries = industries;
@@ -284,9 +332,14 @@ async function loadBaseData() {
 
     window.dataStore.metrics = {};
     window.dataStore.finviz = {};
-}
 
-let isCockpitDataReady = false;
+    // 2) CockpitState initialisieren
+    window.cockpitState.stocks = stocks;
+    window.cockpitState.volumeExtract = computeVolumeExtract(stocks);
+
+    // 3) Daten ins Cockpit-iFrame senden
+    sendCockpitData();
+}
 
 
 /*----------------------------------
@@ -295,7 +348,7 @@ let isCockpitDataReady = false;
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("Cockpit Initialisierung gestartet...");
 
-    // Device Info
+    // Device Info + Badge
     fetch("/api/device-info")
         .then(res => res.json())
         .then(data => {
@@ -317,6 +370,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             logoDiv.style.flexDirection = "column";
         });
 
+    // Systemstatus Listener
+    window.addEventListener("message", (event) => {
+        if (event.data?.type === "system-status-update") {
+            updateHeaderSystemBadge(event.data.badge, event.data.text);
+        }
+    });
+
     // Navigation aktivieren
     document.querySelectorAll("#main-nav a").forEach(link => {
         link.addEventListener("click", (e) => {
@@ -328,19 +388,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Basisdaten laden
     await loadBaseData();
-    isCockpitDataReady = true;
 
-    // Cockpit initial rendern
-    if (!window.cockpitState.strategy || window.cockpitState.strategy === "none") {
-        window.cockpitState.stocks = window.dataStore.baseStocks;
-        renderCockpit(window.cockpitState);
-    }
-
-    // Broadcasts
-    broadcastMessage("MARKET_STATE", { state: window.cockpitState.market });
-    broadcastMessage("SECTORS", { sectors: window.dataStore.sectors });
-    broadcastMessage("INDEX_PERFORMANCE", { index: window.cockpitState.index });
-
+    
     // Dashboard informieren
     const dbIframe = document.getElementById("iframe-new-dashboard");
     if (dbIframe && dbIframe.contentWindow) {

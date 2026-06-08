@@ -6,6 +6,8 @@
 
     <!-- Cockpit-spezifisches CSS -->
     <link rel="stylesheet" href="/apps/cockpit/css/cockpit.css">
+    <link rel="stylesheet" href="/shared/css/volume.css">
+
 </head>
 
 <body>
@@ -29,16 +31,6 @@
 
 <!-- Renderer läuft IM iFrame -->
 <script type="module" src="/apps/cockpit/js/renderCockpit.js"></script>
-
-<!-- Listener für Host-Daten -->
-<script>
-    window.addEventListener("message", (event) => {
-        if (event.data.type === "COCKPIT_DATA") {
-            // renderCockpit kommt aus renderCockpit.js
-            renderCockpit(event.data.state);
-        }
-    });
-</script>
 
 </body>
 </html>

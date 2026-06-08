@@ -1,12 +1,20 @@
-// js/renderCockpit.js
-
+// ===============================
+// IMPORTS
+// ===============================
 import { HeaderTile } from "../tiles/instances/headerTile.js";
 import { Top20Tile } from "../tiles/instances/top20Tile.js";
 import { IndexPerformanceTile } from "../tiles/instances/indexPerformanceTile.js";
 import { SectorOverviewTile } from "../tiles/instances/sectorOverviewTile.js";
 
+
+// ===============================
+// RENDER-FUNKTION
+// ===============================
 export function renderCockpit(state) {
-    
+
+    // State cachen, damit spätere Tiles darauf zugreifen können
+    window.lastCockpitState = state;
+
     // 1) Header
     const headerEl = document.getElementById("cockpit-header");
     if (headerEl) {
@@ -31,3 +39,25 @@ export function renderCockpit(state) {
         sectorEl.innerHTML = SectorOverviewTile(state);
     }
 }
+
+
+// ===============================
+// MESSAGE-LISTENER (NEU)
+// ===============================
+
+// Debug: Renderer wurde geladen
+console.log("IFRAME: renderCockpit.js geladen", performance.now());
+
+// Falls Daten schon vor dem Renderer angekommen sind:
+if (window.lastCockpitState) {
+    console.log("IFRAME: Render mit gecachtem State", performance.now());
+    renderCockpit(window.lastCockpitState);
+}
+
+// Listener für spätere Nachrichten
+window.addEventListener("message", (event) => {
+    if (event.data?.type === "COCKPIT_DATA") {
+        console.log("IFRAME: Render mit neuer Nachricht", performance.now());
+        renderCockpit(event.data.state);
+    }
+});
