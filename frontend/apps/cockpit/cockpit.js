@@ -82,7 +82,6 @@ export function broadcastMessage(type, payload = {}) {
     });
 }
 
-
 /*----------------------------------
 3b. showTool() – FINAL & STABIL
 ----------------------------------*/
@@ -204,7 +203,9 @@ function mergeStrategyWithDataLayer(strategyItems) {
             sector: base.sector ?? f.sector ?? null,
             industry: base.industry ?? f.industry ?? null,
             strategyRank: item.strategyRank,
-            strategyValue: item.strategyValue
+            strategyValue: item.strategyValue,
+            // FIX: prevClose wiederherstellen
+            prevClose: base.prevClose ?? m.prevClose ?? f.prevClose ?? null,
         };
     });
 }

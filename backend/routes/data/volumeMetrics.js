@@ -18,14 +18,14 @@ router.get('/', async (req, res) => {
                     m.ticker,
                     m.vma_20,
                     h.volume,
-                    h.[open], 
-                    h.[high], 
-                    h.[low], 
-                    h.[close], -- MIT KLAMMERN
+                    h.[open],
+                    h.[high],
+                    h.[low],
+                    h.[close],
                     h.[date],
 
-                    -- Vortages-Close
-                    h_prev.[close] AS prevClose, -- ⭐ HIER WAR DER FEHLER: [close] hinzufügen
+                    -- ⭐ Robuster Vortages-Close
+                    h_prev.[close] AS prevClose,
 
                     -- Ratio
                     CASE 
@@ -34,14 +34,23 @@ router.get('/', async (req, res) => {
                     END AS ratio,
 
                     -- Umsatz
-                    (CAST(h.[close] AS FLOAT) * CAST(h.volume AS FLOAT)) AS turnover -- HIER AUCH [close]
+                    (CAST(h.[close] AS FLOAT) * CAST(h.volume AS FLOAT)) AS turnover
+
                 FROM [yahoo].[dbo].[StockMetrics] m
                 CROSS JOIN LatestDates ld
-                INNER JOIN [yahoo].[dbo].[DailyHistory] h ON m.ticker = h.ticker
-                LEFT JOIN [yahoo].[dbo].[DailyHistory] h_prev 
+                INNER JOIN [yahoo].[dbo].[DailyHistory] h 
+                    ON m.ticker = h.ticker
+                LEFT JOIN [yahoo].[dbo].[DailyHistory] h_prev
                     ON h_prev.ticker = h.ticker
-                    AND CAST(h_prev.date AS DATE) = DATEADD(day, -1, CAST(h.date AS DATE))
-                INNER JOIN [trading].[dbo].[finviz] f ON f.ticker = m.ticker 
+                    AND h_prev.date = (
+                        SELECT TOP 1 date
+                        FROM [yahoo].[dbo].[DailyHistory]
+                        WHERE ticker = h.ticker
+                        AND date < h.date
+                        ORDER BY date DESC
+                    )
+                INNER JOIN [trading].[dbo].[finviz] f 
+                    ON f.ticker = m.ticker 
                     AND CAST(f.anl_datum AS DATE) = CAST(m.[date] AS DATE)
                 WHERE CAST(m.[date] AS DATE) = ld.MaxDateMetrics
                 AND CAST(h.[date] AS DATE) = ld.MaxDateHistory
@@ -51,7 +60,8 @@ router.get('/', async (req, res) => {
                 AND m.ticker NOT LIKE '^%'
             ) as sub
             WHERE sub.ratio > 2
-            ORDER BY sub.ratio DESC
+            ORDER BY sub.ratio DESC;
+
         `);
         // ... restlicher Code
 
