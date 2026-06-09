@@ -4,22 +4,18 @@ import {
     getTextColor
 } from "../../../shared/logic/rankSectorColors.js";
 
-
 export function renderSectorTile(sectorName, data) {
     const tile = document.createElement("div");
     tile.className = "sector-tile";
 
-    // 1) Header
     const header = document.createElement("div");
     header.className = "tile-header";
     header.textContent = sectorName;
     tile.appendChild(header);
 
-    // 2) Tabelle
     const table = document.createElement("table");
     table.className = "matrix-table";
 
-    // Tabellenkopf
     const thead = document.createElement("thead");
     const headerTr = document.createElement("tr");
 
@@ -28,7 +24,6 @@ export function renderSectorTile(sectorName, data) {
     thRank.textContent = "Rank";
     headerTr.appendChild(thRank);
 
-    // NEU: colspan = 6
     const thWeek = document.createElement("th");
     thWeek.setAttribute("colspan", "6");
     thWeek.className = "th-matrix-group header-break";
@@ -56,11 +51,9 @@ export function renderSectorTile(sectorName, data) {
     const mSeries = data.month_rank_series || [];
     const qSeries = data.quarter_rank_series || [];
 
-    // 11 Zeilen für die Ränge
     for (let r = 1; r <= 11; r++) {
         const tr = document.createElement("tr");
 
-        // Linke Skala
         const scaleCell = document.createElement("td");
         scaleCell.className = "scale-cell-num";
 
@@ -73,7 +66,6 @@ export function renderSectorTile(sectorName, data) {
 
         tr.appendChild(scaleCell);
 
-        // 18 Spalten
         for (let c = 0; c < 18; c++) {
             const td = document.createElement("td");
             td.className = "matrix-td";

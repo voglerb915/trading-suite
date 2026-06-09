@@ -16,13 +16,16 @@ export function calculatePercent(value, industryCount) {
  * Diese Buckets entsprechen deiner Heatmap-Farbskala.
  */
 export function percentToBucket(percent) {
-    if (percent <= 0.10) return 0;   // sehr schwach
-    if (percent <= 0.25) return 1;   // schwach
-    if (percent <= 0.40) return 2;   // mittel
-    if (percent <= 0.55) return 3;   // neutral
-    if (percent <= 0.70) return 4;   // gut
-    if (percent <= 0.85) return 5;   // stark
-    return 6;                        // sehr stark
+    // ⭐ bei 2/3 bereits Maximum
+    const normalized = Math.min(percent / (2/3), 1);
+
+    if (normalized <= 0.10) return 0;
+    if (normalized <= 0.25) return 1;
+    if (normalized <= 0.40) return 2;
+    if (normalized <= 0.55) return 3;
+    if (normalized <= 0.70) return 4;
+    if (normalized <= 0.85) return 5;
+    return 6;
 }
 
 /**

@@ -37,8 +37,6 @@ export function renderIndustriesTop20(targetId, industries, ranking, dates) {
 
     container.innerHTML = `
         <div class="excel-container">
-            <h3 class="excel-title">Top 20% – Industries</h3>
-
             <div class="top20-row">
                 <div id="top20-week" class="top20-col"></div>
                 <div id="top20-month" class="top20-col"></div>

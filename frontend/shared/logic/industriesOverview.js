@@ -1,4 +1,5 @@
-function calculateIndustryRanking(industries) {
+// Berechnet Ranking-Serien für jede Industry
+export function calculateIndustryRanking(industries) {
     const result = {};
     const timeframes = ["week", "month", "quarter"];
     const names = Object.keys(industries);
@@ -33,6 +34,43 @@ function calculateIndustryRanking(industries) {
     return result;
 }
 
+// Aggregiert Rank-Statistiken pro Sektor
+function calculateSectorStatsFromIndustries(industries, ranking) {
+    const sectors = {};
+
+    Object.entries(industries).forEach(([industryName, ind]) => {
+        const sector = ind.sector;
+        if (!sectors[sector]) sectors[sector] = [];
+        sectors[sector].push(industryName);
+    });
+
+    const result = {};
+
+    Object.entries(sectors).forEach(([sector, inds]) => {
+        const ranksWeek = inds.map(ind => ranking[ind].week_rank_series[0]);
+        const ranksMonth = inds.map(ind => ranking[ind].month_rank_series[0]);
+        const ranksQuarter = inds.map(ind => ranking[ind].quarter_rank_series[0]);
+
+        function calcStats(ranks) {
+            const minRank = Math.min(...ranks);
+            const maxRank = Math.max(...ranks);
+            const avgRank = ranks.reduce((a, b) => a + b, 0) / ranks.length;
+            return { minRank, maxRank, avgRank };
+        }
+
+        result[sector] = {
+            week: calcStats(ranksWeek),
+            month: calcStats(ranksMonth),
+            quarter: calcStats(ranksQuarter),
+            industryCount: inds.length,
+            top29Count: ranksWeek.filter(r => r <= 29).length
+        };
+    });
+
+    return result;
+}
+
+// Top29 pro Sektor und Zeitraum
 function countTop29BySector(industries, ranking, timeframe) {
     const result = {};
 
@@ -50,8 +88,10 @@ function countTop29BySector(industries, ranking, timeframe) {
     return result;
 }
 
+// Hauptfunktion: liefert Overview-Daten pro Sektor
 export function buildIndustriesOverviewData(industries) {
     const ranking = calculateIndustryRanking(industries);
+    const sectorStats = calculateSectorStatsFromIndustries(industries, ranking);
 
     const weekCounts    = countTop29BySector(industries, ranking, "week");
     const monthCounts   = countTop29BySector(industries, ranking, "month");
@@ -64,25 +104,19 @@ export function buildIndustriesOverviewData(industries) {
     ]);
 
     const overview = [...allSectors].map(sector => {
-        // Anzahl Industrien pro Sektor
-        const industryCount = Object.values(industries)
-            .filter(ind => ind.sector === sector)
-            .length;
-
-        // Anzahl Top-29 Industrien (aktueller Tag = Index 0)
-        const topCount = (weekCounts[sector]?.[0] ?? 0);
+        const stats = sectorStats[sector];
 
         return {
             sector,
-            industryCount,
-            topCount,
-            week:    weekCounts[sector]    ?? [0,0,0],
-            month:   monthCounts[sector]   ?? [0,0,0],
-            quarter: quarterCounts[sector] ?? [0,0,0]
+            industryCount: stats.industryCount,
+            topCount: stats.top29Count,
+            week: weekCounts[sector] ?? [0, 0, 0],
+            month: monthCounts[sector] ?? [0, 0, 0],
+            quarter: quarterCounts[sector] ?? [0, 0, 0],
+            rankStats: stats
         };
     });
 
-    // Alphabetisch sortieren
     overview.sort((a, b) => a.sector.localeCompare(b.sector));
 
     return overview;

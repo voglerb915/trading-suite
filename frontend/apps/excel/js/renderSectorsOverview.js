@@ -13,50 +13,48 @@ export function renderSectorsOverview(targetId, sectors, industries) {
     // 1) Industries in Array umwandeln
     const industriesArray = Object.values(industries);
 
-// 2) Industries normalisieren
-const normalizedIndustries = industriesArray.map(ind => ({
-    ...ind,
-    week_rank_series: ind.week,
-    month_rank_series: ind.month,
-    quarter_rank_series: ind.quarter
-}));
+    // 2) Industries normalisieren
+    const normalizedIndustries = industriesArray.map(ind => ({
+        ...ind,
+        week_rank_series: ind.week,
+        month_rank_series: ind.month,
+        quarter_rank_series: ind.quarter
+    }));
 
-// 2b) Industries-Overview DATEN berechnen (nur Daten!)
-const industriesOverview = buildIndustriesOverviewData(normalizedIndustries);
+    // 2b) Industries-Overview DATEN berechnen (nur Daten!)
+    // *** EINZIGE ÄNDERUNG ***
+    const industriesOverview = buildIndustriesOverviewData(industries);
 
-const gridWrapper = document.createElement("div");
-gridWrapper.className = "matrix-dashboard-wrapper";
+    const gridWrapper = document.createElement("div");
+    gridWrapper.className = "matrix-dashboard-wrapper";
 
-// 3) Sektoren-Ranking
-const rankingData = calculateRanking(sectors);
-const sectorNames = Object.keys(rankingData);
+    // 3) Sektoren-Ranking
+    const rankingData = calculateRanking(sectors);
+    const sectorNames = Object.keys(rankingData);
 
-sectorNames.forEach(sectorName => {
-    const data = rankingData[sectorName];
+    sectorNames.forEach(sectorName => {
+        const data = rankingData[sectorName];
 
-    const tile = renderSectorTile(sectorName, data);
+        const tile = renderSectorTile(sectorName, data);
 
-    const sectorIndustries = normalizedIndustries.filter(
-        ind => ind.sector === sectorName
-    );
+        const sectorIndustries = normalizedIndustries.filter(
+            ind => ind.sector === sectorName
+        );
 
-    const overviewEntry = industriesOverview.find(o => o.sector === sectorName);
+        const overviewEntry = industriesOverview.find(o => o.sector === sectorName);
 
-    
-    const top29Count = overviewEntry.topCount;
+        const top29Count = overviewEntry.topCount;
 
-    const stats = calculateSectorStats(sectorIndustries, top29Count);
+        const stats = calculateSectorStats(sectorIndustries, top29Count);
 
-    renderSectorStats(tile, stats);
+        renderSectorStats(tile, stats);
 
-    gridWrapper.appendChild(tile);
-});
+        gridWrapper.appendChild(tile);
+    });
 
+    // 8) IndustriesTile GANZ AM ENDE rendern
+    const industriesTile = renderIndustriesTile(industriesOverview);
+    gridWrapper.appendChild(industriesTile);
 
-// 8) IndustriesTile GANZ AM ENDE rendern
-const industriesTile = renderIndustriesTile(industriesOverview);
-gridWrapper.appendChild(industriesTile);
-
-container.appendChild(gridWrapper);
-
+    container.appendChild(gridWrapper);
 }

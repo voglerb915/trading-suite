@@ -15,8 +15,7 @@ export function renderSectorsRanking(targetId, sectors, ranking, dates) {
 
     container.innerHTML = `
         <div class="excel-container">
-            <h3 class="excel-title">Ranking – Sectors × 15 Tage</h3>
-
+            
             <div id="ranking-matrix-week"></div>
             <div id="ranking-matrix-month" style="margin-top: 40px;"></div>
             <div id="ranking-matrix-quarter" style="margin-top: 40px;"></div>

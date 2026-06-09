@@ -13,12 +13,7 @@ export function renderIndustriesRanking(targetId, industries, ranking, dates) {
 
     container.innerHTML = `
         <div class="excel-container">
-            <h3 class="excel-title">Ranking – Industries</h3>
-
-            <div class="toggle-pill">
-                <button class="pill active" data-mode="short">Short</button>
-                <button class="pill" data-mode="long">Long</button>
-            </div>
+            
 
             <div id="industries-ranking-week"></div>
             <div id="industries-ranking-month" style="margin-top: 40px;"></div>

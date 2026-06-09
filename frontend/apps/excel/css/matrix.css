@@ -306,26 +306,41 @@
     font-weight: 800;
 }
 
+.sector-rank-bar-container {
+    width: 20px;        /* gleiche Breite wie alte Säule */
+    height: 150px;      /* muss zur JS-Höhe passen */
+    position: relative;
+    margin-top: 6px;
+}
 
-
-/* Striche */
-.line-min,
-.line-avg,
-.line-max {
-    position: absolute;
-    left: 0;
+.sector-rank-bar {
     width: 100%;
-    background: #000;
-    opacity: 0.9;
+    height: 100%;
+    border-radius: 4px;
+    position: relative;
+}
+/* Dreiecke */
+/* Basis */
+.rank-marker {
+    position: absolute;
+    width: 0;
+    height: 0;
 }
 
-.line-min,
-.line-max {
-    height: 2px;
+/* Links: Pfeil zeigt nach rechts → steht LINKS außerhalb */
+.marker-left {
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 10px solid; /* Farbe per JS */
+    left: -14px; /* Abstand vom Balken */
 }
 
-.line-avg {
-    height: 3px;
+/* Rechts: Pfeil zeigt nach links → steht RECHTS außerhalb */
+.marker-right {
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-right: 10px solid; /* Farbe per JS */
+    right: -14px; /* Abstand vom Balken */
 }
 
 /* Heatmap-Farben */

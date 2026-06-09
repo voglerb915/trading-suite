@@ -7,8 +7,7 @@ export function renderIndustriesPerformance(targetId, industries, dates) {
 
     container.innerHTML = `
         <div class="excel-container">
-            <h3 class="excel-title">Excel Matrix – Industries × 15 Tage</h3>
-
+            
             <div id="industries-matrix-week"></div>
             <div id="industries-matrix-month" style="margin-top: 40px;"></div>
             <div id="industries-matrix-quarter" style="margin-top: 40px;"></div>
