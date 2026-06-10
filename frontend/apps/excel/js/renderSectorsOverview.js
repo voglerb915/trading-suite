@@ -2,58 +2,54 @@ import { renderSectorTile } from "./renderSectorsTile.js";
 import { renderIndustriesTile } from "./renderIndustriesTile.js";
 import { calculateRanking } from "../../../shared/logic/calculateRanking.js";
 import { buildIndustriesOverviewData } from "../../../shared/logic/industriesOverview.js";
-
-import { calculateSectorStats } from "../../../shared/logic/sectorStats.js";
-import { renderSectorStats } from "./renderSectorStats.js";
+import { renderSectorRankBar } from "./renderSectorRankBar.js";
 
 export function renderSectorsOverview(targetId, sectors, industries) {
-    
+
     const container = document.getElementById(targetId);
     container.innerHTML = "";
 
-    // 1) Industries in Array umwandeln
-    const industriesArray = Object.values(industries);
-
-    // 2) Industries normalisieren
-    const normalizedIndustries = industriesArray.map(ind => ({
-        ...ind,
-        week_rank_series: ind.week,
-        month_rank_series: ind.month,
-        quarter_rank_series: ind.quarter
-    }));
-
-    // 2b) Industries-Overview DATEN berechnen (nur Daten!)
-    // *** EINZIGE ÄNDERUNG ***
     const industriesOverview = buildIndustriesOverviewData(industries);
 
     const gridWrapper = document.createElement("div");
     gridWrapper.className = "matrix-dashboard-wrapper";
 
-    // 3) Sektoren-Ranking
     const rankingData = calculateRanking(sectors);
     const sectorNames = Object.keys(rankingData);
 
     sectorNames.forEach(sectorName => {
-        const data = rankingData[sectorName];
 
-        const tile = renderSectorTile(sectorName, data);
-
-        const sectorIndustries = normalizedIndustries.filter(
-            ind => ind.sector === sectorName
-        );
+        const tile = renderSectorTile(sectorName, rankingData[sectorName]);
 
         const overviewEntry = industriesOverview.find(o => o.sector === sectorName);
+        if (!overviewEntry) return;
 
-        const top29Count = overviewEntry.topCount;
+        const statsContainer = document.createElement("div");
+        statsContainer.className = "sector-stats";
 
-        const stats = calculateSectorStats(sectorIndustries, top29Count);
+        const headerStats = document.createElement("div");
+        headerStats.className = "stats-header";
+        const top = overviewEntry.top29.week[0];
+const total = overviewEntry.industryCount;
+const percent = Math.round((top / total) * 100);
 
-        renderSectorStats(tile, stats);
+headerStats.innerHTML = `
+    <div class="stats-count">${top} / ${total}</div>
+    <div class="stats-percent">${percent}%</div>
+`;
 
+        statsContainer.appendChild(headerStats);
+
+        const barContainer = document.createElement("div");
+        barContainer.className = "sector-rank-bar-container";
+        statsContainer.appendChild(barContainer);
+
+        renderSectorRankBar(barContainer, overviewEntry);
+
+        tile.appendChild(statsContainer);
         gridWrapper.appendChild(tile);
     });
 
-    // 8) IndustriesTile GANZ AM ENDE rendern
     const industriesTile = renderIndustriesTile(industriesOverview);
     gridWrapper.appendChild(industriesTile);
 

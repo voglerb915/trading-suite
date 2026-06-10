@@ -3,6 +3,8 @@ import {
     getSectorColor,
     getTextColor
 } from "../../../shared/logic/rankSectorColors.js";
+import { sectorClasses } from "../../../shared/logic/sectorColors.js";
+
 
 export function renderSectorTile(sectorName, data) {
     const tile = document.createElement("div");
@@ -12,6 +14,11 @@ export function renderSectorTile(sectorName, data) {
     header.className = "tile-header";
     header.textContent = sectorName;
     tile.appendChild(header);
+
+    const sectorClass = sectorClasses[sectorName];
+    if (sectorClass) {
+        header.classList.add(sectorClass);
+    }
 
     const table = document.createElement("table");
     table.className = "matrix-table";
@@ -55,16 +62,17 @@ export function renderSectorTile(sectorName, data) {
         const tr = document.createElement("tr");
 
         const scaleCell = document.createElement("td");
-        scaleCell.className = "scale-cell-num";
+scaleCell.className = "scale-cell-num";
 
-        const bg = getSectorColor(r);
-        const fg = getTextColor(bg);
+const bg = getSectorColor(r);
+const fg = getTextColor(bg);
 
-        scaleCell.style.backgroundColor = bg;
-        scaleCell.style.color = fg;
-        scaleCell.textContent = r;
+scaleCell.style.backgroundColor = bg;
+scaleCell.style.setProperty("color", fg, "important");  // 🔥 garantiert lesbar
+scaleCell.textContent = r;
 
-        tr.appendChild(scaleCell);
+tr.appendChild(scaleCell);
+
 
         for (let c = 0; c < 18; c++) {
             const td = document.createElement("td");

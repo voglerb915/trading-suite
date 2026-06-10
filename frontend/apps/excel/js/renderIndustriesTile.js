@@ -1,55 +1,34 @@
 export function renderIndustriesTile(industriesData) {
     const tile = document.createElement("div");
-    tile.className = "sector-tile industries-tile"; // zusätzliche Klasse
+    tile.className = "sector-tile industries-tile";
 
-    // 1) Header
     const header = document.createElement("div");
     header.className = "tile-header";
     header.textContent = "Industriezweige Top 20%";
     tile.appendChild(header);
 
-    // 2) Tabelle
     const table = document.createElement("table");
-    table.className = "matrix-table industries-table"; // zusätzliche Klasse
-
-    // ============================
-    // HEAD
-    // ============================
+    table.className = "matrix-table industries-table";
 
     const thead = document.createElement("thead");
-
     const tr1 = document.createElement("tr");
+
     const thSector = document.createElement("th");
     thSector.rowSpan = 2;
     thSector.textContent = "Sector";
     thSector.className = "th-matrix-rank";
     tr1.appendChild(thSector);
 
-    const thWeek = document.createElement("th");
-    thWeek.colSpan = 3;
-    thWeek.className = "th-matrix-group header-break";
-    thWeek.textContent = "Week";
-    tr1.appendChild(thWeek);
-
-    const thMonth = document.createElement("th");
-    thMonth.colSpan = 3;
-    thMonth.className = "th-matrix-group header-break";
-    thMonth.textContent = "Month";
-    tr1.appendChild(thMonth);
-
-    const thQuarter = document.createElement("th");
-    thQuarter.colSpan = 3;
-    thQuarter.className = "th-matrix-group";
-    thQuarter.textContent = "Quarter";
-    tr1.appendChild(thQuarter);
+    ["Week", "Month", "Quarter"].forEach((label, i) => {
+        const th = document.createElement("th");
+        th.colSpan = 3;
+        th.className = "th-matrix-group" + (i < 2 ? " header-break" : "");
+        th.textContent = label;
+        tr1.appendChild(th);
+    });
 
     thead.appendChild(tr1);
-
     table.appendChild(thead);
-
-    // ============================
-    // BODY
-    // ============================
 
     const tbody = document.createElement("tbody");
 
@@ -61,21 +40,21 @@ export function renderIndustriesTile(industriesData) {
         tdSector.textContent = row.sector;
         tr.appendChild(tdSector);
 
-        row.week.forEach(v => {
+        row.top29.week.forEach(v => {
             const td = document.createElement("td");
             td.className = "excel-rank industries-value-cell";
             td.textContent = v;
             tr.appendChild(td);
         });
 
-        row.month.forEach(v => {
+        row.top29.month.forEach(v => {
             const td = document.createElement("td");
             td.className = "excel-rank industries-value-cell";
             td.textContent = v;
             tr.appendChild(td);
         });
 
-        row.quarter.forEach(v => {
+        row.top29.quarter.forEach(v => {
             const td = document.createElement("td");
             td.className = "excel-rank industries-value-cell";
             td.textContent = v;

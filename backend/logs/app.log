@@ -3423,3 +3423,37 @@
 [2026-06-10T19:01:34.929Z] [COCKPIT-METRICS] [INFO] Erfolgreich 322 Zeilen für Cockpit geladen.
 [2026-06-10T20:27:01.388Z] [COCKPIT-METRICS] [INFO] Erfolgreich 322 Zeilen für Cockpit geladen.
 [2026-06-10T20:27:57.369Z] [COCKPIT-METRICS] [INFO] Erfolgreich 322 Zeilen für Cockpit geladen.
+[2026-06-10T20:39:58.544Z] [COCKPIT-METRICS] [INFO] Erfolgreich 322 Zeilen für Cockpit geladen.
+[2026-06-10T20:42:55.341Z] [COCKPIT-METRICS] [INFO] Erfolgreich 322 Zeilen für Cockpit geladen.
+[2026-06-10T20:45:02.534Z] [COCKPIT-METRICS] [INFO] Erfolgreich 322 Zeilen für Cockpit geladen.
+[2026-06-10T21:06:55.872Z] [COCKPIT-METRICS] [INFO] Erfolgreich 322 Zeilen für Cockpit geladen.
+[2026-06-10T21:08:36.344Z] [COCKPIT-METRICS] [INFO] Erfolgreich 322 Zeilen für Cockpit geladen.
+[2026-06-10T21:19:40.366Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-06-10T21:20:14.117Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-06-10T21:35:33.067Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.
+[2026-06-10T21:36:49.273Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.
+[2026-06-10T21:43:30.094Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.
+[2026-06-10T21:44:14.831Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.
+[2026-06-10T21:45:05.297Z] [COCKPIT-METRICS] [INFO] Erfolgreich 333 Zeilen für Cockpit geladen.
+[2026-06-10T21:51:42.868Z] [COCKPIT-METRICS] [INFO] Erfolgreich 333 Zeilen für Cockpit geladen.
+[2026-06-10T22:00:22.741Z] [COCKPIT-METRICS] [INFO] Erfolgreich 333 Zeilen für Cockpit geladen.
+[2026-06-10T22:04:15.033Z] [COCKPIT-METRICS] [INFO] Erfolgreich 333 Zeilen für Cockpit geladen.
+[2026-06-10T22:05:05.031Z] [COCKPIT-METRICS] [INFO] Erfolgreich 333 Zeilen für Cockpit geladen.
+[2026-06-10T22:11:04.593Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.
+[2026-06-10T22:11:39.544Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
+[2026-06-10T22:14:12.022Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.
+[2026-06-10T22:16:41.704Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.
+[2026-06-10T22:16:42.489Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
+[2026-06-10T22:21:13.868Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.
+[2026-06-10T22:21:31.500Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.
+[2026-06-10T22:21:49.323Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
+[2026-06-10T22:21:52.355Z] [COCKPIT-METRICS] [INFO] Erfolgreich 333 Zeilen für Cockpit geladen.
+[2026-06-10T22:22:28.058Z] [COCKPIT-METRICS] [INFO] Erfolgreich 333 Zeilen für Cockpit geladen.
+[2026-06-10T22:26:17.932Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.
+[2026-06-10T22:31:31.410Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.
+[2026-06-10T22:31:33.398Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
+[2026-06-10T22:34:47.904Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.
+[2026-06-10T22:44:07.693Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.
+[2026-06-10T22:59:40.262Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.
+[2026-06-10T22:59:42.197Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
+[2026-06-10T23:02:20.691Z] [COCKPIT-METRICS] [INFO] Erfolgreich 300 Zeilen für Cockpit geladen.

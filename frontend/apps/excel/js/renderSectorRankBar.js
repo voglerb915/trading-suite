@@ -1,48 +1,55 @@
+import { getIndustryColor } from "../../../shared/logic/rankIndustryColors.js";
+
+const BAR_HEIGHT = 144;
+
+function mapRankToY(rank) {
+    const safe = Math.max(1, Math.min(144, Number(rank) || 1));
+    return ((safe - 1) / 143) * BAR_HEIGHT;
+}
+
 export function renderSectorRankBar(container, stats) {
-    const { minRank, maxRank, avgRank, heatmapClass } = stats;
-    const barHeight = 144;
-
-    // 1. Balken finden oder einmalig erstellen
-    let bar = container.querySelector(".sector-rank-bar");
-    if (!bar) {
-        bar = document.createElement("div");
-        bar.className = `sector-rank-bar ${heatmapClass || ""}`; // Lädt das CSS-Design!
-        bar.style.height = `${barHeight}px`;
-        bar.style.position = "relative";
-        container.appendChild(bar);
+    if (!stats.rankStats || !stats.rankStats.week) {
+        console.warn("renderSectorRankBar: fehlende rankStats.week", stats);
+        return;
     }
 
-    // 2. Marker entfernen, damit sie nicht doppelt/falsch gerendert werden
-    const existingMarkers = bar.querySelectorAll(".rank-marker");
-    existingMarkers.forEach(m => m.remove());
+    const { minRank, avgRank, maxRank, heatmapClass } = stats.rankStats.week;
 
-    const mapRankToY = (rank) => ((rank - 1) / 143) * barHeight;
+    const bar = document.createElement("div");
+    bar.className = `sector-rank-bar ${heatmapClass}`;
+    bar.style.height = BAR_HEIGHT + "px";
+    bar.style.position = "relative";
 
-    // 3. Marker korrekt erstellen
-// 3. Marker korrekt erstellen (Richtung korrigiert)
-    const addMarker = (rank, color, side) => {
-    const m = document.createElement("div");
-    // Wir geben ihm die Klasse für die Position
-    m.className = side === "left" ? "rank-marker marker-left" : "rank-marker marker-right";
+    container.innerHTML = "";
+    container.appendChild(bar);
+
     
-    m.style.position = "absolute";
-    m.style.top = `${mapRankToY(rank)}px`;
-    
-    // Die Farbe erzwingen wir hier direkt
+
+function addMarker(rank, side, bar) {
+    const marker = document.createElement("div");
+
+    // 🔥 1. Korrekte Klassen
+    marker.className = `rank-marker ${side === "left" ? "marker-left" : "marker-right"} pfeil-gedreht`;
+
+    // 🔥 2. Korrekte Farbe basierend auf Rang
+    const color = getIndustryColor(rank);
+
     if (side === "left") {
-        m.style.borderRightColor = color;
+        marker.style.borderRightColor = color;   // Spitze zeigt nach rechts
     } else {
-        m.style.borderLeftColor = color;
+        marker.style.borderLeftColor = color;    // Spitze zeigt nach links
     }
-    
-    // WENN SIE JETZT NOCH NACH AUSSEN ZEIGEN, DANN DREHEN WIR SIE:
-    m.classList.add("pfeil-gedreht"); 
 
-    bar.appendChild(m);
-};
+    // 🔥 3. Korrekte Position
+    marker.style.top = `${mapRankToY(rank)}px`;
 
-    addMarker(minRank, "#00aa00", "left");
-    addMarker(avgRank, "#000000", "left");
-    addMarker(avgRank, "#000000", "right");
-    addMarker(maxRank, "#cc0000", "right");
+    bar.appendChild(marker);
+}
+
+
+    addMarker(minRank, "left", bar);
+addMarker(avgRank, "left", bar);
+addMarker(avgRank, "right", bar);
+addMarker(maxRank, "right", bar);
+
 }

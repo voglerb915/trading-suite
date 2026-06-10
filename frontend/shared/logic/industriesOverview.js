@@ -1,12 +1,14 @@
-// Berechnet Ranking-Serien für jede Industry
+function normalizeRank(value) {
+    const rank = Math.round(Number(value));
+    return Math.max(1, Math.min(144, rank));
+}
+
 export function calculateIndustryRanking(industries) {
     const result = {};
     const timeframes = ["week", "month", "quarter"];
     const names = Object.keys(industries);
 
-    names.forEach(name => {
-        result[name] = {};
-    });
+    names.forEach(name => result[name] = {});
 
     timeframes.forEach(tf => {
         const days = industries[names[0]][tf].length;
@@ -20,7 +22,7 @@ export function calculateIndustryRanking(industries) {
             entries.sort((a, b) => b.value - a.value);
 
             entries.forEach((entry, index) => {
-                const rank = index + 1;
+                const rank = normalizeRank(index + 1);
 
                 if (!result[entry.name][`${tf}_rank_series`]) {
                     result[entry.name][`${tf}_rank_series`] = [];
@@ -34,7 +36,6 @@ export function calculateIndustryRanking(industries) {
     return result;
 }
 
-// Aggregiert Rank-Statistiken pro Sektor
 function calculateSectorStatsFromIndustries(industries, ranking) {
     const sectors = {};
 
@@ -47,8 +48,8 @@ function calculateSectorStatsFromIndustries(industries, ranking) {
     const result = {};
 
     Object.entries(sectors).forEach(([sector, inds]) => {
-        const ranksWeek = inds.map(ind => ranking[ind].week_rank_series[0]);
-        const ranksMonth = inds.map(ind => ranking[ind].month_rank_series[0]);
+        const ranksWeek    = inds.map(ind => ranking[ind].week_rank_series[0]);
+        const ranksMonth   = inds.map(ind => ranking[ind].month_rank_series[0]);
         const ranksQuarter = inds.map(ind => ranking[ind].quarter_rank_series[0]);
 
         function calcStats(ranks) {
@@ -59,18 +60,18 @@ function calculateSectorStatsFromIndustries(industries, ranking) {
         }
 
         result[sector] = {
-            week: calcStats(ranksWeek),
-            month: calcStats(ranksMonth),
-            quarter: calcStats(ranksQuarter),
-            industryCount: inds.length,
-            top29Count: ranksWeek.filter(r => r <= 29).length
+            rankStats: {
+                week:    calcStats(ranksWeek),
+                month:   calcStats(ranksMonth),
+                quarter: calcStats(ranksQuarter)
+            },
+            industryCount: inds.length
         };
     });
 
     return result;
 }
 
-// Top29 pro Sektor und Zeitraum
 function countTop29BySector(industries, ranking, timeframe) {
     const result = {};
 
@@ -88,7 +89,15 @@ function countTop29BySector(industries, ranking, timeframe) {
     return result;
 }
 
-// Hauptfunktion: liefert Overview-Daten pro Sektor
+function rankToHeatmap(avgRank) {
+    if (avgRank <= 24) return "hm-6";
+    if (avgRank <= 48) return "hm-5";
+    if (avgRank <= 72) return "hm-4";
+    if (avgRank <= 96) return "hm-3";
+    if (avgRank <= 120) return "hm-2";
+    return "hm-1";
+}
+
 export function buildIndustriesOverviewData(industries) {
     const ranking = calculateIndustryRanking(industries);
     const sectorStats = calculateSectorStatsFromIndustries(industries, ranking);
@@ -109,11 +118,21 @@ export function buildIndustriesOverviewData(industries) {
         return {
             sector,
             industryCount: stats.industryCount,
-            topCount: stats.top29Count,
-            week: weekCounts[sector] ?? [0, 0, 0],
-            month: monthCounts[sector] ?? [0, 0, 0],
-            quarter: quarterCounts[sector] ?? [0, 0, 0],
-            rankStats: stats
+
+            top29: {
+                week:    weekCounts[sector]    ?? [0, 0, 0],
+                month:   monthCounts[sector]   ?? [0, 0, 0],
+                quarter: quarterCounts[sector] ?? [0, 0, 0]
+            },
+
+            rankStats: {
+                week: {
+                    ...stats.rankStats.week,
+                    heatmapClass: rankToHeatmap(stats.rankStats.week.avgRank)
+                },
+                month: stats.rankStats.month,
+                quarter: stats.rankStats.quarter
+            }
         };
     });
 
