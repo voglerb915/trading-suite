@@ -7,6 +7,7 @@ import { calculateSectorStats } from "../../../shared/logic/sectorStats.js";
 import { renderSectorStats } from "./renderSectorStats.js";
 
 export function renderSectorsOverview(targetId, sectors, industries) {
+    
     const container = document.getElementById(targetId);
     container.innerHTML = "";
 
