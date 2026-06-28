@@ -26,7 +26,6 @@ import { renderDashboardHeaderRight } from "./js/header/renderDashboardHeaderRig
 console.log("Dashboard JS loaded");
 window.parent.postMessage({ type: "DASHBOARD_READY" }, "*");
 
-
 /*----------------------------------
 2. FETCH-BREMSE (RAM-REDIRECT)
 ----------------------------------*/
@@ -47,7 +46,6 @@ window.fetch = function(url, options) {
     return originalFetch(url, options);
 };
 
-
 /*----------------------------------
 3. GLOBALER STATE
 ----------------------------------*/
@@ -56,7 +54,7 @@ window.dashboardState = {
     industries: [],
     stocks: [],
     etfs: [],
-    signals: [],      // ⭐ HIER MUSS ES REIN (Initial als leeres Array)
+    signals: [],
     sector: null,
     industry: null,
     ticker: null,
@@ -64,11 +62,27 @@ window.dashboardState = {
     breadcrumbs: "Alle Sektoren",
     strategy: "none",
     indexFilter: "all",
-    search: ""
+    search: "",
+    filterEntryIndustries: false,
+    filterExitIndustries: false,
+
+    filterEntrySectors: false,
+    filterExitSectors: false,
+
+    filterEntryStocks: false,
+    filterExitStocks: false
+
+
 };
 
 /*----------------------------------
-4. LOAD DATA (OPTIMIERT, FIXED)
+3b. START-SYNCHRONISATION
+----------------------------------*/
+window._dashboardReadyStocks = false;
+window._dashboardReadySignals = false;
+
+/*----------------------------------
+4. LOAD DATA
 ----------------------------------*/
 function loadDashboardData() {
     try {
@@ -81,30 +95,21 @@ function loadDashboardData() {
         }
 
         console.log("loadDashboardData(): baseStocks LENGTH =", cockpitData.baseStocks.length);
-console.log("DEBUG STATE AFTER LOAD:", window.dashboardState.indexFilter);
 
-        // ⭐ Strategy NICHT verlieren
         const currentStrategy = window.dashboardState.strategy;
-
         let stocks;
 
-        // Strategy aktiv → Strategy-Stocks verwenden
         if (currentStrategy !== "none") {
             const strategyStocks = cockpitState.stocks;
-
             if (Array.isArray(strategyStocks) && strategyStocks.length > 0) {
                 stocks = strategyStocks;
             } else {
                 stocks = cockpitData.baseStocks;
             }
-        }
-
-        // Strategy = none → BaseStocks
-        else {
+        } else {
             stocks = cockpitData.baseStocks;
         }
 
-        // ⭐ State aktualisieren, Strategy NICHT überschreiben
         window.dashboardState = {
             ...window.dashboardState,
             strategy: currentStrategy,
@@ -132,13 +137,10 @@ function renderHeader() {
     renderDashboardHeaderRight(window.dashboardState);
 }
 
-
 /*----------------------------------
-6. UPDATE + RENDER (OPTIMIERT)
+6. UPDATE + RENDER
 ----------------------------------*/
 function updateAndRenderDashboard() {
-
-    // Sicherheitsnetz: falls stocks fehlen → leeres Array statt Crash
     if (!Array.isArray(window.dashboardState.stocks)) {
         window.dashboardState.stocks = [];
     }
@@ -148,43 +150,35 @@ function updateAndRenderDashboard() {
 }
 
 /*----------------------------------
-7. STRATEGY CHANGE (FINAL)
+7. STRATEGY CHANGE
 ----------------------------------*/
 document.addEventListener("dashboard:strategyChange", async (e) => {
     const strategy = e.detail;
-
-    // Strategy im Dashboard setzen
     window.dashboardState.strategy = strategy;
 
-    // Strategy im Cockpit anwenden
     if (window.parent && typeof window.parent.applyStrategy === "function") {
         await window.parent.applyStrategy(strategy);
     }
 });
 
 /*----------------------------------
-7.1. INDEX CHANGE (NEU)
+7.1 INDEX CHANGE
 ----------------------------------*/
 document.addEventListener("dashboard:indexChange", (e) => {
-    const index = e.detail;   // z.B. "SP500", "NDX", "RUT", "DJI", "all"
-
-    // Wert in den Dashboard-State schreiben
+    const index = e.detail;
     window.dashboardState.indexFilter = index;
-console.log("DEBUG STATE AFTER SET:", window.dashboardState.indexFilter);
-    // Neu rendern
     updateAndRenderDashboard();
 });
 
-// ticker search
+/*----------------------------------
+SEARCH + RESET
+----------------------------------*/
 document.addEventListener("dashboard:searchChange", (e) => {
-    console.log("DEBUG SEARCH EVENT:", e.detail);
     window.dashboardState.search = e.detail;
     updateAndRenderDashboard();
 });
 
-// 🟢 HIER KOMMT RESET HIN
 document.addEventListener("dashboard:reset", () => {
-    console.log("RESET EVENT RECEIVED");
     window.dashboardState = {
         ...window.dashboardState,
         sector: null,
@@ -195,54 +189,76 @@ document.addEventListener("dashboard:reset", () => {
         search: ""
     };
 
-    // Search-Feld im Header leeren
-    document.dispatchEvent(
-        new CustomEvent("dashboard:searchChange", { detail: "" })
-    );
-
+    document.dispatchEvent(new CustomEvent("dashboard:searchChange", { detail: "" }));
     updateAndRenderDashboard();
 });
 
-
 /*----------------------------------
-8. CLICK EVENTS (OPTIMIERT)
+8. CLICK EVENTS
 ----------------------------------*/
 document.addEventListener("click", (e) => {
 
-    /*------------------------------
-    1. STOCK CLICK
-    ------------------------------*/
+    // ⭐ SIGNAL-PILLEN (Entry / Exit)
+const pill = e.target.closest(".pill");
+if (pill) {
+    const type = pill.dataset.type;
+
+    switch (type) {
+        case "entry-industries":
+            window.dashboardState.filterEntryIndustries = !window.dashboardState.filterEntryIndustries;
+            break;
+
+        case "exit-industries":
+            window.dashboardState.filterExitIndustries = !window.dashboardState.filterExitIndustries;
+            break;
+
+        case "entry-sectors":
+            window.dashboardState.filterEntrySectors = !window.dashboardState.filterEntrySectors;
+            break;
+
+        case "exit-sectors":
+            window.dashboardState.filterExitSectors = !window.dashboardState.filterExitSectors;
+            break;
+
+        // ⭐ NEU: STOCKS
+        case "entry-stocks":
+            window.dashboardState.filterEntryStocks = !window.dashboardState.filterEntryStocks;
+            break;
+
+        case "exit-stocks":
+            window.dashboardState.filterExitStocks = !window.dashboardState.filterExitStocks;
+            break;
+    }
+
+    updateAndRenderDashboard();
+    return;
+}
+
+
+    // ⭐ STOCK CLICK
     const stockRow = e.target.closest("[data-stock]");
     if (stockRow) {
         const ticker = stockRow.dataset.stock;
         const item = window.dashboardState.stocks.find(s => s.ticker === ticker);
-
         if (!item) return;
 
-        // State aktualisieren
         window.dashboardState.sector = item.sector || item.sector_name;
         window.dashboardState.industry = item.industry || item.industry_name;
         window.dashboardState.ticker = ticker;
         window.dashboardState.referenceStock = item;
 
-        // Highlight setzen
         document.querySelectorAll('.stock-item').forEach(el =>
             el.classList.toggle('highlight-ticker', el.dataset.stock === ticker)
         );
 
-        // Header + Chart aktualisieren
         renderHeader();
         if (typeof window.renderChart === 'function') {
             window.renderChart(ticker);
         }
-
         return;
     }
 
-
-    /*------------------------------
-    2. FILTER CLICK (SEKTOR/INDUSTRIE)
-    ------------------------------*/
+    // ⭐ SECTOR / INDUSTRY CLICK
     const filterEl = e.target.closest("[data-sector]") || e.target.closest("[data-industry]");
     if (filterEl) {
         const type = filterEl.hasAttribute("data-sector") ? "sector" : "industry";
@@ -259,7 +275,6 @@ document.addEventListener("click", (e) => {
             window.dashboardState.industry = isBreadcrumb ? val :
                 (window.dashboardState.industry === val ? null : val);
 
-            // Automatische Sektor-Erkennung
             if (window.dashboardState.industry) {
                 const allStocks = window.parent?.dataStore?.baseStocks || [];
                 const sample = allStocks.find(s => 
@@ -271,29 +286,23 @@ document.addEventListener("click", (e) => {
             }
         }
 
-        // Ticker zurücksetzen
         window.dashboardState.ticker = null;
-
-        // Rendern
         updateAndRenderDashboard();
     }
 });
 
 /*----------------------------------
-9. INITIALISIERUNG (OPTIMIERT)
+9. INITIALISIERUNG
 ----------------------------------*/
 function setupHeaderListeners() {
     const container = document.getElementById("dashboard-header-center");
     if (!container) return;
 
-    // Listener nur einmal binden
     if (!container.dataset.listenerAttached) {
         container.dataset.listenerAttached = "true";
 
         container.addEventListener("click", (ev) => {
             if (ev.target.dataset?.bc === "reset") {
-
-                // State zurücksetzen
                 Object.assign(window.dashboardState, {
                     sector: null,
                     industry: null,
@@ -301,7 +310,6 @@ function setupHeaderListeners() {
                     strategy: "none"
                 });
 
-                // Highlight entfernen
                 document.querySelectorAll('.stock-item')
                     .forEach(el => el.classList.remove('highlight-ticker'));
 
@@ -325,30 +333,27 @@ export function initDashboard() {
 }
 
 /*----------------------------------
-10. MESSAGE HANDLER (ROBUST & ERWEITERT)
+10. MESSAGE HANDLER
 ----------------------------------*/
 window.addEventListener("message", (e) => {
     const { type, stocks, signals, strategy, payload } = e.data || {};
-    
     console.log(`📥 Message empfangen: ${type}`);
 
-    // Fallback: Manchmal stecken Signale im 'payload' Objekt statt direkt in 'e.data'
-    const finalSignals = Array.isArray(signals) ? signals : (Array.isArray(payload?.signals) ? payload.signals : null);
+    const finalSignals = Array.isArray(signals)
+        ? signals
+        : (Array.isArray(payload?.signals) ? payload.signals : null);
 
-    // -----------------------------
-    // UPDATE_STOCKS (oder UPDATE_DASHBOARD)
-    // -----------------------------
+    // UPDATE_STOCKS / UPDATE_DASHBOARD
     if (type === "UPDATE_STOCKS" || type === "UPDATE_DASHBOARD") {
 
-        // 1. Strategy
         if (typeof strategy === "string") {
             window.dashboardState.strategy = strategy;
         }
 
-        // 2. Stocks
-        window.dashboardState.stocks = Array.isArray(stocks) ? stocks : (window.dashboardState.stocks || []);
+        if (Array.isArray(stocks)) {
+            window.dashboardState.stocks = stocks;
+        }
 
-        // 3. Signale (Hier greift unser "Robust-Check")
         if (finalSignals !== null) {
             console.log("✅ Signale erfolgreich gesetzt:", finalSignals.length);
             window.dashboardState.signals = finalSignals;
@@ -360,15 +365,26 @@ window.addEventListener("message", (e) => {
         return;
     }
 
-    // -----------------------------
     // COCKPIT_DATA_READY
-    // -----------------------------
     if (type === "COCKPIT_DATA_READY") {
         if (window.dashboardState.strategy !== "none") return;
         initDashboard();
         return;
     }
+    // SPARKSIGNALS
+if (type === "sparkSignals") {
+    console.log("📊 SparkSignals empfangen:", payload);
+
+    // Sicherstellen, dass dataStore existiert
+    window.dataStore = window.dataStore || {};
+    window.dataStore.sparkSignals = payload;
+
+    updateAndRenderDashboard();
+    return;
+}
+
 });
+
 
 /*----------------------------------
 12. MESSAGE BUFFER FLUSH

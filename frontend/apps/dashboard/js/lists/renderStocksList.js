@@ -1,4 +1,25 @@
 import { sectorClasses } from "../../../../shared/logic/sectorColors.js";
+import { getSectorClass, getDiffColor, formatDiff, renderRankCircle } 
+    from "../helpers/renderHelpers.js";
+
+import { passesSignalFilter } 
+    from "../helpers/filterHelpers.js";
+
+
+
+export function renderStockSignalDot(ticker) {
+    const store = window.dataStore || {};
+    const signals = store.sparkSignals?.stocks || {};
+    const sig = signals[ticker];
+
+    if (!sig) return "";
+    if (sig.signal === "entry") return `<span class="sig-dot entry"></span>`;
+    if (sig.signal === "exit")  return `<span class="sig-dot exit"></span>`;
+    return "";
+}
+
+window.renderStockSignalDot = renderStockSignalDot;
+
 
 export function renderStocksList(stocks, state) {
     const listUl = document.getElementById('stocks-list');
@@ -13,7 +34,7 @@ export function renderStocksList(stocks, state) {
         return;
     }
 
-    // 1. Sector
+// 1. Sector
 if (state.sector && state.sector !== "all") {
     stocks = stocks.filter(s => s.sector === state.sector);
 }
@@ -46,13 +67,29 @@ if (state.search && state.search.length > 0) {
     });
 }
 
+// ⭐ 5. Signal-Filter (Entry / Exit)
+stocks = stocks.filter(s =>
+    passesSignalFilter(
+        window.dataStore?.sparkSignals?.stocks?.[s.ticker],
+        state.filterEntryStocks,
+        state.filterExitStocks
+    )
+);
+
 
     // 🟢 Stocks-Pille aktualisieren (nach allen Filtern!)
     const pillContainer = document.getElementById("stocks-pill-container");
     if (pillContainer) {
-        pillContainer.innerHTML = `
-            <span class="pill pill-small">${stocks.length}</span>
-        `;
+       pillContainer.innerHTML = `
+    <span class="pill pill-count">${stocks.length}</span>
+
+    <span class="pill pill-entry ${state.filterEntryStocks ? 'active' : ''}"
+          data-type="entry-stocks">Entry</span>
+
+    <span class="pill pill-exit ${state.filterExitStocks ? 'active' : ''}"
+          data-type="exit-stocks">Exit</span>
+`;
+
     }
 
     const visible = stocks;
@@ -109,13 +146,21 @@ if (state.search && state.search.length > 0) {
                 <div class="stock-row-inner">
 
                     <!-- LINKS -->
-                    <div class="stock-left">
-                        ${isSelected ? '▶ ' : ''}
-                        <strong>${position}. ${item.ticker}</strong><br>
-                        <span class="stock-sub">
-                            ${displaySector} | ${displayIndustry}
-                        </span>
-                    </div>
+                <div class="stock-left">
+                    ${isSelected ? '▶ ' : ''}
+
+                    ${renderRankCircle(
+                        item.rsRank,
+                        window.dataStore?.sparkSignals?.stocks?.[item.ticker]
+                    )}
+
+                    ${item.ticker}<br>
+
+                    <span class="stock-sub">
+                        ${displaySector} | ${displayIndustry}
+                    </span>
+                </div>
+
 
                     <!-- RECHTS -->
                     <div class="stock-right">

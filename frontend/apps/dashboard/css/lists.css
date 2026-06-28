@@ -40,6 +40,71 @@
     background-color: transparent !important;
 }
 
+/* ---------------------------------------------------------
+   Signal Dot / Rank Circle (Stocks, Industry, Sector)
+--------------------------------------------------------- */
+.sig-dot {
+    display:inline-block;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    margin-left:6px;
+    vertical-align:middle;
+}
+.sig-dot.entry { background:#00c853; }
+.sig-dot.exit  { background:#d50000; }
+
+.rank-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width:  30px;      /* vorher 22px */
+    height: 30px;     /* vorher 22px */
+    border-radius: 50%;
+    font-size: 15px;  /* vorher 12px */
+    font-weight: 600;
+    color: #fff;
+    margin-right: 8px; /* etwas mehr Abstand */
+}
+
+.rank-entry {
+    background-color: #2ecc71; /* Grün */
+}
+
+.rank-exit {
+    background-color: #e74c3c; /* Rot */
+}
+
+.rank-neutral {
+    background-color: #7f8c8d; /* Grau */
+}
+
+.rank-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    height: 20px;
+    border-radius: 999px;   /* echte Pille */
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;            /* WICHTIG: weißer Text */
+    margin-right: 6px;
+    line-height: 1;
+}
+
+.rank-entry {
+    background-color: #2ecc71;
+}
+
+.rank-exit {
+    background-color: #e74c3c;
+}
+
+.rank-neutral {
+    background-color: #7f8c8d;
+}
+
 /* =========================================================
    SECTORS LIST
    ========================================================= */

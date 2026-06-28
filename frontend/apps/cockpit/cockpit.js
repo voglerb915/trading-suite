@@ -323,24 +323,63 @@ async function loadBaseData() {
     const [stocks, sectors, industries, etfs, signals] = await Promise.all(
         responses.map(r => r.json())
     );
+// 🟢 Block 1: SparkSignals laden (NEU)
+let sparklineSignals = null;
+try {
+    const sparkRes = await fetch("/api/sparksignals");
+    const sparkJson = await sparkRes.json();
 
-    // 1) DataStore füllen
-    window.dataStore.baseStocks = stocks;
-    window.dataStore.sectors = sectors;
-    window.dataStore.industries = industries;
-    window.dataStore.etfs = etfs;
-    window.dataStore.signals = signals;
-
-    window.dataStore.metrics = {};
-    window.dataStore.finviz = {};
-
-    // 2) CockpitState initialisieren
-    window.cockpitState.stocks = stocks;
-    window.cockpitState.volumeExtract = computeVolumeExtract(stocks);
-
-    // 3) Daten ins Cockpit-iFrame senden
-    sendCockpitData();
+    if (sparkJson?.success) {
+        sparklineSignals = sparkJson.sparkline;
+        console.log("SparkSignals geladen:", sparklineSignals);
+    } else {
+        console.warn("SparkSignals: success=false", sparkJson);
+    }
+} catch (err) {
+    console.error("Fehler beim Laden der SparkSignals:", err);
 }
+
+
+// 1) DataStore füllen
+window.dataStore.baseStocks = stocks;
+window.dataStore.sectors = sectors;
+window.dataStore.industries = industries;
+window.dataStore.etfs = etfs;
+window.dataStore.signals = signals;
+
+window.dataStore.metrics = {};
+window.dataStore.finviz = {};
+
+
+// 🟢 Block 2: SparkSignals in den dataStore schreiben (NEU)
+window.dataStore.sparkSignals = {
+    industries: sparklineSignals?.industries ?? {},
+    sectors: sparklineSignals?.sectors ?? {},
+    stocks: sparklineSignals?.stocks ?? {}
+};
+
+console.log("SparkSignals im dataStore gespeichert:", window.dataStore.sparkSignals);
+
+
+// 2) CockpitState initialisieren
+window.cockpitState.stocks = stocks;
+window.cockpitState.volumeExtract = computeVolumeExtract(stocks);
+
+
+// 🟢 Block 3: SparkSignals in CockpitState integrieren (NEU)
+window.cockpitState.sparkSignals = {
+    industries: sparklineSignals?.industries ?? {},
+    sectors: sparklineSignals?.sectors ?? {},
+    stocks: sparklineSignals?.stocks ?? {}
+};
+
+console.log("SparkSignals im CockpitState gespeichert:", window.cockpitState.sparkSignals);
+
+
+// 3) Daten ins Cockpit-iFrame senden
+sendCockpitData();
+}   // 🟢 ← HIER: loadBaseData korrekt schließen!
+
 
 
 /*----------------------------------
@@ -390,7 +429,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Basisdaten laden
     await loadBaseData();
 
-    
     // Dashboard informieren
     const dbIframe = document.getElementById("iframe-new-dashboard");
     if (dbIframe && dbIframe.contentWindow) {
@@ -398,6 +436,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             type: "COCKPIT_DATA_READY",
             signals: window.dataStore.signals || []
         }, "*");
+
+        // 🟢 Block 4: SparkSignals an Dashboard senden (NEU)
+        dbIframe.contentWindow.postMessage({
+            type: "sparkSignals",
+            payload: {
+                industries: window.dataStore.sparkSignals?.industries ?? {},
+                sectors: window.dataStore.sparkSignals?.sectors ?? {},
+                stocks: window.dataStore.sparkSignals?.stocks ?? {}
+            }
+        }, "*");
+
+        console.log("SparkSignals an Dashboard gesendet:", window.dataStore.sparkSignals);
     }
 
     // Routing starten

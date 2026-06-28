@@ -40,7 +40,9 @@ app.get('/api/device-info', (req, res) => {
     });
 });
 
-// MARKET
+// ANALYSIS
+app.use("/api/sparksignals", require("./routes/analysis/sparkSignalsRoute"));
+
 // MARKET
 app.use("/api/market/stocks", require("./routes/market/stocks"));
 app.use("/api/market/sectors", require("./routes/market/sectors"));
@@ -64,6 +66,7 @@ app.use("/api/strategy", require("./routes/strategy/strategies"));
 
 // SIGNALS ENGINE (NEU)
 app.use("/api/signals", require("./routes/strategy/signalsRoute"));
+app.use("/api/sparkstocksignals", require("./routes/strategy/sparkStockSignalsRoute"));
 
 
 // // RS

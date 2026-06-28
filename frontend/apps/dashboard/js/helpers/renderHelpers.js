@@ -38,6 +38,23 @@ export function formatDiff(value) {
   return "0";
 }
 
+export function renderRankCircle(rank, signalObj) {
+    const sig = signalObj?.signal;
+
+    // ⭐ Kein Signal → normale Zahl, kein Kreis
+    if (!sig) {
+        return `<strong>${rank ?? "—"}.</strong>`;
+    }
+
+    // ⭐ Entry / Exit → farbiger Kreis
+    let cls = "rank-neutral";
+    if (sig === "entry") cls = "rank-entry";
+    if (sig === "exit") cls = "rank-exit";
+
+    return `<span class="rank-pill ${cls}">${rank ?? "—"}</span>`;
+
+}
+
 
 // ---------------------------------------------------------
 //  CLICK HANDLER: SECTOR
