@@ -41,20 +41,16 @@ export function formatDiff(value) {
 export function renderRankCircle(rank, signalObj) {
     const sig = signalObj?.signal;
 
-    // ⭐ Kein Signal → normale Zahl, kein Kreis
+    // ⭐ Wenn KEIN Signal: Nutze die gleiche Klasse, aber mit neutralem Style
     if (!sig) {
-        return `<strong>${rank ?? "—"}.</strong>`;
+        return `<span class="rank-pill rank-empty">${rank ?? "—"}</span>`;
     }
 
-    // ⭐ Entry / Exit → farbiger Kreis
-    let cls = "rank-neutral";
-    if (sig === "entry") cls = "rank-entry";
-    if (sig === "exit") cls = "rank-exit";
+    // ⭐ Wenn Signal: Entry / Exit
+    let cls = sig === "entry" ? "rank-entry" : "rank-exit";
 
     return `<span class="rank-pill ${cls}">${rank ?? "—"}</span>`;
-
 }
-
 
 // ---------------------------------------------------------
 //  CLICK HANDLER: SECTOR

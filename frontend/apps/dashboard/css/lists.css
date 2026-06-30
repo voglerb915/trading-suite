@@ -6,7 +6,7 @@
    STOCK ITEM (alte einfache Liste)
 --------------------------------------------------------- */
 .stock-item {
-  padding: 6px 10px;
+  padding: 4px 8px;
   margin: 4px 0;
   background-color: #ffffff;
   border-radius: 4px;
@@ -17,6 +17,21 @@
 
 .stock-item:hover {
   background-color: #f9f9f9;
+}
+#stocks-list {
+    list-style: none !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+}
+
+#stocks-list li {
+    list-style-type: none !important;
+}
+
+.stock-position {
+    font-size: 0.95rem;   /* exakt wie Sectors/Industries */
+    font-weight: 700;
+    margin-right: 6px;
 }
 
 /* ---------------------------------------------------------
@@ -54,53 +69,31 @@
 .sig-dot.entry { background:#00c853; }
 .sig-dot.exit  { background:#d50000; }
 
-.rank-circle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width:  30px;      /* vorher 22px */
-    height: 30px;     /* vorher 22px */
-    border-radius: 50%;
-    font-size: 15px;  /* vorher 12px */
-    font-weight: 600;
-    color: #fff;
-    margin-right: 8px; /* etwas mehr Abstand */
-}
 
-.rank-entry {
-    background-color: #2ecc71; /* Grün */
-}
-
-.rank-exit {
-    background-color: #e74c3c; /* Rot */
-}
-
-.rank-neutral {
-    background-color: #7f8c8d; /* Grau */
-}
-
+/* Einheitliche Basis für alle Ranks */
 .rank-pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 0 10px;
-    height: 20px;
-    border-radius: 999px;   /* echte Pille */
-    font-size: 12px;
+    height: 18px;
+    border-radius: 999px;
+    font-size: 15px;      /* Hier ist die einheitliche Größe */
     font-weight: 600;
-    color: #fff;            /* WICHTIG: weißer Text */
-    margin-right: 6px;
     line-height: 1;
+    margin-right: 6px;
 }
 
-.rank-entry {
-    background-color: #2ecc71;
+/* Der leere Zustand (ohne Signal) */
+.rank-empty {
+    background-color: transparent;
+    color: #333;          /* Dunkler Text statt weiß */
+    border: 1px solid #ddd; /* Optional: ein dezenter Rand */
 }
 
-.rank-exit {
-    background-color: #e74c3c;
-}
-
+/* Deine bestehenden Farben */
+.rank-entry { background-color: #2ecc71; color: #fff; }
+.rank-exit  { background-color: #e74c3c; color: #fff; }
 .rank-neutral {
     background-color: #7f8c8d;
 }
@@ -112,7 +105,7 @@
 .grid-table {
   display: grid;
   grid-template-columns: 1fr 56px 32px 32px 32px;
-  row-gap: 6px;
+  row-gap: 2px;
 }
 
 .grid-row-sector {
@@ -151,7 +144,7 @@
 .grid-table-industries {
     display: grid;
     grid-template-columns: 1fr 56px 32px 32px 32px;
-    row-gap: 6px;
+    row-gap: 2px;
 }
 
 .grid-row-industry {
@@ -203,6 +196,12 @@
     font-size: 0.9rem;   /* oder 0.9rem, 0.85rem – wie du willst */
     font-weight: 700;
 }
+.stock-ticker {
+    font-size: 0.95rem;   /* oder 1rem, wie du willst */
+    font-weight: 700;     /* fett */
+    color: #000;          /* optional */
+    line-height: 1.1;
+}
 
 .stock-right {
     text-align: right;
@@ -213,6 +212,17 @@
 .stock-sub {
     color: #666;
     font-size: 0.85rem;
+}
+
+.strategy-value-strong {
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+.score-value {
+    font-size: 1.05rem;   /* gleiche Größe wie strategy-value-strong */
+    font-weight: 700;     /* fett */
+    color: #444;          /* optional, gleiche Farbe wie rechts */
+    line-height: 1;
 }
 
 /* =========================================================
@@ -398,7 +408,3 @@
     line-height: 1.3;
 }
 
-.strategy-value-strong {
-    font-size: 1.05rem;
-    font-weight: 700;
-}

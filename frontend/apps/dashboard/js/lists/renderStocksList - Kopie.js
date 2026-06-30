@@ -133,8 +133,7 @@ const html = visible.map((item, idx) => {
 
         topValue = state.strategy && state.strategy !== "none"
             ? `<strong class="strategy-value-strong">${formatted}</strong>`
-            : `<span class="score-value">${formatted}</span>`;
-
+            : formatted;
     } else {
         topValue = "—";
     }
@@ -148,21 +147,20 @@ const html = visible.map((item, idx) => {
 
                 <!-- LINKS -->
                 <div class="stock-left">
-
+                    <span class="stock-position">${position}.</span> 
                     ${isSelected ? '▶ ' : ''}
 
                     ${renderRankCircle(
-                        position,
+                        item.rsRank,
                         window.dataStore?.sparkSignals?.stocks?.[item.ticker]
                     )}
 
-                    <span class="stock-ticker">${item.ticker}</span><br>
+                    ${item.ticker}<br>
 
                     <span class="stock-sub">
                         ${displaySector} | ${displayIndustry}
                     </span>
                 </div>
-
 
                 <!-- RECHTS -->
                 <div class="stock-right">

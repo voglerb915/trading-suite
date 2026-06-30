@@ -76,3 +76,14 @@
     padding: 10px 16px;
     cursor: pointer;
 }
+
+/* Highlight Symbol as Export when hove */
+.tab.export-overview {
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.tab.export-overview:hover {
+    color: #ffd54f;          /* warmes Gold-Gelb, gut sichtbar auf dunklem Hintergrund */
+    transform: scale(1.15);  /* leichtes Vergrößern */
+    cursor: pointer;
+}

@@ -12,7 +12,12 @@ import { renderIndustriesTop20 } from "./js/renderIndustriesTop20.js";
 
 // SECTORS OVERVIEW
 import { renderSectorsOverview } from "./js/renderSectorsOverview.js";
+import { exportOverviewHTML } from "./js/helpers/exportOverviewHTML.js";
 
+
+// ---------------------------------------------------------
+// MAIN
+// ---------------------------------------------------------
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("EXCEL: Start...");
 
@@ -33,16 +38,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     renderIndustriesTop20("tab-industries-top20", industries, rankingIndustries, dates);
 
-    // ORIGINAL: funktionierend
     renderSectorsOverview("tab-sectors-overview", sectors, industries);
 
-    document.addEventListener("click", (e) => {
-        if (!e.target.classList.contains("tab")) return;
 
-        const tab = e.target.dataset.tab;
+    // -----------------------------------------------------
+    // TAB-LOGIK
+    // -----------------------------------------------------
+document.querySelectorAll(".tab").forEach(tabEl => {
+    tabEl.addEventListener("click", (e) => {
+        const target = e.target;
+
+        // 1) Export nur beim Icon
+        if (target.classList.contains("tab-icon-export")) {
+            exportOverviewHTML("tab-sectors-overview");
+            return;
+        }
+
+
+        // 2) Tab-Wechsel bei Klick auf Text oder Tab-Fläche
+        const tab = tabEl.dataset.tab;
 
         document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
-        e.target.classList.add("active");
+        tabEl.classList.add("active");
 
         document.querySelectorAll(".tab-content").forEach(div => {
             div.style.display = "none";
@@ -53,4 +70,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             targetTab.style.display = "block";
         }
     });
+});
+
+    // -----------------------------------------------------
+    // EXPORT-BUTTON (falls vorhanden)
+    // -----------------------------------------------------
+    const btn = document.getElementById("btn-export-overview");
+    if (btn) {
+        btn.addEventListener("click", () => {
+            exportOverviewHTML("tab-sectors-overview");
+        });
+    }
 });
