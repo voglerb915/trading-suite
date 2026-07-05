@@ -69,10 +69,16 @@ window.dashboardState = {
     filterEntrySectors: false,
     filterExitSectors: false,
 
+// NEUE STRUKTUR:
+    // Für Signals-Liste
     filterEntryStocks: false,
-    filterExitStocks: false
+    filterExitStocks: false,
+    filterMidLong: false,
+    filterMidExit: false,
 
-
+    // ALTE STRUKTUR: (Wichtig für StocksList!)
+    filterEntry: false, 
+    filterExit: false,
 };
 
 /*----------------------------------
@@ -175,6 +181,12 @@ SEARCH + RESET
 ----------------------------------*/
 document.addEventListener("dashboard:searchChange", (e) => {
     window.dashboardState.search = e.detail;
+
+    // ⭐ WICHTIG: Cockpit informieren
+    document.dispatchEvent(new CustomEvent("dashboard:search", {
+        detail: e.detail
+    }));
+
     updateAndRenderDashboard();
 });
 
@@ -189,16 +201,19 @@ document.addEventListener("dashboard:reset", () => {
         search: ""
     };
 
-    document.dispatchEvent(new CustomEvent("dashboard:searchChange", { detail: "" }));
+    // ⭐ WICHTIG: Cockpit informieren
+    document.dispatchEvent(new CustomEvent("dashboard:search", { detail: "" }));
+
     updateAndRenderDashboard();
 });
+
 
 /*----------------------------------
 8. CLICK EVENTS
 ----------------------------------*/
 document.addEventListener("click", (e) => {
 
-    // ⭐ SIGNAL-PILLEN (Entry / Exit)
+// ⭐ SIGNAL-PILLEN (Entry / Exit / Long / Mid-Exit)
 const pill = e.target.closest(".pill");
 if (pill) {
     const type = pill.dataset.type;
@@ -207,33 +222,42 @@ if (pill) {
         case "entry-industries":
             window.dashboardState.filterEntryIndustries = !window.dashboardState.filterEntryIndustries;
             break;
-
         case "exit-industries":
             window.dashboardState.filterExitIndustries = !window.dashboardState.filterExitIndustries;
             break;
-
         case "entry-sectors":
             window.dashboardState.filterEntrySectors = !window.dashboardState.filterEntrySectors;
             break;
-
         case "exit-sectors":
             window.dashboardState.filterExitSectors = !window.dashboardState.filterExitSectors;
             break;
 
-        // ⭐ NEU: STOCKS
-        case "entry-stocks":
-            window.dashboardState.filterEntryStocks = !window.dashboardState.filterEntryStocks;
+        // FÜR STOCKS-TAB (Die alten)
+        case "filterEntry":
+            window.dashboardState.filterEntry = !window.dashboardState.filterEntry;
+            break;
+        case "filterExit":
+            window.dashboardState.filterExit = !window.dashboardState.filterExit;
             break;
 
-        case "exit-stocks":
+        // FÜR SIGNALS-TAB (Die neuen)
+        case "filterEntryStocks":
+            window.dashboardState.filterEntryStocks = !window.dashboardState.filterEntryStocks;
+            break;
+        case "filterExitStocks":
             window.dashboardState.filterExitStocks = !window.dashboardState.filterExitStocks;
             break;
-    }
+        case "filterMidLong":
+            window.dashboardState.filterMidLong = !window.dashboardState.filterMidLong;
+            break;
+        case "filterMidExit":
+            window.dashboardState.filterMidExit = !window.dashboardState.filterMidExit;
+            break;
+    } // <--- DIESE KLAMMER HAT GEFEHLT!
 
     updateAndRenderDashboard();
     return;
 }
-
 
     // ⭐ STOCK CLICK
     const stockRow = e.target.closest("[data-stock]");

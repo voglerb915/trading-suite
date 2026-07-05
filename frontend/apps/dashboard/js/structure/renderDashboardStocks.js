@@ -1,7 +1,6 @@
 import { renderStocksList } from "../lists/renderStocksList.js";
 
 export function renderDashboardStocks(stocks, state) {
-    // Log-Brücke zur Fehlerdiagnose
     console.log("🔍 VIEW: renderDashboardStocks aufgerufen mit stocks.length:", stocks ? stocks.length : "NULL");
 
     const container = document.querySelector("#stocks-list-container");
@@ -9,8 +8,9 @@ export function renderDashboardStocks(stocks, state) {
         console.error("❌ FEHLER: Container #stocks-list-container nicht gefunden!");
         return;
     }
-    
-    // Die eigentliche Arbeit
+
+    // Dashboard rendert NUR – keine Filterung hier!
     renderStocksList(stocks, state);
+
     console.log("✅ VIEW: Liste erfolgreich gerendert.");
 }

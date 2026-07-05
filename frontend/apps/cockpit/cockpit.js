@@ -255,18 +255,22 @@ export async function applyStrategy(strategyName) {
 function filterStocks(state, stocks) {
     let result = [...stocks];
 
+    // 1. FILTERUNG: Sector
     if (state.sector && state.sector !== "all") {
         result = result.filter(s => (s.sector || s.sector_name) === state.sector);
     }
 
+    // 2. FILTERUNG: Industry
     if (state.industry) {
         result = result.filter(s => (s.industry || s.industry_name) === state.industry);
     }
 
+    // 3. FILTERUNG: Index
     if (state.index && state.index !== "all") {
         result = result.filter(s => Array.isArray(s.index) && s.index.includes(state.index));
     }
 
+    // 4. FILTERUNG: Volumen
     if (state.volFilterActive) {
         result = result.filter(s => {
             const vol = Number(s.volume || 0);
@@ -275,16 +279,37 @@ function filterStocks(state, stocks) {
         });
     }
 
-    if (state.search && state.search.length > 1) {
+    // 5. FILTERUNG: Ticker/Name
+    if (state.search && state.search.length >= 1) {
         const q = state.search.toLowerCase();
-        result = result.filter(s =>
-            s.ticker.toLowerCase().includes(q) ||
-            s.name?.toLowerCase().includes(q)
-        );
+
+        result = result.filter(s => {
+            const ticker = s.ticker?.toLowerCase() || "";
+            const name = s.name?.toLowerCase() || "";
+            return ticker.includes(q) || name.includes(q);
+        });
+
+        // ⭐ 6. SORTIERUNG: Ticker beginnt mit Suchbegriff → oben
+        result.sort((a, b) => {
+            const q = state.search.toLowerCase();
+            const aTicker = a.ticker.toLowerCase();
+            const bTicker = b.ticker.toLowerCase();
+
+            const aStarts = aTicker.startsWith(q);
+            const bStarts = bTicker.startsWith(q);
+
+            // Priorität: beginnt mit Suchbegriff
+            if (aStarts && !bStarts) return -1;
+            if (!aStarts && bStarts) return 1;
+
+            // Danach globalRank
+            return a.globalRank - b.globalRank;
+        });
     }
 
     return result;
 }
+
 
 function sortStocks(state, stocks) {
     const dir = state.sortDirection === "asc" ? 1 : -1;

@@ -228,7 +228,12 @@
 /* =========================================================
    SIGNALS LIST (Tab 1)
    ========================================================= */
-
+/* Setze das Standard-Styling für Listen in diesem Container zurück */
+#tools-tab-content ul {
+    list-style-type: none; /* Entfernt die Punkte */
+    margin: 0;             /* Entfernt den Außenabstand oben/unten */
+    padding: 0;            /* Entfernt den Innenabstand links */
+}
 .signal-row {
     display: flex;
     justify-content: space-between;

@@ -37,11 +37,19 @@ export function renderDashboardTools(state) {
 // ... import Statements ...
 
 function renderActiveTab(tabName, state, content) {
+
+    // Content leeren
+    content.innerHTML = "";
+
     switch (tabName) {
-        case "signals":
-            // Übergabe des Arrays + des State-Objekts
-            renderSignalsList(state.signals || [], state);
-            break;
+
+case "signals": {
+    // Hole die Daten direkt aus dem state, der an die Funktion übergeben wird
+    // Das ist die gleiche Quelle, die auch die Hauptspalte 'stocks' nutzt
+    const stocks = state.stocks || window.dataStore?.stocks || [];
+    renderSignalsList(stocks, state, content);
+    break;
+}
 
         case "watchlist":
             renderWatchlist(state, content);
@@ -63,3 +71,6 @@ function renderActiveTab(tabName, state, content) {
             content.innerHTML = "<p>Unbekannter Tab.</p>";
     }
 }
+
+
+

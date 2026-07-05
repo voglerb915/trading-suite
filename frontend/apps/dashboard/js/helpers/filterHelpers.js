@@ -9,3 +9,23 @@ export function passesSignalFilter(signalObj, entryFlag, exitFlag) {
 
     return false;
 }
+// Neue Funktion speziell für den Signals-Tab mit 4 Filtern
+export function passesMultiSignalFilter(ticker, state) {
+    const spark = window.dataStore?.sparkSignals?.stocks?.[ticker];
+    const mid = window.dataStore?.midTermSignals?.stocks?.[ticker];
+
+    // Korrigierte Namen gemäß dashboardState
+    const isNoFilterActive = !state.filterEntryStocks && !state.filterExitStocks && 
+                             !state.filterMidLong && !state.filterMidExit;
+
+    if (isNoFilterActive) return true;
+
+    // Logik: Zeige, wenn EINE der aktiven Bedingungen erfüllt ist
+    if (state.filterEntryStocks && spark?.signal === 'entry') return true;
+    if (state.filterExitStocks && spark?.signal === 'exit') return true;
+    if (state.filterMidLong && mid?.signal === 'long') return true;
+    if (state.filterMidExit && mid?.signal === 'exit') return true;
+
+    return false;
+}
+    

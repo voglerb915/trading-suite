@@ -1,9 +1,7 @@
 import { sectorClasses } from "../../../../shared/logic/sectorColors.js";
 import { getSectorClass, getDiffColor, formatDiff, renderRankCircle } 
     from "../helpers/renderHelpers.js";
-
-import { passesSignalFilter } 
-    from "../helpers/filterHelpers.js";
+import { passesSignalFilter } from "../helpers/filterHelpersStocks.js";
 
 
 
@@ -52,7 +50,7 @@ if (state.indexFilter && state.indexFilter !== "all") {
     );
 }
 
-// 4. Search
+// 4. Search - wird im Cockpit gemacht
 if (state.search && state.search.length > 0) {
     const q = state.search.toUpperCase().split(" ");
 
@@ -67,30 +65,28 @@ if (state.search && state.search.length > 0) {
     });
 }
 
-// ⭐ 5. Signal-Filter (Entry / Exit)
+// ⭐ 5. Signal-Filter (Nutze die Variablen, die du auch im State hast)
 stocks = stocks.filter(s =>
     passesSignalFilter(
         window.dataStore?.sparkSignals?.stocks?.[s.ticker],
-        state.filterEntryStocks,
-        state.filterExitStocks
+        state.filterEntry, // Nutze hier konsequent die Variablen, die du im Pille-HTML nutzt
+        state.filterExit
     )
 );
 
-
-    // 🟢 Stocks-Pille aktualisieren (nach allen Filtern!)
-    const pillContainer = document.getElementById("stocks-pill-container");
-    if (pillContainer) {
-       pillContainer.innerHTML = `
+// 🟢 Stocks-Pille aktualisieren
+const pillContainer = document.getElementById("stocks-pill-container");
+if (pillContainer) {
+    pillContainer.innerHTML = `
     <span class="pill pill-count">${stocks.length}</span>
 
-    <span class="pill pill-entry ${state.filterEntryStocks ? 'active' : ''}"
-          data-type="entry-stocks">Entry</span>
+    <span class="pill pill-entry ${state.filterEntry ? 'active' : ''}"
+          data-type="filterEntry">Entry</span>
 
-    <span class="pill pill-exit ${state.filterExitStocks ? 'active' : ''}"
-          data-type="exit-stocks">Exit</span>
+    <span class="pill pill-exit ${state.filterExit ? 'active' : ''}"
+          data-type="filterExit">Exit</span>
 `;
-
-    }
+}
 
     const visible = stocks;
 
