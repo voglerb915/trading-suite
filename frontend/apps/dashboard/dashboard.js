@@ -146,13 +146,28 @@ function renderHeader() {
 /*----------------------------------
 6. UPDATE + RENDER
 ----------------------------------*/
+let isRendering = false;
+
 function updateAndRenderDashboard() {
+    if (isRendering) return;
+
     if (!Array.isArray(window.dashboardState.stocks)) {
         window.dashboardState.stocks = [];
     }
 
-    renderHeader();
-    renderDashboard(window.dashboardState);
+    isRendering = true;
+
+    requestAnimationFrame(() => {
+        try {
+            renderHeader();
+            renderDashboard(window.dashboardState);
+        } catch (error) {
+            console.error("Fehler beim Rendern:", error);
+        } finally {
+            // Egal ob Fehler oder Erfolg: Die Sperre wird immer gelöst
+            isRendering = false; 
+        }
+    });
 }
 
 /*----------------------------------
@@ -179,34 +194,44 @@ document.addEventListener("dashboard:indexChange", (e) => {
 /*----------------------------------
 SEARCH + RESET
 ----------------------------------*/
-document.addEventListener("dashboard:searchChange", (e) => {
-    window.dashboardState.search = e.detail;
-
-    // ⭐ WICHTIG: Cockpit informieren
-    document.dispatchEvent(new CustomEvent("dashboard:search", {
-        detail: e.detail
-    }));
-
-    updateAndRenderDashboard();
-});
-
 document.addEventListener("dashboard:reset", () => {
-    window.dashboardState = {
-        ...window.dashboardState,
+    // 1. Definiere den State mit null (nicht {})
+    const cleanState = {
         sector: null,
         industry: null,
         ticker: null,
         strategy: "none",
         indexFilter: "all",
-        search: ""
+        search: "",
+        referenceStock: null,
+        filterEntry: false,
+        filterExit: false,
+        filterMidLong: false,
+        filterMidExit: false,
+        filterEntryStocks: false,
+        filterExitStocks: false,
+        filterEntrySectors: null, // Auf null setzen
+        filterExitSectors: null,
+        filterEntryIndustries: null,
+        filterExitIndustries: null
     };
 
-    // ⭐ WICHTIG: Cockpit informieren
-    document.dispatchEvent(new CustomEvent("dashboard:search", { detail: "" }));
+    // 2. State überschreiben
+    window.dashboardState = { ...window.dashboardState, ...cleanState };
 
+    // 3. UI-Aufräumen
+    document.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
+    // ⭐ ZUSATZ: Strategie-Dropdown erzwingen
+        const strategySelect = document.getElementById("strategy-select"); // Stelle sicher, dass die ID stimmt
+        if (strategySelect) {
+            strategySelect.value = "none";
+            // Falls du ein Framework oder ein Custom-Select benutzt, evtl. dispatch Event
+            strategySelect.dispatchEvent(new Event('change')); 
+        }
+    // 4. Cockpit & Rendern
+    document.dispatchEvent(new CustomEvent("dashboard:search", { detail: "" }));
     updateAndRenderDashboard();
 });
-
 
 /*----------------------------------
 8. CLICK EVENTS
