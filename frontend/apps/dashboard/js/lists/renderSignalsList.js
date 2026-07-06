@@ -3,44 +3,39 @@ import { renderRankCircle } from "../helpers/renderHelpers.js";
 import { passesMultiSignalFilter } from "../helpers/filterHelpersSignals.js";
 
 export function renderSignalsList(stocks, state, container) {
-    // HARDCODED DEBUG
-    const testTicker = "EDIT";
-    const found = window.dataStore?.signals?.find(s => s.ticker === testTicker);
-    console.log("DEBUG: Suche nach EDIT in store:", found);
-    console.log("DEBUG: Suche in stocks vorhanden?", stocks.some(s => s.ticker === testTicker));
-    // ---
-    
     if (!container) return;
-    // ...
+
+    // DEBUG: Prüfe die Datenquelle direkt hier
+    const midSignals = window.dataStore?.midSignals?.stocks || {};
+    console.log("DEBUG: renderSignalsList - midSignals vorhanden:", Object.keys(midSignals).length > 0);
+    console.log("DEBUG: Anzahl Stocks übergeben:", stocks.length);
 
     // 1. Filter anwenden
-    const filtered = (stocks || []).filter(s => passesMultiSignalFilter(s.ticker, state));
+    const filtered = (stocks || []).filter(s => {
+        const passes = passesMultiSignalFilter(s.ticker, state);
+        return passes;
+    });
 
-    // 2. Pillen im Tools-Bereich aktualisieren (Zentraler Block)
+    console.log("DEBUG: Nach Filter verbleiben:", filtered.length);
+
+    // 2. Pillen im Tools-Bereich aktualisieren
     const pillContainer = document.getElementById("tools-pill-container");
     if (pillContainer) {
         pillContainer.innerHTML = `
             <span class="pill pill-count">${filtered.length}</span>
-            
-            <!-- Kurzfristig (Spark) -->
-            <span class="pill ${state.filterEntryStocks ? 'active' : ''}" 
-                  data-type="filterEntryStocks">Entry</span>
-            <span class="pill ${state.filterExitStocks ? 'active' : ''}" 
-                  data-type="filterExitStocks">Exit</span>
-            
-            <!-- Mittelfristig (Mid-Term) -->
-            <span class="pill ${state.filterMidLong ? 'active' : ''}" 
-                  data-type="filterMidLong">Long</span>
-            <span class="pill ${state.filterMidExit ? 'active' : ''}" 
-                  data-type="filterMidExit">Mid-Exit</span>
+            <span class="pill ${state.filterEntryStocks ? 'active' : ''}" data-type="filterEntryStocks">Entry</span>
+            <span class="pill ${state.filterExitStocks ? 'active' : ''}" data-type="filterExitStocks">Exit</span>
+            <span class="pill ${state.filterMidLong ? 'active' : ''}" data-type="filterMidLong">Long</span>
+            <span class="pill ${state.filterMidExit ? 'active' : ''}" data-type="filterMidExit">Mid-Exit</span>
         `;
     }
 
     // 3. Liste rendern
     if (filtered.length === 0) {
-        container.innerHTML = `<ul><li class="stock-item empty">Keine Treffer für Signale</li></ul>`;
+        container.innerHTML = `<ul><li class="stock-item empty">Keine Treffer für Signale (Filter aktiv?)</li></ul>`;
         return;
     }
+
 
     const html = filtered.map((item, idx) => {
         // ... (dein restlicher Code ab hier bleibt gleich)

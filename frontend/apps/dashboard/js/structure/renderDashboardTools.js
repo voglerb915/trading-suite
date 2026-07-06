@@ -14,29 +14,24 @@ export function renderDashboardTools(state) {
 
     tabHeaders.forEach(tab => {
         tab.onclick = function() {
-            // 1. Alle Tabs visuell deaktivieren
             tabHeaders.forEach(t => t.classList.remove("active"));
             this.classList.add("active");
-
-            // 2. Ziel-Tab ermitteln
             const targetTab = this.getAttribute("data-tab");
-            
-            // 3. Zentrale Render-Funktion aufrufen
-            console.log(`📊 Tab '${targetTab}' aktiv. Lade Daten...`);
             renderActiveTab(targetTab, state, tabContent);
         };
     });
 
-    // 🟢 DOPPELBODEN: Beim initialen Laden (wenn schon eine Klasse 'active' im HTML ist)
-    const activeTab = document.querySelector(".tab-header .tab-item.active");
-    if (activeTab) {
-        renderActiveTab(activeTab.getAttribute("data-tab"), state, tabContent);
-    }
+    // 🟢 HIER: Warte auf das Event aus der cockpit.js, statt sofort zu rendern
+    window.addEventListener("dataStoreReady", () => {
+        console.log("🚀 Daten bereit, initialisiere Rendering...");
+        const activeTab = document.querySelector(".tab-header .tab-item.active");
+        if (activeTab) {
+            renderActiveTab(activeTab.getAttribute("data-tab"), state, tabContent);
+        }
+    });
 }
 
-// ... import Statements ...
-
-function renderActiveTab(tabName, state, content) {
+export function renderActiveTab(tabName, state, content) {
 
     // Content leeren
     content.innerHTML = "";
@@ -44,10 +39,21 @@ function renderActiveTab(tabName, state, content) {
     switch (tabName) {
 
 case "signals": {
-    // Hole die Daten direkt aus dem state, der an die Funktion übergeben wird
-    // Das ist die gleiche Quelle, die auch die Hauptspalte 'stocks' nutzt
-    const stocks = state.stocks || window.dataStore?.stocks || [];
-    renderSignalsList(stocks, state, content);
+    const allStocks = state.stocks || window.dataStore?.baseStocks || [];
+    
+    // DEBUG: Was ist im Store?
+    console.log("DEBUG: renderDashboardTools - Store Inhalt:", window.dataStore.midSignals);
+    
+    const midSignalsMap = window.dataStore?.midSignals?.stocks || {};
+    
+    const stocksWithSignals = allStocks.filter(stock => {
+        // Wir prüfen hier direkt, ob es den Ticker gibt
+        return midSignalsMap.hasOwnProperty(stock.ticker);
+    });
+
+    console.log(`📊 Signals-Tab: ${stocksWithSignals.length} Stocks gefunden.`);
+    
+    renderSignalsList(stocksWithSignals, state, content);
     break;
 }
 

@@ -37,7 +37,7 @@ router.get('/run-engine', async (req, res) => {
 });
 
 // DASHBOARD-DATEN (iframe Dashboard)
-router.get('/get-latest', async (req, res) => {
+router.get('/mid-signal', async (req, res) => {
     try {
         const data = await prepareSignals();
         res.json(data);
