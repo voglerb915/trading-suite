@@ -41,23 +41,20 @@ export function renderCockpit(state) {
 }
 
 
-// ===============================
-// MESSAGE-LISTENER (NEU)
-// ===============================
-
-// Debug: Renderer wurde geladen
-console.log("IFRAME: renderCockpit.js geladen", performance.now());
-
-// Falls Daten schon vor dem Renderer angekommen sind:
-if (window.lastCockpitState) {
-    console.log("IFRAME: Render mit gecachtem State", performance.now());
-    renderCockpit(window.lastCockpitState);
-}
-
-// Listener für spätere Nachrichten
+/*----------------------------------
+MESSAGE-LISTENER (OPTIMIERT)
+----------------------------------*/
 window.addEventListener("message", (event) => {
-    if (event.data?.type === "COCKPIT_DATA") {
-        console.log("IFRAME: Render mit neuer Nachricht", performance.now());
-        renderCockpit(event.data.state);
+    // 1. Prüfe auf den neuen Typ 'COCKPIT_DATA_READY'
+    // 2. Wir akzeptieren auch den alten Typ 'COCKPIT_DATA' für Kompatibilität
+    if (event.data?.type === "COCKPIT_DATA_READY" || event.data?.type === "COCKPIT_DATA") {
+        console.log("IFRAME: Render mit Nachricht vom Typ:", event.data.type);
+        
+        // WICHTIG: Wenn du das neue Komplettpaket sendest, heißt die Variable 'state' 
+        // vielleicht anders oder ist direkt in event.data enthalten. 
+        // Falls du in cockpit.js alles unter 'state' schickst, passt das so:
+        const dataToRender = event.data.state || event.data; 
+        
+        renderCockpit(dataToRender);
     }
 });

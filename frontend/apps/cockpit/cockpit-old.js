@@ -464,21 +464,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Basisdaten laden
     await loadBaseData();
 
-    // Dashboard informieren (Der bessere Weg)
+    // Dashboard informieren
     const dbIframe = document.getElementById("iframe-new-dashboard");
     if (dbIframe && dbIframe.contentWindow) {
-        const payload = {
+        dbIframe.contentWindow.postMessage({
             type: "COCKPIT_DATA_READY",
-            stocks: window.dataStore.baseStocks,
-            sectors: window.dataStore.sectors,
-            industries: window.dataStore.industries,
-            etfs: window.dataStore.etfs,
-            sparkSignals: window.dataStore.sparkSignals,
-            midSignals: window.dataStore.midSignals || {}
-        };
+            signals: window.dataStore.midSignals || []
+        }, "*");
 
-        dbIframe.contentWindow.postMessage(payload, "*");
-        console.log("✈️ Komplettpaket an iFrame gesendet.");
+        // 🟢 Block 4: SparkSignals an Dashboard senden (NEU)
+        dbIframe.contentWindow.postMessage({
+            type: "sparkSignals",
+            payload: {
+                industries: window.dataStore.sparkSignals?.industries ?? {},
+                sectors: window.dataStore.sparkSignals?.sectors ?? {},
+                stocks: window.dataStore.sparkSignals?.stocks ?? {}
+            }
+        }, "*");
+
+        console.log("SparkSignals an Dashboard gesendet:", window.dataStore.sparkSignals);
     }
 
     // Routing starten
