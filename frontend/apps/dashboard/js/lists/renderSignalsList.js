@@ -41,8 +41,8 @@ const filtered = (stocks || []).filter(s => {
     if (pillContainer) {
         pillContainer.innerHTML = `
             <span class="pill pill-count">${filtered.length}</span>
-            <span class="pill pill-buy ${state.filterBuySignals ? 'active' : ''}" data-type="filterBuySignals">BuySignals</span>
-            <span class="pill pill-sell ${state.filterSellSignals ? 'active' : ''}" data-type="filterSellSignals">SellSignals</span>
+            <span class="pill pill-buy ${state.filterBuySignals ? 'active' : ''}" data-type="filterBuySignals">Buy</span>
+            <span class="pill pill-sell ${state.filterSellSignals ? 'active' : ''}" data-type="filterSellSignals">Sell</span>
             <span class="pill pill-long ${state.filterLongMid ? 'active' : ''}" data-type="filterLongMid">Long</span>
             <span class="pill pill-exit ${state.filterExitMid ? 'active' : ''}" data-type="filterExitMid">Exit</span>
         `;

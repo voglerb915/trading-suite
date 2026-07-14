@@ -76,6 +76,20 @@ stocks = stocks.filter(s =>
     )
 );
 
+// --- HIER NEU: Sortierung einfügen ---
+const sortedStocks = [...stocks].sort((a, b) => {
+    // Wenn eine Strategie aktiv ist, sortiere nach Value (höchster zuerst)
+    if (state.strategy && state.strategy !== "none") {
+        const valA = a.strategyValue ?? a.value ?? 0;
+        const valB = b.strategyValue ?? b.value ?? 0;
+        return valB - valA; 
+    }
+    // Standard: Sortiere nach globalRank (niedrigster Rank zuerst)
+    const rankA = a.globalRank ?? a.rsRank ?? a.rank ?? Infinity;
+    const rankB = b.globalRank ?? b.rsRank ?? b.rank ?? Infinity;
+    return rankA - rankB;
+});
+
 // 🟢 Stocks-Pille aktualisieren
 const pillContainer = document.getElementById("stocks-pill-container");
 if (pillContainer) {
@@ -89,7 +103,8 @@ if (pillContainer) {
     `;
 }
 
-    const visible = stocks;
+
+const visible = [...sortedStocks];
 
 const html = visible.map((item, idx) => {
     const isSelected = item.ticker === state?.ticker;

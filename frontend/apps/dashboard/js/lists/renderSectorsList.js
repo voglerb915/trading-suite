@@ -104,10 +104,10 @@ export function renderSectorsList(sectors, state) {
                 <span class="pill pill-count">${sortedSectors.length}</span>
 
                 <span class="pill pill-buy ${state.filterBuySectors ? 'active' : ''}" 
-                      data-type="entry-sectors">Entry</span>
+                      data-type="entry-sectors">Buy</span>
 
                 <span class="pill pill-sell ${state.filterSellSectors ? 'active' : ''}" 
-                      data-type="exit-sectors">Exit</span>
+                      data-type="exit-sectors">Sell</span>
             </div>
 
             <div class="sectors-header-diffs">

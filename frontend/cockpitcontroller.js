@@ -78,9 +78,7 @@ if (Array.isArray(sparkSignalsData)) {
     // 3) Strategy-Daten laden
     const strategyNames = [
         "52wHigh",
-        "RSI",
-        "Breakout",
-        "VolumeSpike",
+        
         "MeanReversion"
     ];
 
