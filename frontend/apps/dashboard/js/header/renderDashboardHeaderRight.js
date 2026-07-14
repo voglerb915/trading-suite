@@ -37,71 +37,73 @@ export function renderDashboardHeaderRight(state) {
     `;
 
     // Strategy-Dropdown auf aktuellen State setzen
-    document.getElementById("strategy-select").value = state.strategy;
+    document.getElementById("strategy-select").value =
+        state.strategy ?? state.strategyName ?? "none";
 
     // Index-Dropdown auf aktuellen State setzen
-    document.getElementById("index-select").value = state.indexFilter || "all";
+    document.getElementById("index-select").value =
+        state.index ?? state.indexFilter ?? "all";
 
-// ⭐ Events NEU setzen (jedes Mal!)
-document.getElementById("strategy-select").addEventListener("change", (e) => {
-    window.parent.document.dispatchEvent(
-        new CustomEvent("dashboard:strategyChange", {
-            detail: e.target.value
-        })
-    );
-});
+    // FIX: Bleibe lokal im Iframe-Dokument, damit dashboard.js die Events empfängt
+    const targetDoc = document;
 
+    console.log("📌 HeaderRight: targetDoc ist lokales document");
 
-document.getElementById("index-select").addEventListener("change", (e) => {
-    window.document.dispatchEvent(
+    // Strategy
+    document.getElementById("strategy-select").addEventListener("change", (e) => {
+        console.log("📌 HeaderRight: Strategy-Dropdown geändert:", e.target.value);
+        targetDoc.dispatchEvent(
+            new CustomEvent("dashboard:strategyChange", {
+                detail: e.target.value
+            })
+        );
+    });
 
-        new CustomEvent("dashboard:indexChange", {
-            detail: e.target.value
-        })
-    );
-});
+    // Index
+    document.getElementById("index-select").addEventListener("change", (e) => {
+        console.log("📌 HeaderRight: Index-Dropdown geändert:", e.target.value);
+        targetDoc.dispatchEvent(
+            new CustomEvent("dashboard:indexChange", {
+                detail: e.target.value
+            })
+        );
+    });
 
-document.getElementById("ticker-search").addEventListener("input", (e) => {
-    const value = e.target.value.toUpperCase();
-    console.log("DEBUG SEARCH INPUT:", value);
+    // ⭐ SEARCH → Event dispatchen
+    document.getElementById("ticker-search").addEventListener("input", (e) => {
+        const value = e.target.value.toUpperCase();
+        targetDoc.dispatchEvent(
+            new CustomEvent("dashboard:searchChange", {
+                detail: value
+            })
+        );
+    });
 
-    window.document.dispatchEvent(
-        new CustomEvent("dashboard:searchChange", {
-            detail: value
-        })
-    );
-});
+    // ⭐ DELETE
+    document.getElementById("delete-btn").addEventListener("click", () => {
+        window.dashboardState.search = "";
+        const searchInput = document.getElementById("ticker-search");
+        searchInput.value = "";
 
-document.getElementById("delete-btn").addEventListener("click", () => {
-    // Search im State löschen
-    window.dashboardState.search = "";
+        targetDoc.dispatchEvent(
+            new CustomEvent("dashboard:searchChange", {
+                detail: ""
+            })
+        );
 
-    // Input-Feld leeren
+        // Falls updateAndRenderDashboard global verfügbar ist, wird es hier aufgerufen
+        if (typeof updateAndRenderDashboard === 'function') {
+            updateAndRenderDashboard();
+        }
+        searchInput.focus();
+    });
+
+    // 🟢 Search-Feld nach Rendern wiederherstellen + Fokus halten
     const searchInput = document.getElementById("ticker-search");
-    searchInput.value = "";
+    searchInput.value = state.search || "";
 
-    // 🟢 WICHTIG: Search-Event feuern, damit die Liste zurückgesetzt wird
-    window.document.dispatchEvent(
-        new CustomEvent("dashboard:searchChange", {
-            detail: ""
-        })
-    );
-
-    // Dashboard neu rendern
-    updateAndRenderDashboard();
-
-    // Fokus wieder ins Feld setzen
-    searchInput.focus();
-});
-
-// 🟢 Search-Feld nach Rendern wiederherstellen + Fokus halten
-const searchInput = document.getElementById("ticker-search");
-searchInput.value = state.search || "";
-
-// Fokus setzen, damit man weiter tippen kann
-if (state.search && state.search.length > 0) {
-    searchInput.focus();
-    searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
-}
-
+    if (state.search && state.search.length > 0) {
+        searchInput.focus();
+        searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+    }
 }

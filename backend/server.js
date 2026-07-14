@@ -41,7 +41,9 @@ app.get('/api/device-info', (req, res) => {
 });
 
 // ANALYSIS
-app.use("/api/sparksignals", require("./routes/analysis/sparkSignalsRoute"));
+app.use("/api/sparksignals", require("./routes/analysis/sparkSignalsRoute")); //alte Struktur mit Komplettee Paketen
+app.use("/api/sparklinesignals", require("./routes/analysis/sparkLineSignals")); //neue CockpitStruktur - nur flache json
+
 
 // MARKET
 app.use("/api/market/stocks", require("./routes/market/stocks"));
@@ -65,8 +67,9 @@ app.use("/api/data/excel", require("./routes/data/excelRawData"));
 app.use("/api/strategy", require("./routes/strategy/strategies"));
 
 // SIGNALS ENGINE (NEU)
-app.use("/api/signals", require("./routes/strategy/signalsRoute"));
-app.use("/api/sparkstocksignals", require("./routes/strategy/sparkStockSignalsRoute"));
+app.use("/api/signals", require("./routes/strategy/signalsRoute")); //midSignals
+//app.use("/api/sparkstocksignals", require("./routes/strategy/sparkStockSignalsRoute")); // falls alte struktur crasht
+app.use("/api/signals/spark-signal", require("./routes/strategy/sparkStockSignalsRoute")); // alte CockpitStruktur
 
 
 // // RS

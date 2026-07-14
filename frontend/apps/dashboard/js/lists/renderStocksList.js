@@ -50,6 +50,7 @@ if (state.indexFilter && state.indexFilter !== "all") {
     );
 }
 
+/*
 // 4. Search - wird im Cockpit gemacht
 if (state.search && state.search.length > 0) {
     const q = state.search.toUpperCase().split(" ");
@@ -64,13 +65,14 @@ if (state.search && state.search.length > 0) {
         );
     });
 }
+*/
 
 // ⭐ 5. Signal-Filter (Nutze die Variablen, die du auch im State hast)
 stocks = stocks.filter(s =>
     passesSignalFilter(
         window.dataStore?.sparkSignals?.stocks?.[s.ticker],
-        state.filterEntry, // Nutze hier konsequent die Variablen, die du im Pille-HTML nutzt
-        state.filterExit
+        state.filterBuyStocks, // HIER angepasst
+        state.filterSellStocks    // HIER angepasst
     )
 );
 
@@ -80,12 +82,11 @@ if (pillContainer) {
     pillContainer.innerHTML = `
     <span class="pill pill-count">${stocks.length}</span>
 
-    <span class="pill pill-entry ${state.filterEntry ? 'active' : ''}"
-          data-type="filterEntry">Entry</span>
-
-    <span class="pill pill-exit ${state.filterExit ? 'active' : ''}"
-          data-type="filterExit">Exit</span>
-`;
+    <span class="pill pill-buy ${state.filterBuyStocks ? 'active' : ''}" 
+        data-type="filterBuyStocks">Buy</span>
+    <span class="pill pill-sell ${state.filterSellStocks ? 'active' : ''}" 
+        data-type="filterSellStocks">Sell</span>
+    `;
 }
 
     const visible = stocks;

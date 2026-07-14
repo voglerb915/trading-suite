@@ -1,4 +1,7 @@
+import { renderDashboardHeaderLeft } from "../header/renderDashboardHeaderLeft.js";
 import { renderDashboardHeaderCenter } from "../header/renderDashboardHeaderCenter.js";
+import { renderDashboardHeaderRight } from "../header/renderDashboardHeaderRight.js";
+
 import { renderDashboardSectors } from "./renderDashboardSectors.js";
 import { renderDashboardIndustries } from "./renderDashboardIndustries.js";
 import { renderDashboardStocks } from "./renderDashboardStocks.js";
@@ -18,6 +21,8 @@ export function renderDashboard(state) {
 
     // ⭐ HEADER AKTUALISIEREN
     renderDashboardHeaderCenter(liveState);
+    renderDashboardHeaderLeft(liveState);
+    renderDashboardHeaderRight(liveState);
 
     // =====================================================
     // 1) SECTORS

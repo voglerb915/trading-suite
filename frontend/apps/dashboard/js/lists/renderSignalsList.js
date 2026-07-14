@@ -1,6 +1,6 @@
 import { sectorClasses } from "../../../../shared/logic/sectorColors.js";
 import { renderRankCircle } from "../helpers/renderHelpers.js";
-import { passesMultiSignalFilter } from "../helpers/filterHelpersSignals.js";
+
 
 export function renderSignalsList(stocks, state, container) {
     if (!container) return;
@@ -11,22 +11,40 @@ export function renderSignalsList(stocks, state, container) {
     console.log("DEBUG: Anzahl Stocks übergeben:", stocks.length);
 
     // 1. Filter anwenden
-    const filtered = (stocks || []).filter(s => {
-        const passes = passesMultiSignalFilter(s.ticker, state);
-        return passes;
-    });
+const filtered = (stocks || []).filter(s => {
+    const spark = window.dataStore?.sparkSignals?.stocks?.[s.ticker];
+    const mid = window.dataStore?.midSignals?.stocks?.[s.ticker];
 
+    const sparkActive = state.filterBuySignals || state.filterSellSignals;
+    const midActive = state.filterLongMid || state.filterExitMid;
+
+    if (!sparkActive && !midActive) return true;
+
+    // Spark: 'entry' für Buy, 'exit' für Sell
+    const sparkMatch = (state.filterBuySignals && spark?.signal === "entry") || 
+                       (state.filterSellSignals && spark?.signal === "exit");
+
+    // Wir nutzen jetzt signal_type und Großschreibung wie in der Konsole gesehen
+    const midMatch = (state.filterLongMid && mid?.signal_type === 'LONG') || 
+                     (state.filterExitMid && mid?.signal_type === 'EXIT');
+
+    if (sparkActive && !sparkMatch) return false;
+    if (midActive && !midMatch) return false;
+
+    return true;
+});
     console.log("DEBUG: Nach Filter verbleiben:", filtered.length);
 
     // 2. Pillen im Tools-Bereich aktualisieren
+// 2. Pillen im Tools-Bereich aktualisieren
     const pillContainer = document.getElementById("tools-pill-container");
     if (pillContainer) {
         pillContainer.innerHTML = `
             <span class="pill pill-count">${filtered.length}</span>
-            <span class="pill ${state.filterEntryStocks ? 'active' : ''}" data-type="filterEntryStocks">Entry</span>
-            <span class="pill ${state.filterExitStocks ? 'active' : ''}" data-type="filterExitStocks">Exit</span>
-            <span class="pill ${state.filterMidLong ? 'active' : ''}" data-type="filterMidLong">Long</span>
-            <span class="pill ${state.filterMidExit ? 'active' : ''}" data-type="filterMidExit">Mid-Exit</span>
+            <span class="pill pill-buy ${state.filterBuySignals ? 'active' : ''}" data-type="filterBuySignals">BuySignals</span>
+            <span class="pill pill-sell ${state.filterSellSignals ? 'active' : ''}" data-type="filterSellSignals">SellSignals</span>
+            <span class="pill pill-long ${state.filterLongMid ? 'active' : ''}" data-type="filterLongMid">Long</span>
+            <span class="pill pill-exit ${state.filterExitMid ? 'active' : ''}" data-type="filterExitMid">Exit</span>
         `;
     }
 

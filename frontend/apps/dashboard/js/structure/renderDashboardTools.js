@@ -13,17 +13,18 @@ export function renderDashboardTools(state) {
     if (!tabHeaders || !tabContent) return;
 
     tabHeaders.forEach(tab => {
-        tab.onclick = function() {
+        tab.onclick = function(e) {
+            e.stopPropagation(); // verhindert Stocks-Renderer
+
             tabHeaders.forEach(t => t.classList.remove("active"));
             this.classList.add("active");
+
             const targetTab = this.getAttribute("data-tab");
             renderActiveTab(targetTab, state, tabContent);
         };
     });
 
-    // 🟢 HIER: Warte auf das Event aus der cockpit.js, statt sofort zu rendern
     window.addEventListener("dataStoreReady", () => {
-        console.log("🚀 Daten bereit, initialisiere Rendering...");
         const activeTab = document.querySelector(".tab-header .tab-item.active");
         if (activeTab) {
             renderActiveTab(activeTab.getAttribute("data-tab"), state, tabContent);
@@ -33,29 +34,64 @@ export function renderDashboardTools(state) {
 
 export function renderActiveTab(tabName, state, content) {
 
-    // Content leeren
     content.innerHTML = "";
+
+    const pillContainer = document.getElementById("tools-pill-container");
+    if (pillContainer) pillContainer.innerHTML = "";
 
     switch (tabName) {
 
-case "signals": {
-    const allStocks = state.stocks || window.dataStore?.baseStocks || [];
-    
-    // DEBUG: Was ist im Store?
-    console.log("DEBUG: renderDashboardTools - Store Inhalt:", window.dataStore.midSignals);
-    
-    const midSignalsMap = window.dataStore?.midSignals?.stocks || {};
-    
-    const stocksWithSignals = allStocks.filter(stock => {
-        // Wir prüfen hier direkt, ob es den Ticker gibt
-        return midSignalsMap.hasOwnProperty(stock.ticker);
-    });
+        case "signals": {
 
-    console.log(`📊 Signals-Tab: ${stocksWithSignals.length} Stocks gefunden.`);
-    
-    renderSignalsList(stocksWithSignals, state, content);
-    break;
-}
+            if (pillContainer) {
+                pillContainer.innerHTML = `
+                    <span class="pill pill-count">0</span>
+
+                    <span class="pill ${state.filterEntryStocks ? 'active' : ''}" data-type="filterEntryStocks">Spark LONG</span>
+                    <span class="pill ${state.filterExitStocks ? 'active' : ''}" data-type="filterExitStocks">Spark EXIT</span>
+
+                    <span class="pill ${state.filterMidLong ? 'active' : ''}" data-type="filterMidLong">Midterm LONG</span>
+                    <span class="pill ${state.filterMidExit ? 'active' : ''}" data-type="filterMidExit">Midterm EXIT</span>
+                `;
+
+                pillContainer.querySelectorAll(".pill").forEach(btn => {
+                    btn.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();   // WICHTIG: verhindert Router + Cockpit
+
+                        const type = btn.dataset.type;
+
+                        state.filterEntryStocks = type === "filterEntryStocks";
+                        state.filterExitStocks  = type === "filterExitStocks";
+                        state.filterMidLong     = type === "filterMidLong";
+                        state.filterMidExit     = type === "filterMidExit";
+
+                        renderActiveTab("signals", state, content);
+                    });
+
+                });
+            }
+
+            // ⭐⭐⭐ DUAL-MODE FIX (NEUES SYSTEM + ALTES SYSTEM)
+            const allStocks =
+                state.stocks ||
+                window.dataStore?.baseStocks ||
+                [];
+
+            const midSignalsMap =
+                state.midSignals?.stocks ||
+                window.dataStore?.midSignals?.stocks ||
+                {};
+
+            // ⭐ Filter Stocks mit Midterm-Signalen
+            const stocksWithSignals = allStocks.filter(stock =>
+                midSignalsMap.hasOwnProperty(stock.ticker)
+            );
+
+            renderSignalsList(stocksWithSignals, state, content);
+            break;
+        }
 
         case "watchlist":
             renderWatchlist(state, content);
@@ -77,6 +113,3 @@ case "signals": {
             content.innerHTML = "<p>Unbekannter Tab.</p>";
     }
 }
-
-
-

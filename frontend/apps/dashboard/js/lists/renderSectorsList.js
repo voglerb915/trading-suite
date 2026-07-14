@@ -1,19 +1,37 @@
 import { getSectorClass, getDiffColor, formatDiff, renderRankCircle } from "../helpers/renderHelpers.js";
 import { passesSignalFilter } from "../helpers/filterHelpers.js";
 
-export function renderSectorSignalDot(sectorName) {
-    const store = window.dataStore || {};
-    const signals = store.sparkSignals?.sectors || {};
-    const sig = signals[sectorName];
+/**
+ * Universelle Normalisierung für alte + neue SparkSignals-Struktur
+ */
+function normalizeSectorSignal(sig) {
+    if (!sig) return null;
 
-    if (!sig) return "";
-    if (sig.signal === "entry") return `<span class="sig-dot entry"></span>`;
-    if (sig.signal === "exit")  return `<span class="sig-dot exit"></span>`;
-    return "";
+    // Neue Struktur: { signal: "entry" | "exit" }
+    if (typeof sig.signal === "string") {
+        return { signal: sig.signal };
+    }
+
+    // Alte Struktur: { entry: 3, exit: 1 }
+    if (typeof sig.entry === "number" || typeof sig.exit === "number") {
+        if (sig.entry > 0) return { signal: "entry" };
+        if (sig.exit  > 0) return { signal: "exit" };
+    }
+
+    // Alternative alte Struktur: { long: 3, short: 1 }
+    if (typeof sig.long === "number" || typeof sig.short === "number") {
+        if (sig.long  > 0) return { signal: "entry" };
+        if (sig.short > 0) return { signal: "exit" };
+    }
+
+    // Liste von Signalen: { signals: ["entry", "exit"] }
+    if (Array.isArray(sig.signals)) {
+        if (sig.signals.includes("entry")) return { signal: "entry" };
+        if (sig.signals.includes("exit"))  return { signal: "exit" };
+    }
+
+    return null;
 }
-
-window.renderSectorSignalDot = renderSectorSignalDot;
-
 
 export function renderSectorsList(sectors, state) {
     const column = document.getElementById('sectors');
@@ -21,15 +39,16 @@ export function renderSectorsList(sectors, state) {
   
     if (!column || !container) return;
 
-    // ⭐ NEU: Unabhängige Sector-Filter anwenden
-const filteredSectors = sectors.filter(sec =>
-    passesSignalFilter(
-        window.dataStore?.sparkSignals?.sectors?.[sec.sector],
-        state.filterEntrySectors,
-        state.filterExitSectors
-    )
-);
+    const sparkSectors = window.dataStore?.sparkSignals?.sectors || {};
 
+    // ⭐ Filter anwenden (Entry/Exit)
+    const filteredSectors = sectors.filter(sec =>
+        passesSignalFilter(
+            sparkSectors[sec.sector],
+            state.filterBuySectors,
+            state.filterBuySectors
+        )
+    );
 
     // ⭐ Danach sortieren
     const sortedSectors = [...filteredSectors].sort((a, b) => {
@@ -48,12 +67,15 @@ const filteredSectors = sectors.filter(sec =>
             return stockSector === item.sector;
         }).length;
 
+        // ⭐ SparkSignal normalisieren (alt + neu)
+        const normalizedSignal = normalizeSectorSignal(sparkSectors[item.sector]);
+
         return `
             <div class="grid-row-sector stock-item ${isSelected ? 'highlight-sector' : ''}"
                  data-sector="${item.sector}">
 
                 <div class="grid-cell ${getSectorClass(item.sector)}">
-                  ${renderRankCircle(item.rsRank, window.dataStore?.sparkSignals?.sectors?.[item.sector])}
+                  ${renderRankCircle(item.rsRank, normalizedSignal)}
                   ${isSelected ? '▶ ' : ''}${item.sector} (${score})
                 </div>
 
@@ -62,7 +84,6 @@ const filteredSectors = sectors.filter(sec =>
                 <div class="grid-cell" style="color:${getDiffColor(item.diffW)};">
                     ${formatDiff(item.diffW)}
                 </div>
-
 
                 <div class="grid-cell" style="color:${getDiffColor(item.diffM)};">
                     ${formatDiff(item.diffM)}
@@ -82,10 +103,10 @@ const filteredSectors = sectors.filter(sec =>
                 Sectors 
                 <span class="pill pill-count">${sortedSectors.length}</span>
 
-                <span class="pill pill-entry ${state.filterEntrySectors ? 'active' : ''}" 
+                <span class="pill pill-buy ${state.filterBuySectors ? 'active' : ''}" 
                       data-type="entry-sectors">Entry</span>
 
-                <span class="pill pill-exit ${state.filterExitSectors ? 'active' : ''}" 
+                <span class="pill pill-sell ${state.filterSellSectors ? 'active' : ''}" 
                       data-type="exit-sectors">Exit</span>
             </div>
 

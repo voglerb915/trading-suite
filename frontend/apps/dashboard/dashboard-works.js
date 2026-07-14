@@ -19,6 +19,9 @@ import { renderDashboard } from "./js/structure/renderDashboard.js";
 import { renderDashboardHeaderLeft } from "./js/header/renderDashboardHeaderLeft.js";
 import { renderDashboardHeaderCenter } from "./js/header/renderDashboardHeaderCenter.js";
 import { renderDashboardHeaderRight } from "./js/header/renderDashboardHeaderRight.js";
+import { renderActiveTab } from "./js/structure/renderDashboardTools.js";
+import { renderStocksList } from "./js/lists/renderStocksList.js";
+
 
 /*----------------------------------
 1. DASHBOARD READY SIGNAL
@@ -229,7 +232,7 @@ document.addEventListener("dashboard:reset", () => {
             strategySelect.dispatchEvent(new Event('change')); 
         }
     // 4. Cockpit & Rendern
-    document.dispatchEvent(new CustomEvent("dashboard:search", { detail: "" }));
+    document.dispatchEvent(new CustomEvent("dashboard:searchChange", { detail: "" }));
     updateAndRenderDashboard();
 });
 
@@ -379,20 +382,51 @@ export function initDashboard() {
     console.log("initDashboard() → Daten geladen, render jetzt");
     setupHeaderListeners();
     updateAndRenderDashboard();
+
+    // 🟢 HIER: Erzwinge das Rendering des aktiven Tabs
+    const activeTabItem = document.querySelector(".tab-header .tab-item.active");
+    const tabContent = document.getElementById("tools-tab-content");
+    
+    if (activeTabItem && tabContent) {
+        const tabType = activeTabItem.getAttribute("data-tab");
+        console.log("🚀 Initiales Tab-Rendering für:", tabType);
+        
+        // Wir importieren renderActiveTab (oder falls es global verfügbar ist)
+        // und rufen es hier auf
+        renderActiveTab(tabType, window.dashboardState, tabContent);
+    } else {
+        console.warn("⚠️ Konnte Tab-Container nicht finden. DOM noch nicht bereit?");
+    }
 }
 
-/*----------------------------------
-10. MESSAGE HANDLER
-----------------------------------*/
-window.addEventListener("message", (e) => {
-    const { type, stocks, signals, strategy, payload } = e.data || {};
+window.addEventListener("message", (event) => {
+    console.log("RAW MESSAGE:", event.data);
+
+    const msg = event.data;
+    const { type, stocks, sectors, industries, etfs, midSignals, sparkSignals, signals, payload, strategy } = msg;
+
     console.log(`📥 Message empfangen: ${type}`);
 
-    const finalSignals = Array.isArray(signals)
-        ? signals
-        : (Array.isArray(payload?.signals) ? payload.signals : null);
+    // 1. INITIALISIERUNG durch Cockpit → Host → Router → NEW-DASHBOARD
+    if (type === "INIT_DASHBOARD") {
+        console.log("📥 INIT_DASHBOARD empfangen:", msg);
 
-    // UPDATE_STOCKS / UPDATE_DASHBOARD
+        // DataStore füllen
+        window.dataStore = window.dataStore || {};
+        window.dataStore.baseStocks   = stocks;
+        window.dataStore.sectors      = sectors;
+        window.dataStore.industries   = industries;
+        window.dataStore.etfs         = etfs;
+        window.dataStore.midSignals   = midSignals;
+        window.dataStore.sparkSignals = sparkSignals;
+
+        // Dashboard initialisieren
+        initDashboard();
+
+        return;
+    }
+
+    // 2. UPDATE: Stocks aktualisieren
     if (type === "UPDATE_STOCKS" || type === "UPDATE_DASHBOARD") {
 
         if (typeof strategy === "string") {
@@ -403,35 +437,23 @@ window.addEventListener("message", (e) => {
             window.dashboardState.stocks = stocks;
         }
 
+        const finalSignals = Array.isArray(signals)
+            ? signals
+            : (Array.isArray(payload?.signals) ? payload.signals : null);
+
         if (finalSignals !== null) {
-            console.log("✅ Signale erfolgreich gesetzt:", finalSignals.length);
             window.dashboardState.signals = finalSignals;
-        } else {
-            console.log("⚠️ UPDATE_STOCKS erhalten, aber KEINE Signale gefunden.");
         }
 
-        updateAndRenderDashboard();
+        // Nur die Stocks-Liste rendern
+        renderStocksList(
+            Object.values(window.dashboardState.stocks || {}),
+            window.dashboardState
+        );
+
+        // KEIN initDashboard(), KEIN updateAndRenderDashboard()
         return;
     }
-
-    // COCKPIT_DATA_READY
-    if (type === "COCKPIT_DATA_READY") {
-        if (window.dashboardState.strategy !== "none") return;
-        initDashboard();
-        return;
-    }
-    // SPARKSIGNALS
-if (type === "sparkSignals") {
-    console.log("📊 SparkSignals empfangen:", payload);
-
-    // Sicherstellen, dass dataStore existiert
-    window.dataStore = window.dataStore || {};
-    window.dataStore.sparkSignals = payload;
-
-    updateAndRenderDashboard();
-    return;
-}
-
 });
 
 

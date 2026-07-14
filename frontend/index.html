@@ -4,18 +4,26 @@
     <meta charset="UTF-8">
     <title>Trading Cockpit – Host</title>
 
-    <!-- Host lädt NUR die Host-CSS -->
-    <link rel="stylesheet" href="/apps/cockpit/css/cockpit.css">
+    <!-- Host CSS -->
+    <link rel="stylesheet" href="/cockpit/cockpit.css">
 </head>
 
 <body>
 
-<!-- HOST HEADER (einmalig, global) -->
+<!-- HOST HEADER -->
 <header id="topbar">
-    <div class="logo">Trading Cockpit</div>
+
+    <div class="logo">
+        Trading Cockpit
+
+        <!-- Device Info + System Badge (wie früher) -->
+        <div id="device-status-info">
+            <span id="header-system-badge"></span>
+        </div>
+    </div>
 
     <nav id="main-nav">
-        <a href="#" data-tool="cockpit">Cockpit</a>
+        <a href="#" data-tool="focuspanel">Focus-Panel</a>
         <a href="#" data-tool="lab">Lab</a>
         <a href="#" data-tool="dashboard">Dashboard</a>
         <a href="#" data-tool="new-dashboard">New Dashboard</a>
@@ -24,58 +32,132 @@
         <a href="#" data-tool="excel">Excel</a>
         <a href="#" data-tool="control">Control-Center</a>
     </nav>
-    
 </header>
 
 
-<!-- HOST CONTENT: ALLE IFRAMES -->
+<!-- HOST CONTENT: IFRAMES -->
 <main id="content">
 
-    <!-- Cockpit UI (läuft im iFrame) -->
-    <iframe id="iframe-cockpit"
-            src="/apps/cockpit/index.html"
-            class="tool-iframe"></iframe>
-
-    <!-- Lab -->
-    <iframe id="iframe-lab"
-            src="/apps/lab/index.html"
-            class="tool-iframe"></iframe>
-
-    <!-- Dashboard alt -->
-    <iframe id="iframe-dashboard"
-            src="http://localhost:3000"
-            class="tool-iframe"></iframe>
-
-    <!-- Dashboard neu -->
-    <iframe id="iframe-new-dashboard"
-            src="/apps/dashboard/index.html"
-            class="tool-iframe"></iframe>
-
-    <!-- Journal -->
-    <iframe id="iframe-journal"
-            src="/apps/journal/index.html"
-            class="tool-iframe"></iframe>
-
-    <!-- Charting -->
-    <iframe id="iframe-charting"
-            src="/apps/charting-tool/index.html"
-            class="tool-iframe"></iframe>
-
-    <!-- Excel -->
-    <iframe id="iframe-excel"
-            src="/apps/excel/index.html"
-            class="tool-iframe"></iframe>
-
-    <!-- Control Center -->
-    <iframe id="iframe-control"
-            src="/apps/control-center/index.html"
-            class="tool-iframe"></iframe>
+    <iframe id="iframe-cockpit" src="/cockpit/cockpit.html" class="tool-iframe"></iframe>
+    <iframe id="iframe-focuspanel" src="/apps/focuspanel/focus.html" class="tool-iframe"></iframe>
+    <iframe id="iframe-lab" src="/apps/lab/index.html" class="tool-iframe"></iframe>
+    <iframe id="iframe-dashboard" src="http://localhost:3000" class="tool-iframe"></iframe>
+    <iframe id="iframe-new-dashboard" src="/apps/dashboard/index.html" class="tool-iframe"></iframe>
+    <iframe id="iframe-journal" src="/apps/journal/index.html" class="tool-iframe"></iframe>
+    <iframe id="iframe-charting" src="/apps/charting-tool/chart.html" class="tool-iframe"></iframe>
+    <iframe id="iframe-excel" src="/apps/excel/index.html" class="tool-iframe"></iframe>
+    <iframe id="iframe-control" src="/apps/control-center/index.html" class="tool-iframe"></iframe>
 
 </main>
 
 
-<!-- Host-Controller -->
-<script type="module" src="/apps/cockpit/cockpit.js"></script>
+<!-- CONTROLLER -->
+<script type="module" src="/message-router-controller.js"></script>
+<script type="module" src="/cockpitcontroller.js"></script>
+
+
+<!-- showTool() -->
+<script>
+function showTool(tool) {
+    // alle iframes verstecken
+    document.querySelectorAll(".tool-iframe").forEach(frame => {
+        frame.style.display = "none";
+    });
+
+    // gewünschtes iframe anzeigen
+    const active = document.getElementById(`iframe-${tool}`);
+    if (active) active.style.display = "block";
+
+    // Navigation highlight setzen
+    document.querySelectorAll("#main-nav a").forEach(a => a.classList.remove("active"));
+    const activeLink = document.querySelector(`#main-nav a[data-tool="${tool}"]`);
+    if (activeLink) activeLink.classList.add("active");
+}
+</script>
+
+<!-- ⭐ GENAU HIER MUSS DER NAVIGATIONSLISTENER HIN -->
+<script>
+document.querySelectorAll("#main-nav a").forEach(link => {
+    link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const tool = link.getAttribute("data-tool");
+        if (tool) showTool(tool);
+    });
+});
+</script>
+
+
+
+<!-- RESPONSE → Cockpit weiterleiten -->
+<script>
+window.addEventListener("message", (event) => {
+    if (event.data?.type === "RESPONSE") {
+        const cockpitFrame = document.getElementById("iframe-cockpit");
+        cockpitFrame.contentWindow.postMessage(event.data, "*");
+    }
+});
+</script>
+
+
+<!-- ⭐ DEVICE INFO + SYSTEM BADGE (wie früher) -->
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+    // Device Info laden
+    const res = await fetch("/api/device-info");
+    const data = await res.json();
+
+    const deviceInfo = document.getElementById("device-status-info");
+    const mode = data.isLaptop ? "Mobile Mode" : "Stationary";
+
+    deviceInfo.innerHTML = `${data.deviceName} | ${mode} <span id="header-system-badge"></span>`;
+});
+</script>
+
+
+<!-- SYSTEM STATUS LISTENER -->
+<script>
+function updateHeaderSystemBadge(badge, text) {
+    const el = document.getElementById("header-system-badge");
+    if (!el) return;
+
+    el.className = "";
+    el.classList.add(`header-badge-${badge}`);
+    el.textContent = text;
+}
+
+window.addEventListener("message", (event) => {
+    if (event.data?.type === "system-status-update") {
+        updateHeaderSystemBadge(event.data.badge, event.data.text);
+    }
+});
+</script>
+
+<!-- ⭐ BADGE-KLICK → CONTROL-CENTER -->
+<script>
+document.addEventListener("click", (e) => {
+    if (e.target.id === "header-system-badge") {
+        showTool("control");
+    }
+});
+</script>
+
+
+
+<!-- INIT + Cockpit aktivieren -->
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+    window.postMessage({
+        type: "REQUEST",
+        action: "INIT"
+    }, "*");
+
+    // Start-Tool: lab
+    showTool("lab");
+});
+
+
+</script>
 
 </body>
 </html>

@@ -1,23 +1,37 @@
 export function passesMultiSignalFilter(ticker, state) {
-    // 1. Direkter Zugriff ohne Suchen
-    const midSignal = window.dataStore?.midSignals?.stocks?.[ticker];
-    const sparkSignal = window.dataStore?.sparkSignals?.stocks?.[ticker];
 
-    // 2. Deine Filter-Logik
-    // Wenn keine Pille aktiv ist, zeigen wir ALLES mit Signal (wie gewünscht)
-    const filterActive = state.filterEntryStocks || state.filterExitStocks || 
-                         state.filterMidLong || state.filterMidExit;
+    const spark = window.dataStore?.sparkSignals?.stocks?.[ticker] || null;
+    const mid   = window.dataStore?.midSignals?.stocks?.[ticker] || null;
 
-    if (!filterActive) {
-        // Zeige alles, was IRGENDEIN Signal hat (Mid oder Spark)
-        return !!midSignal || !!sparkSignal;
+    // Spark LONG
+    if (state.filterEntryStocks) {
+        if (!spark || spark.signal_type !== "LONG") return false;
     }
 
-    // 3. Wenn Pillen aktiv sind, prüfen wir exakt
-    if (state.filterEntryStocks && sparkSignal?.signal === 'entry') return true;
-    if (state.filterExitStocks && sparkSignal?.signal === 'exit') return true;
-    if (state.filterMidLong && midSignal?.signal === 'long') return true;
-    if (state.filterMidExit && midSignal?.signal === 'exit') return true;
+    // Spark EXIT
+    if (state.filterExitStocks) {
+        if (!spark || spark.signal_type !== "EXIT") return false;
+    }
 
-    return false;
+    // Midterm LONG
+    if (state.filterMidLong) {
+        if (!mid || mid.signal_type !== "LONG") return false;
+    }
+
+    // Midterm EXIT
+    if (state.filterMidExit) {
+        if (!mid || mid.signal_type !== "EXIT") return false;
+    }
+
+    // Wenn keine Filter aktiv → alles durchlassen
+    if (
+        !state.filterEntryStocks &&
+        !state.filterExitStocks &&
+        !state.filterMidLong &&
+        !state.filterMidExit
+    ) {
+        return true;
+    }
+
+    return true;
 }
