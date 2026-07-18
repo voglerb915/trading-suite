@@ -79,7 +79,8 @@ if (Array.isArray(sparkSignalsData)) {
     const strategyNames = [
         "52wHigh",
         
-        "MeanReversion"
+        
+      
     ];
 
     const strategyItemsMap = {};

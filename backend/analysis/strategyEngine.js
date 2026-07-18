@@ -3,6 +3,8 @@
 // Alle Strategien importieren
 const { strategy52wHigh } = require("./strategies/strategy52wHigh.js");
 
+
+
 function runStrategy(strategyName, finvizRows) {
     if (!strategyName || strategyName === "none") {
         return [];
@@ -14,6 +16,8 @@ function runStrategy(strategyName, finvizRows) {
         case "52wHigh":
             strategyFn = strategy52wHigh;
             break;
+
+ 
 
         default:
             console.warn(`Strategie '${strategyName}' ist nicht implementiert.`);

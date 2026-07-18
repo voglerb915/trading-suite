@@ -65,11 +65,13 @@ app.use("/api/data/excel", require("./routes/data/excelRawData"));
 //app.use("/api/strategy/short-1", require("./routes/strategy/shortStrategy1"));
 // STRATEGY
 app.use("/api/strategy", require("./routes/strategy/strategies"));
+app.use("/api/strategy", require("./routes/strategy/shortStage3writer"));
 
 // SIGNALS ENGINE (NEU)
 app.use("/api/signals", require("./routes/strategy/signalsRoute")); //midSignals
 //app.use("/api/sparkstocksignals", require("./routes/strategy/sparkStockSignalsRoute")); // falls alte struktur crasht
 app.use("/api/signals/spark-signal", require("./routes/strategy/sparkStockSignalsRoute")); // alte CockpitStruktur
+app.use("/api/signals", require("./routes/strategy/sparkSignalsWriter")); // <--- HIER EINBINDEN
 
 
 // // RS
@@ -82,6 +84,7 @@ app.use("/api/rs", require("./routes/rs/etfsRsWriter"));
 app.use("/api/system/checks", require("./routes/system/checks"));
 app.use("/api/system/cockpit", require("./routes/system/cockpitStatusRoutes"));
 app.use("/api/system", require("./routes/system/systemStatusRoutes"));
+app.use("/api/system", require("./routes/system/checkSparkStatus")); // <--- HIER EINBINDEN
 
 // JOURNAL
 app.use("/api/journal", require("./routes/journal/journal"));

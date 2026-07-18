@@ -36,7 +36,7 @@ function writeStatusFile(data) {
 // Einzelnen Tile-Status aktualisieren (DYNAMISCH)
 // ------------------------------------------------------
 function updateTileStatus(category, payload) {
-    console.log("DEBUG Payload:", JSON.stringify(payload, null, 2)); // <--- HIER EINFÜGEN
+    //console.log("DEBUG Payload:", JSON.stringify(payload, null, 2)); // <--- HIER EINFÜGEN
     const status = readStatusFile();
 
     // Initiale Struktur sicherstellen

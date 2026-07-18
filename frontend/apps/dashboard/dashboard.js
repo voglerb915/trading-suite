@@ -1,6 +1,21 @@
 // ======================================================
 //  DASHBOARD — FINAL VERSION (Dashboard filtert, Cockpit liefert Daten)
 // ======================================================
+/*
+1. IMPORTS
+2. GLOBALER STOCK-CLICK-HANDLER
+3. GLOBAL STATE
+4. INIT REQUEST
+5. REQUEST SENDER
+6. RESPONSE HANDLER
+7. RENDER ALL
+8. Strategy-Merge (lokal im Dashboard)
+9. Lokale Filterlogik
+10. StrategyChange Handler
+11. Index, Search, Reset
+12. CLICK HANDLER
+13. READY
+*/
 
 console.log("Dashboard NewStructure loaded");
 let dashboardReady = false;
@@ -10,9 +25,11 @@ let dashboardReady = false;
 // ------------------------------------------------------
 import { renderDashboard } from "./js/structure/renderDashboard.js";
 import { renderDashboardTools, renderActiveTab } from "./js/structure/renderDashboardTools.js";
+import { strategyEngine } from "./js/strategies/strategyEngine.js";
+
 
 // ------------------------------------------------------
-// GLOBALER STOCK-CLICK-HANDLER (wie früher)
+// 2. GLOBALER STOCK-CLICK-HANDLER (wie früher)
 // ------------------------------------------------------
 window.handleStockClick = function(ticker, industry, sector) {
     console.log("handleStockClick → Sende GET_STOCK_DETAILS:", ticker);
@@ -25,7 +42,7 @@ window.handleStockClick = function(ticker, industry, sector) {
 };
 
 // ------------------------------------------------------
-// 2. GLOBAL STATE
+// 3. GLOBAL STATE
 // ------------------------------------------------------
 // NEU
 window.dashboardState = {
@@ -61,19 +78,34 @@ window.dashboardState = {
     // MidSignals (Long / Exit)
     filterLongMid: false,
     filterExitMid: false,
+      
     
-    
-    
-
     midSignals: { stocks: {} },
     sparkSignals: { stocks: {}, sectors: {}, industries: {} },
+
+    industryMap: new Map(),
+    totalInd: 0,
 
     referenceStock: null
 };
 const dashboardState = window.dashboardState;
 
 // ------------------------------------------------------
-// 3. INIT REQUEST
+// buildIndustryMap (NEU)
+// ------------------------------------------------------
+function buildIndustryMap(industries) {
+    const map = new Map();
+    industries.forEach(ind => {
+        map.set(ind.industry, ind.rank);
+    });
+
+    const totalInd = industries.length;
+    return { map, totalInd };
+}
+
+
+// ------------------------------------------------------
+// 4. INIT REQUEST
 // ------------------------------------------------------
 let initSent = false;
 
@@ -91,7 +123,7 @@ function requestInit() {
 requestInit();
 
 // ------------------------------------------------------
-// 4. REQUEST SENDER
+// 5. REQUEST SENDER
 // ------------------------------------------------------
 function sendRequest(action, payload) {
     window.parent.postMessage({
@@ -102,7 +134,7 @@ function sendRequest(action, payload) {
 }
 
 // ------------------------------------------------------
-// 5. RESPONSE HANDLER
+// 6. RESPONSE HANDLER
 // ------------------------------------------------------
 window.addEventListener("message", (event) => {
     console.log("RAW MESSAGE:", event.data);   // ⭐ MUSS erscheinen
@@ -128,6 +160,12 @@ case "INIT":
     dashboardState.sectors    = msg.payload.sectors || [];
     dashboardState.industries = msg.payload.industries || [];
     dashboardState.etfs       = msg.payload.etfs || [];
+
+    // ⭐ IndustryMap erzeugen
+    const { map, totalInd } = buildIndustryMap(dashboardState.industries);
+    dashboardState.industryMap = map;
+    dashboardState.totalInd = totalInd;
+
 
     // StrategyItems
     dashboardState.strategyItems = msg.payload.strategyItems || {};
@@ -173,6 +211,11 @@ case "COCKPIT_DATA": {
     dashboardState.sectors    = msg.payload.sectors || [];
     dashboardState.industries = msg.payload.industries || [];
     dashboardState.etfs       = msg.payload.etfs || [];
+
+    const { map, totalInd } = buildIndustryMap(dashboardState.industries);
+    dashboardState.industryMap = map;
+    dashboardState.totalInd = totalInd;
+
 
     // MidSignals normalisieren
     const rawMid2 = msg.payload.midSignals || [];
@@ -222,7 +265,7 @@ case "STOCK_DETAILS":
 });
 
 // ------------------------------------------------------
-// 6. RENDER ALL
+// 7. RENDER ALL
 // ------------------------------------------------------
 function renderAll() {
     renderDashboard(dashboardState);
@@ -249,7 +292,7 @@ function renderAll() {
     }
 }
 // ------------------------------------------------------
-// 7. Strategy-Merge (lokal im Dashboard)
+// 8. Strategy-Merge (lokal im Dashboard) — FINAL CLEAN VERSION
 // ------------------------------------------------------
 function mergeStrategies(baseStocks, strategyItemsMap, selectedStrategies) {
     const merged = baseStocks.map(stock => ({ ...stock }));
@@ -258,12 +301,13 @@ function mergeStrategies(baseStocks, strategyItemsMap, selectedStrategies) {
         const items = strategyItemsMap[strategyName] || [];
         const map = new Map(items.map(s => [s.ticker, s]));
 
+        let hitCount = 0;
+
         for (const stock of merged) {
             const strat = map.get(stock.ticker);
             if (strat) {
-                // DEBUG: Prüfen, ob wir hier überhaupt reinkommen
-                console.log(`DEBUG: Strategie-Treffer für ${stock.ticker}:`, strategyName);
-                
+                hitCount++;
+
                 if (!Array.isArray(stock.strategy)) {
                     stock.strategy = [];
                 }
@@ -272,11 +316,20 @@ function mergeStrategies(baseStocks, strategyItemsMap, selectedStrategies) {
                 stock.strategyRank  = strat.strategyRank;
             }
         }
+
+        // ⭐ Nur EIN Log pro Strategie pro Tick
+        if (!mergeStrategies._logged) {
+            console.log(`DEBUG: ${strategyName} Treffer: ${hitCount}`);
+            mergeStrategies._logged = true;
+        }
     }
+
     return merged;
 }
+
+
 // ------------------------------------------------------
-// 8. Lokale Filterlogik
+// 9. Lokale Filterlogik
 // ------------------------------------------------------
 
 function filterStocksUI() {
@@ -286,20 +339,32 @@ function filterStocksUI() {
 
     console.log("DEBUG: Filter startet. Strategie:", dashboardState.strategy, "Index:", dashboardState.indexFilter);
 
-    // 1. Strategy Filter
-    // WICHTIG: Da stocksOriginal keine Strategie-Daten hat, 
-    // muss dieser Block die Daten VOR dem Filtern einbeziehen.
+    // ------------------------------------------------------
+    // Strategy-Filter in filterStocksUI (FINAL VERSION)
+    // ------------------------------------------------------
     if (dashboardState.strategy && dashboardState.strategy !== "none") {
-        const merged = mergeStrategies(
-            filtered,
-            dashboardState.strategyItems,
-            [dashboardState.strategy]
-        );
-        filtered = merged.filter(s => {
-            const strategySource = s.strategy || [];
-            return Array.isArray(strategySource) && strategySource.includes(dashboardState.strategy);
-        });
+
+        // 1) FRONTEND-Strategien
+        const frontendFn = strategyEngine[dashboardState.strategy];
+        if (frontendFn) {
+            filtered = frontendFn(filtered);
+        }
+
+        // 2) BACKEND-Strategien
+        else {
+            const merged = mergeStrategies(
+                filtered,
+                dashboardState.strategyItems,
+                [dashboardState.strategy]
+            );
+
+            filtered = merged.filter(s => {
+                const strategySource = s.strategy || [];
+                return Array.isArray(strategySource) && strategySource.includes(dashboardState.strategy);
+            });
+        }
     }
+
 
     // 2. Sector
     if (dashboardState.sector && dashboardState.sector !== "all") {
@@ -339,32 +404,50 @@ function filterStocksUI() {
 
 window.filterStocksUI = filterStocksUI;
 // ------------------------------------------------------
-// 9. StrategyChange Handler
+// 10. StrategyChange Handler (FINAL VERSION)
 // ------------------------------------------------------
 function handleStrategyChange(e) {
-    const selectedStrategy = e.detail; // "none" oder "52wHigh"
+    const selectedStrategy = e.detail;
     dashboardState.strategy = selectedStrategy;
 
+    // Immer vom Original starten
+    let filtered = [...dashboardState.stocksOriginal];
+
+    // 1) NONE → alles zurücksetzen
     if (selectedStrategy === "none") {
-        // WICHTIG: Setze stocks auf das Original zurück, 
-        // ABER verlasse dich nicht darauf, dass der Filter schon stimmt.
-        dashboardState.stocks = [...dashboardState.stocksOriginal];
-    } else {
-        const merged = mergeStrategies(
-            dashboardState.stocksOriginal,
-            dashboardState.strategyItems,
-            [selectedStrategy]
-        );
-        dashboardState.stocks = merged;
+        dashboardState.stocks = filtered;
+        filterStocksUI();
+        renderAll();
+        return;
     }
 
-    // ⭐ DER FIX:
-    // Wir rufen filterStocksUI() auf. Da wir stocksOriginal als Basis in 
-    // filterStocksUI verwenden, werden alle anderen aktiven Filter 
-    // (Sektor, Industrie, etc.) jetzt sauber neu berechnet.
+    // 2) FRONTEND-Strategien (z.B. nearhigh52)
+    const frontendFn = strategyEngine[selectedStrategy];
+    if (frontendFn) {
+        console.log("Frontend-Strategie aktiv:", selectedStrategy);
+        filtered = frontendFn(filtered);
+        dashboardState.stocks = filtered;
+
+        filterStocksUI();
+        renderAll();
+        return;
+    }
+
+    // 3) BACKEND-Strategien (kommen aus CockpitController)
+    console.log("Backend-Strategie aktiv:", selectedStrategy);
+
+    const merged = mergeStrategies(
+        dashboardState.stocksOriginal,
+        dashboardState.strategyItems,
+        [selectedStrategy]
+    );
+
+    dashboardState.stocks = merged;
+
     filterStocksUI();
     renderAll();
 }
+
 
 document.addEventListener("dashboard:strategyChange", handleStrategyChange);
 if (window.parent && window.parent !== window) {
@@ -372,7 +455,7 @@ if (window.parent && window.parent !== window) {
 }
 
 // ------------------------------------------------------
-// 10. Index, Search, Reset
+// 11. Index, Search, Reset
 // ------------------------------------------------------
 
 
@@ -418,11 +501,9 @@ document.addEventListener("dashboard:reset", () => {
 });
 
 
+
 // ------------------------------------------------------
-// 11. CLICK HANDLER
-// ------------------------------------------------------
-// ------------------------------------------------------
-// 11. CLICK HANDLER
+// 12. CLICK HANDLER
 // ------------------------------------------------------
 document.addEventListener("click", (e) => {
 
@@ -496,6 +577,6 @@ document.addEventListener("click", (e) => {
 });
 
 // ------------------------------------------------------
-// 12. READY
+// 13. READY
 // ------------------------------------------------------
 console.log("Dashboard NewStructure ready.");

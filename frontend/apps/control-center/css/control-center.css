@@ -68,6 +68,8 @@ body {
 }
 
 
+
+
 /* ----------------------------------------------
    4) PROGRESS-BAR
 ---------------------------------------------- */
@@ -394,3 +396,36 @@ body {
 .badge-green  { background: #2ecc71; }
 .badge-yellow { background: #f1c40f; color: #000; }
 .badge-red    { background: #e74c3c; }
+
+/* ----------------------------------------------
+   GEAR-ICON – Aktiv/Inactive
+---------------------------------------------- */
+
+.calc-action {
+    cursor: pointer;
+    text-align: center;
+    font-size: 1.2rem;
+    opacity: 0.8;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+/* Aktiv: Writer läuft */
+/* Zahnrad aktiv: Rotation */
+.calc-action.running i {
+    color: orange !important;
+    transform: scale(1.15) rotate(0deg);
+    animation: gear-spin 1.2s linear infinite;
+}
+
+@keyframes gear-spin {
+    from { transform: scale(1.15) rotate(0deg); }
+    to   { transform: scale(1.15) rotate(360deg); }
+}
+
+
+/* Hover darf running NICHT überschreiben */
+.calc-action.running:hover {
+    color: orange !important;
+    transform: scale(1.15) !important;
+    opacity: 1 !important;
+}

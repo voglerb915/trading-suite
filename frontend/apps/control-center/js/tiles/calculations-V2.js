@@ -11,11 +11,8 @@ export function renderCalculationsTable(state = {}) {
         { key: "RS_Stocks", label: "RS Stocks JSON", action: "rsstocks" },
         { key: "RS_ETFs", label: "RS ETFs JSON", action: "rsetfs" }, 
         { key: "Signals", label: "Signals Engine", action: "signals" },
-        { key: "SparkSignals", label: "Spark-Signale (DB)", action: "spark" }, // NEU
         { key: "ShortStrategy", label: "Short-Strategie", action: "short" },
-        { key: "Metrics", label: "Update-Metrics", action: "metrics" },
-    
-       
+        { key: "Metrics", label: "Update-Metrics", action: "metrics" }
     ];
 
     root.innerHTML = `
@@ -40,8 +37,7 @@ export function renderCalculationsTable(state = {}) {
                             <td>${ok ? "✔️" : (isError ? "❌" : "–")}</td>
                             <td>${s.lastRun ? formatTimestamp(s.lastRun) : "–"}</td>
                             <td>${s.duration || "–"}</td>
-                            <td class="calc-action" data-action="${r.action}"><i class="fas fa-cog"></i></td>
-
+                            <td class="calc-action" data-action="${r.action}" style="cursor: pointer;">⚙️</td>
                         </tr>
                     `;
                 }).join("")}
@@ -54,9 +50,6 @@ export function renderCalculationsTable(state = {}) {
         if (!el) return;
 
         const action = el.dataset.action;
-
-        // Zahnrad aktiv setzen
-        el.classList.add("running");
         el.style.opacity = "0.5";
 
         try {
@@ -67,23 +60,18 @@ export function renderCalculationsTable(state = {}) {
                 "rsindustries": runRsIndustriesWriter,
                 "rsstocks": runRsStocksWriter,
                 "rsetfs": runRsEtfsWriter,
-                "signals": runSignalsEngine,
-                "spark": runSparkSignalWriter
+                "signals": runSignalsEngine
             };
 
             if (actions[action]) await actions[action]();
         } catch (err) {
             console.error("Fehler beim Prozess:", err);
         } finally {
-            // Zahnrad wieder deaktivieren
-            el.classList.remove("running");
             el.style.opacity = "1";
-
             await loadPersistedStatus();
             renderCalculationsTable(window.__persistedState?.calculations || {});
         }
     };
-
 }
 
 /* ============================================================
@@ -184,48 +172,5 @@ async function runRsEtfsWriter() {
         });
     } catch (err) {
         await saveTileStatus("calculations", { RS_ETFs: { status: "error", lastRun: new Date(), duration: "–" } });
-    }
-}
-
-// In deiner calculations.js:
-async function runSparkSignalWriter() {
-    // 1. Check beim Backend
-    const response = await fetch("http://localhost:4000/api/system/check-spark-status");
-    const data = await response.json();
-
-    // 2. Wächter-Logik
-    if (data.isDone) {
-        await saveTileStatus("calculations", {
-            SparkSignals: {
-                status: "success",
-                lastRun: new Date(),
-                duration: "0s"
-            }
-        });
-        return;
-    }
-
-    // 3. Writer starten
-    const start = performance.now();
-    try {
-        const res = await fetch("http://localhost:4000/api/signals/write-spark-to-db");
-        const result = await res.json();
-
-        await saveTileStatus("calculations", {
-            SparkSignals: {
-                status: result.success ? "success" : "error",
-                lastRun: new Date(),
-                duration: ((performance.now() - start) / 1000).toFixed(1) + "s"
-            }
-        });
-
-    } catch (err) {
-        await saveTileStatus("calculations", {
-            SparkSignals: {
-                status: "error",
-                lastRun: new Date(),
-                duration: "–"
-            }
-        });
     }
 }
