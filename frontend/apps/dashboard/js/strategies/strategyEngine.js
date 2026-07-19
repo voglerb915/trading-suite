@@ -5,13 +5,13 @@
 // ======================================================
 
 import { nearHigh52w } from "./nearHigh52w.js";
-import { stage3topping } from "./stage3topping.js";
-
+import { strategy52wHigh } from "./strategy52wHigh.js";
 
 
 export const strategyEngine = {
     nearhigh52: nearHigh52w,
-    //insideday52w: insideDay52w,
-    stage3topping: (stocks) => stage3topping(stocks, dashboardState.industryMap, dashboardState.totalInd)
+    high52w: strategy52wHigh,
+ 
 };
+
 

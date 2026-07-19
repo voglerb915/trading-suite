@@ -20,6 +20,7 @@ window.renderStockSignalDot = renderStockSignalDot;
 
 
 export function renderStocksList(stocks, state) {
+    
     const listUl = document.getElementById('stocks-list');
     if (!listUl) return;
 
@@ -107,53 +108,110 @@ if (pillContainer) {
 const visible = [...sortedStocks];
 
 const html = visible.map((item, idx) => {
-    const isSelected = item.ticker === state?.ticker;
-    const sectorClass = sectorClasses[item.sector] ?? "";
 
-    const position = idx + 1;   // ← eigene Nummerierung
+    // ⭐⭐⭐ FIX: Strategy-Daten mergen ⭐⭐⭐
+    let mergedItem = item;
 
-    const displaySector = item.sector ?? "—";
-    const displayIndustry = item.industry ?? "—";
+    if (dashboardState.strategy === "stage3topping") {
+        const stratArr = dashboardState.strategyItems?.stage3topping || [];
+        const stratData = stratArr.find(s => s.ticker === item.ticker);
 
-    const clickHandler = `onclick="handleStockClick('${item.ticker}', '${item.industry}', '${item.sector}')"`;
+        if (stratData) {
+            mergedItem = { ...item, ...stratData };
+        }
+    }
+    // ⭐⭐⭐ Ende FIX ⭐⭐⭐
+
+
+    const isSelected = mergedItem.ticker === state?.ticker;
+    const sectorClass = sectorClasses[mergedItem.sector] ?? "";
+
+    const position = idx + 1;
+
+    const displaySector = mergedItem.sector ?? "—";
+    const displayIndustry = mergedItem.industry ?? "—";
+
+    const clickHandler = `onclick="handleStockClick('${mergedItem.ticker}', '${mergedItem.industry}', '${mergedItem.sector}')"`;
 
 
     // Global Rank
     const globalRank =
-        item.globalRank ??
-        item.rsRank ??
-        item.rank ??
+        mergedItem.globalRank ??
+        mergedItem.rsRank ??
+        mergedItem.rank ??
         null;
 
     const bottomValue = globalRank != null
         ? `Global: ${globalRank}`
         : "Global: —";
 
-    // Top Value
-    const rawTop =
-        item.strategyValue ??
-        item.value ??
-        item.rsScore ??
-        item.score ??
-        null;
+    // ⭐ FIX: rawTop definieren
+    let rawTop = null;
+
+    // Top Value – je nach Strategie den richtigen Wert wählen
+    switch (state.strategy) {
+        case "high52w":
+        case "insideday52w":
+        case "nearhigh52":
+            rawTop = mergedItem.strategyValue ?? mergedItem.value ?? null;
+            break;
+
+        case "stage3topping":
+            rawTop = mergedItem.strategyValue ?? mergedItem.score ?? mergedItem.totalScore ?? null;
+            break;
+
+        case "none":
+        default:
+            rawTop = mergedItem.strategyValue ?? mergedItem.value ?? mergedItem.rsScore ?? mergedItem.score ?? null;
+            break;
+    }
+
 
     let topValue;
     if (rawTop != null) {
-        const formatted = (item.strategyValue != null || item.value != null)
+        const percentStrategies = ["high52w", "insideday52w", "nearhigh52"];
+
+        const formatted = percentStrategies.includes(state.strategy)
             ? `${rawTop.toFixed(2)}%`
             : rawTop.toFixed(2);
 
         topValue = state.strategy && state.strategy !== "none"
             ? `<strong class="strategy-value-strong">${formatted}</strong>`
             : `<span class="score-value">${formatted}</span>`;
-
     } else {
         topValue = "—";
     }
 
+
+
+    const showTooltip = dashboardState.strategy === "stage3topping";
+
+const fmt = v => (typeof v === "number" ? v.toFixed(2) : "0.00");
+
+// Labels auf exakt 14 Zeichen bringen (Padding)
+const pad = label => label.padEnd(14, " ");
+
+const tooltipText = `
+SCORE               RAW
+-----------------------------------------
+${pad("S1 StateAct")}: ${fmt(mergedItem.score_stateActive)}   |   ${mergedItem.stateActive}
+${pad("S2 Age")}:       ${fmt(mergedItem.score_age)}           |   ${mergedItem.daysAbove}
+${pad("S3 Slope")}:     ${fmt(mergedItem.score_slope)}         |   ${mergedItem.slopeVal}
+${pad("S4 IndRank")}:   ${fmt(mergedItem.score_indRank)}       |   ${mergedItem.indRank}
+${pad("S5 SMA Dist")}:  ${fmt(mergedItem.score_smaDist)}       |   ${mergedItem.smaDist}
+
+-----------------------------------------
+Total Score:        ${fmt(mergedItem.totalScore)}
+`.trim();
+
+
+    const tooltipIcon = showTooltip
+        ? `<span style="margin-right:8px; cursor:help;" title="${tooltipText}">📊</span>`
+        : "";
+
     return `
         <li class="stock-item ${sectorClass} ${isSelected ? 'highlight-ticker' : ''}"
-            data-stock="${item.ticker}"
+            data-stock="${mergedItem.ticker}"
             ${clickHandler}>
 
             <div class="stock-row-inner">
@@ -165,26 +223,85 @@ const html = visible.map((item, idx) => {
 
                     ${renderRankCircle(
                         position,
-                        window.dataStore?.sparkSignals?.stocks?.[item.ticker]
+                        window.dataStore?.sparkSignals?.stocks?.[mergedItem.ticker]
                     )}
 
-                    <span class="stock-ticker">${item.ticker}</span><br>
+                    <span class="stock-ticker">${mergedItem.ticker}</span><br>
 
                     <span class="stock-sub">
                         ${displaySector} | ${displayIndustry}
                     </span>
                 </div>
 
-
                 <!-- RECHTS -->
                 <div class="stock-right">
-                    ${topValue}<br>
-                    ${bottomValue}
+
+                    <div style="
+                        display: grid;
+                        grid-template-columns: auto 1fr;
+                        align-items: center;
+                        font-weight: bold;
+                        color: #444;
+                        font-size: 1rem;
+                        white-space: nowrap;
+                        text-align: right;
+                    ">
+
+                        <!-- Tooltip nur bei stage3topping -->
+                        ${dashboardState.strategy === "stage3topping" ? `
+                            <span class="score-tooltip-trigger" style="margin-right:8px; cursor:help;">
+                                📊
+                                <div class="score-tooltip">
+                                    <div class="score-row">
+                                        <span class="score-label">S1 StateActive</span>
+                                        <span class="score-value">${fmt(mergedItem.score_stateActive)}</span>
+                                        <span class="score-raw">${mergedItem.stateActive}</span>
+                                    </div>
+                                    <div class="score-row">
+                                        <span class="score-label">S2 Age</span>
+                                        <span class="score-value">${fmt(mergedItem.score_age)}</span>
+                                        <span class="score-raw">${mergedItem.daysAbove}</span>
+                                    </div>
+                                    <div class="score-row">
+                                        <span class="score-label">S3 Slope</span>
+                                        <span class="score-value">${fmt(mergedItem.score_slope)}</span>
+                                        <span class="score-raw">${mergedItem.slopeVal}</span>
+                                    </div>
+                                    <div class="score-row">
+                                        <span class="score-label">S4 IndRank</span>
+                                        <span class="score-value">${fmt(mergedItem.score_indRank)}</span>
+                                        <span class="score-raw">${mergedItem.indRank}</span>
+                                    </div>
+                                    <div class="score-row">
+                                        <span class="score-label">S5 SMA Dist</span>
+                                        <span class="score-value">${fmt(mergedItem.score_smaDist)}</span>
+                                        <span class="score-raw">${mergedItem.smaDist}</span>
+                                    </div>
+                                    <div class="score-total">
+                                        <span class="score-label">Total</span>
+                                        <span class="score-value">${fmt(mergedItem.totalScore)}</span>
+                                    </div>
+                                </div>
+                            </span>
+                        ` : `
+                            <span></span>
+                        `}
+
+
+                        <!-- StrategyValue rechtsbündig -->
+                        <span>${topValue}</span>
+                    </div>
+
+                    <!-- Rank bleibt unverändert -->
+                    <div>${bottomValue}</div>
+
                 </div>
+
 
             </div>
         </li>
     `;
+
 }).join('');
 
     listUl.innerHTML = html;

@@ -62,10 +62,9 @@ app.use("/api/data/downloads", require("./routes/data/loadYahooStocks"));
 app.use("/api/data/excel", require("./routes/data/excelRawData"));
 
 // STRATEGY
-//app.use("/api/strategy/short-1", require("./routes/strategy/shortStrategy1"));
-// STRATEGY
-app.use("/api/strategy", require("./routes/strategy/strategies"));
+//app.use("/api/strategy", require("./routes/strategy/strategies")); für high52 + nearHigh52 die aber aktuell im frontend laufen
 app.use("/api/strategy", require("./routes/strategy/shortStage3writer"));
+app.use("/api/strategy", require("./routes/strategy/stage3toppingReader"));
 
 // SIGNALS ENGINE (NEU)
 app.use("/api/signals", require("./routes/strategy/signalsRoute")); //midSignals

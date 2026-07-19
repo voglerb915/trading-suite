@@ -9,7 +9,7 @@ export function renderDashboardHeaderRight(state) {
                 <label for="strategy-select">Strategy:</label>
                 <select id="strategy-select">
                     <option value="none">none</option>
-                    <option value="52wHigh">52-week High</option>
+                    <option value="high52w">52-week High</option>
                     <option value="insideday52w">Inside Day @ 52W-High</option>
                     <option value="nearhigh52">Max. 5% below High</option>
                     <option value="stage3topping">Stage3 to Stage4</option>

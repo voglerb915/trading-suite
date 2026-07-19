@@ -6,5 +6,11 @@ export function nearHigh52w(stocks) {
             s["52w_high"] <= 0 &&
             s.industry !== "Shell Companies"
         )
-        .sort((a, b) => b["52w_high"] - a["52w_high"]);
+        .sort((a, b) => b["52w_high"] - a["52w_high"])
+        .map((row, index) => ({
+            ...row,
+            strategyRank: index + 1,
+            strategyValue: row["52w_high"],   // ⭐ WICHTIG
+            value: row["52w_high"]
+        }));
 }

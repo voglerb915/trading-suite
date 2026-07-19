@@ -141,21 +141,31 @@ window.addEventListener("message", (event) => {
 
     const msg = event.data;
     if (!msg || msg.type !== "RESPONSE") {
-        console.log("IGNORED MESSAGE:", msg);  // ⭐ zeigt dir, ob STOCK_DETAILS falschen type hat
+        
         return;
     }
 
-    console.log("RESPONSE MESSAGE:", msg);     // ⭐ zeigt dir, ob STOCK_DETAILS überhaupt kommt
+    
 
 
     switch (msg.action) {
 
 case "INIT":
+    
     console.log("INIT empfangen:", msg.payload);
+  
 
     // Basisdaten
     dashboardState.stocksOriginal = msg.payload.stocks || [];
     dashboardState.stocks         = dashboardState.stocksOriginal;
+
+    // ⭐ Strategie anwenden (HIER MUSS ES REIN)
+const fn = strategyEngine[dashboardState.strategy];
+if (fn) {
+    dashboardState.stocks = fn(dashboardState.stocksOriginal);
+}
+
+
 
     dashboardState.sectors    = msg.payload.sectors || [];
     dashboardState.industries = msg.payload.industries || [];
@@ -403,12 +413,15 @@ function filterStocksUI() {
 }
 
 window.filterStocksUI = filterStocksUI;
+
 // ------------------------------------------------------
-// 10. StrategyChange Handler (FINAL VERSION)
+// 10. StrategyChange Handler (FINAL CLEAN VERSION)
 // ------------------------------------------------------
 function handleStrategyChange(e) {
     const selectedStrategy = e.detail;
     dashboardState.strategy = selectedStrategy;
+
+    console.log("📌 StrategyChange:", selectedStrategy);
 
     // Immer vom Original starten
     let filtered = [...dashboardState.stocksOriginal];
@@ -421,20 +434,33 @@ function handleStrategyChange(e) {
         return;
     }
 
-    // 2) FRONTEND-Strategien (z.B. nearhigh52)
+    // 2) FRONTEND-Strategien (UI-Filter)
     const frontendFn = strategyEngine[selectedStrategy];
     if (frontendFn) {
         console.log("Frontend-Strategie aktiv:", selectedStrategy);
+
+        // Frontend-Strategie direkt anwenden
         filtered = frontendFn(filtered);
+
         dashboardState.stocks = filtered;
 
         filterStocksUI();
         renderAll();
-        return;
+        return;   // ❗ WICHTIG: Backend wird NICHT ausgeführt
     }
 
     // 3) BACKEND-Strategien (kommen aus CockpitController)
     console.log("Backend-Strategie aktiv:", selectedStrategy);
+
+    const backendItems = dashboardState.strategyItems[selectedStrategy];
+
+    if (!backendItems) {
+        console.warn("⚠ Backend-Strategie hat keine Daten:", selectedStrategy);
+        dashboardState.stocks = [];
+        filterStocksUI();
+        renderAll();
+        return;
+    }
 
     const merged = mergeStrategies(
         dashboardState.stocksOriginal,
@@ -449,9 +475,10 @@ function handleStrategyChange(e) {
 }
 
 
+
 document.addEventListener("dashboard:strategyChange", handleStrategyChange);
 if (window.parent && window.parent !== window) {
-    window.parent.document.addEventListener("dashboard:strategyChange", handleStrategyChange);
+   // window.parent.document.addEventListener("dashboard:strategyChange", handleStrategyChange);
 }
 
 // ------------------------------------------------------
