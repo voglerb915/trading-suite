@@ -4,11 +4,12 @@ const router = express.Router();
 const { yahooPool, tradingPool } = require("../../db/connection");
 
 // ------------------------------------------------------
-// Short Stage3 Writer – neue Struktur
+// Stage3 Topping Writer – neue Struktur
 // ------------------------------------------------------
-router.get("/write-stage3-strategy", async (req, res) => {
+router.get("/write-stage3-topping", async (req, res) => {
+    const t0 = performance.now(); // Startpunkt der Messung
     try {
-        console.log("Short-Stage3 Writer gestartet");
+        console.log("Stage3-Topping Writer gestartet");
 
         // ------------------------------------------------------
         // 0) Gedächtnis laden (strategies → yahoo)
@@ -16,17 +17,17 @@ router.get("/write-stage3-strategy", async (req, res) => {
         const memoryResult = await yahooPool.request().query(`
             SELECT ticker, s1_state_active, s1_trigger_date, s1_days_above
             FROM yahoo.dbo.strategies
-            WHERE strategy_name = 'S1_SHORT_S3T'
+            WHERE strategy_name = 'S1_STAGE3_TOPPING'
               AND [date] = (
                   SELECT MAX([date]) 
                   FROM yahoo.dbo.strategies 
-                  WHERE strategy_name = 'S1_SHORT_S3T'
+                  WHERE strategy_name = 'S1_STAGE3_TOPPING'
               )
         `);
 
-        const lastShortMap = {};
+        const lastToppingMap = {};
         memoryResult.recordset.forEach(s => {
-            lastShortMap[s.ticker] = {
+            lastToppingMap[s.ticker] = {
                 signal_state_active: s.s1_state_active ?? 0,
                 trigger_date:        s.s1_trigger_date ?? null,
                 days_above_sma:      s.s1_days_above   ?? 0
@@ -34,7 +35,7 @@ router.get("/write-stage3-strategy", async (req, res) => {
         });
 
         // ------------------------------------------------------
-        // 1) Industry‑Ranking aus marketScores (NEUE STRUKTUR)
+        // 1) Industry‑Ranking aus marketScores
         // ------------------------------------------------------
         const industryResult = await tradingPool.request().query(`
             SELECT name, rank_db
@@ -51,10 +52,8 @@ router.get("/write-stage3-strategy", async (req, res) => {
             industryResult.recordset.map(r => [r.name, r.rank_db])
         );
 
-        const totalInd = industryMap.size;
-
         // ------------------------------------------------------
-        // 2) Finviz-Daten laden (NEUE STRUKTUR)
+        // 2) Finviz-Daten laden
         // ------------------------------------------------------
         const result = await tradingPool.request().query(`
             SELECT 
@@ -68,7 +67,6 @@ router.get("/write-stage3-strategy", async (req, res) => {
 
         const allRows = result.recordset;
 
-        // Gruppieren nach Ticker
         const grouped = {};
         allRows.forEach(row => {
             if (!grouped[row.ticker]) grouped[row.ticker] = [];
@@ -84,20 +82,15 @@ router.get("/write-stage3-strategy", async (req, res) => {
             if (history.length < 21) return null;
 
             const latest         = history.at(-1);
-            const oldestInWindow = history.at(-21);
             const history20      = history.slice(-20);
 
-            const prev = lastShortMap[latest.ticker] ?? {
+            const prev = lastToppingMap[latest.ticker] ?? {
                 signal_state_active: 0,
                 trigger_date: null,
                 days_above_sma: 0
             };
 
             const currentSmaPrice = latest.price / (1 + (latest.sma200 / 100));
-
-            const hasBeenBelow = history20.some(r =>
-                r.price < (r.price / (1 + (r.sma200 / 100)))
-            );
 
             const hasBeenAboveAfterBelow = history20.some((r, idx) => {
                 const smaVal = r.price / (1 + (r.sma200 / 100));
@@ -184,7 +177,7 @@ router.get("/write-stage3-strategy", async (req, res) => {
             await request.query(`
                 DELETE FROM yahoo.dbo.strategies
                 WHERE [date] = '${todayStr}'
-                  AND [strategy_name] = 'S1_SHORT_S3T'
+                  AND [strategy_name] = 'S1_STAGE3_TOPPING'
             `);
 
             for (const item of processedData) {
@@ -204,7 +197,7 @@ router.get("/write-stage3-strategy", async (req, res) => {
                     VALUES (
                         '${item.anl_datum.toISOString().split('T')[0]}',
                         '${item.ticker}',
-                        'S1_SHORT_S3T',
+                        'S1_STAGE3_TOPPING',
                         ${item.totalScore},
                         ${item.state_active},
                         ${triggerDateStr},
@@ -217,15 +210,21 @@ router.get("/write-stage3-strategy", async (req, res) => {
                 `);
             }
 
-            console.log(`Short-Stage3 gespeichert: ${processedData.length} Signale`);
+            console.log(`Stage3-Topping gespeichert: ${processedData.length} Signale`);
         } else {
-            console.log("Short-Stage3: keine aktiven Signale");
+            console.log("Stage3-Topping: keine aktiven Signale");
         }
 
-        res.json({ success: true, count: processedData.length });
+            const t1 = performance.now(); // Endpunkt der Messung
+
+                res.json({
+                    success: true,
+                    duration: ((t1 - t0) / 1000).toFixed(1) + "s",
+                    count: processedData.length
+                });
 
     } catch (err) {
-        console.error("Short-Stage3 Writer Fehler:", err.message);
+        console.error("Stage3-Topping Writer Fehler:", err.message);
         res.status(500).json({ success: false, error: err.message });
     }
 });

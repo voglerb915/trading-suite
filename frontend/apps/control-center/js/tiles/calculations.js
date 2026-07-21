@@ -12,9 +12,9 @@ export function renderCalculationsTable(state = {}) {
         { key: "RS_ETFs", label: "RS ETFs JSON", action: "rsetfs" }, 
         { key: "Signals", label: "Signals Engine", action: "signals" },
         { key: "SparkSignals", label: "Spark-Signale (DB)", action: "spark" }, // NEU
-        { key: "ShortStrategy", label: "Short-Strategie", action: "short" },
+        { key: "Stage3Topping", label: "Stage3 Topping Writer", action: "stage3topping" },
         { key: "Metrics", label: "Update-Metrics", action: "metrics" },
-    
+        { key: "InsideDay52W", label: "InsideDay52W Writer", action: "insideday52w" },
        
     ];
 
@@ -61,14 +61,17 @@ export function renderCalculationsTable(state = {}) {
 
         try {
             const actions = {
-                "short": runShortStrategyAction,
+                
                 "metrics": runMetricsAction,
                 "rssectors": runRsSectorsWriter,
                 "rsindustries": runRsIndustriesWriter,
                 "rsstocks": runRsStocksWriter,
                 "rsetfs": runRsEtfsWriter,
                 "signals": runSignalsEngine,
-                "spark": runSparkSignalWriter
+                "spark": runSparkSignalWriter,
+                "stage3topping": runStage3ToppingWriter,
+                "insideday52w": runInsideDay52WWriter
+
             };
 
             if (actions[action]) await actions[action]();
@@ -109,29 +112,37 @@ async function runSignalsEngine() {
     }
 }
 
-async function runShortStrategyAction() {
-    const start = performance.now();
-    try {
-        const res = await fetch("http://localhost:4000/api/strategy/short-1/update-short-strategy");
-        if (!res.ok) throw new Error();
-        await saveTileStatus("calculations", {
-            ShortStrategy: { status: "success", lastRun: new Date(), duration: ((performance.now() - start) / 1000).toFixed(1) + "s" }
-        });
-    } catch (err) {
-        await saveTileStatus("calculations", { ShortStrategy: { status: "error", lastRun: new Date(), duration: "–" } });
-    }
-}
+
 
 async function runMetricsAction() {
     const start = performance.now();
     try {
-        const res = await fetch("http://localhost:4000/api/data/volume-metrics");
-        if (!res.ok) throw new Error();
+        const res = await fetch("http://localhost:4000/api/data/metrics/run", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.error || "Unbekannter Fehler");
+
         await saveTileStatus("calculations", {
-            Metrics: { status: "success", lastRun: new Date(), duration: ((performance.now() - start) / 1000).toFixed(1) + "s" }
+            Metrics: { 
+                status: "success", 
+                lastRun: new Date(), 
+                duration: ((performance.now() - start) / 1000).toFixed(1) + "s" 
+            }
         });
     } catch (err) {
-        await saveTileStatus("calculations", { Metrics: { status: "error", lastRun: new Date(), duration: "–" } });
+        console.error("Fehler bei Metrics:", err);
+        await saveTileStatus("calculations", { 
+            Metrics: { 
+                status: "error", 
+                lastRun: new Date(), 
+                duration: "–" 
+            } 
+        });
     }
 }
 
@@ -222,6 +233,56 @@ async function runSparkSignalWriter() {
     } catch (err) {
         await saveTileStatus("calculations", {
             SparkSignals: {
+                status: "error",
+                lastRun: new Date(),
+                duration: "–"
+            }
+        });
+    }
+}
+
+async function runStage3ToppingWriter() {
+    const start = performance.now();
+    try {
+        const res = await fetch("http://localhost:4000/api/strategy/write-stage3-topping");
+        const data = await res.json();
+
+        await saveTileStatus("calculations", {
+            Stage3Topping: {
+                status: data.success ? "success" : "error",
+                lastRun: new Date(),
+                duration: ((performance.now() - start) / 1000).toFixed(1) + "s"
+            }
+        });
+
+    } catch (err) {
+        await saveTileStatus("calculations", {
+            Stage3Topping: {
+                status: "error",
+                lastRun: new Date(),
+                duration: "–"
+            }
+        });
+    }
+}
+
+async function runInsideDay52WWriter() {
+    const start = performance.now();
+    try {
+        const res = await fetch("http://localhost:4000/api/strategy/insideDay52wWriter");
+        const data = await res.json();
+
+        await saveTileStatus("calculations", {
+            InsideDay52W: {
+                status: data.error ? "error" : "success",
+                lastRun: new Date(),
+                duration: ((performance.now() - start) / 1000).toFixed(1) + "s"
+            }
+        });
+
+    } catch (err) {
+        await saveTileStatus("calculations", {
+            InsideDay52W: {
                 status: "error",
                 lastRun: new Date(),
                 duration: "–"

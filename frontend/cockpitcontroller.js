@@ -55,10 +55,8 @@ async function controllerInit() {
             .catch(() => ({ stocks: {}, sectors: {}, industries: {} }))
     ]);
 
-    // ❗ sparkSignalsData darf NICHT const sein → daher let
     let sparkSignalsData = sparkSignalsDataRaw;
 
-    // Normalisieren
     if (Array.isArray(sparkSignalsData)) {
         sparkSignalsData = {
             stocks: Object.fromEntries(
@@ -69,7 +67,6 @@ async function controllerInit() {
         };
     }
 
-    // 2) Basisdaten übernehmen
     controllerState.baseStocks   = stocks;
     controllerState.stocks       = stocks;
     controllerState.sectors      = sectors;
@@ -78,58 +75,79 @@ async function controllerInit() {
     controllerState.midSignals   = midSignalsData;
     controllerState.sparkSignals = sparkSignalsData;
 
-// 3) Strategy-Daten laden (alte Strategy-Tabelle)
-const strategyNames = ["stage3topping"];
 
-const strategyItemsMap = {};
-for (const name of strategyNames) {
-    try {
-        const items = await loadStrategyStocks(name);
-        strategyItemsMap[name] = items;
-    } catch (err) {
-        console.warn("Strategy Load Error:", name, err);
-        strategyItemsMap[name] = [];
+    // ------------------------------------------------------
+    // 3) Strategy-Daten laden (Dashboard erwartet stage3topping)
+    // ------------------------------------------------------
+    const strategyNames = ["stage3topping"];   // FIX
+
+    const strategyItemsMap = {};
+    for (const name of strategyNames) {
+        try {
+            const items = await loadStrategyStocks(name);   // FIX
+            strategyItemsMap[name] = items;
+        } catch (err) {
+            console.warn("Strategy Load Error:", name, err);
+            strategyItemsMap[name] = [];
+        }
     }
-}
 
-controllerState.strategyItems = strategyItemsMap;
-console.log("DEBUG Cockpit strategyItems (alt):", controllerState.strategyItems);
+    controllerState.strategyItems = strategyItemsMap;
+    console.log("DEBUG Cockpit strategyItems (alt):", controllerState.strategyItems);
 
-// 3b) Stage3-Reader-Daten holen (wie SparkSignals)
-let stage3ReaderData = [];
-try {
-    const res = await fetch("/api/strategy/stage3topping");
-    const json = await res.json();
-    stage3ReaderData = json.data || [];
-    
-} catch (err) {
-    console.warn("Stage3 Reader Fetch Error:", err);
-}
 
-// 3c) StrategyItems mit Reader-Daten anreichern
-try {
-    const enriched = controllerState.strategyItems.stage3topping.map(stock => {
-        const r = stage3ReaderData.find(x => x.ticker === stock.ticker);
-        if (!r) return stock;
+    // ------------------------------------------------------
+    // 3b) Stage3-Reader-Daten holen
+    // ------------------------------------------------------
+    let stage3ReaderData = [];
+    try {
+        const res = await fetch("/api/strategy/stage3topping");   // FIX
+        const json = await res.json();
+        stage3ReaderData = json.signals || [];   // FIX
+    } catch (err) {
+        console.warn("Stage3 Reader Fetch Error:", err);
+    }
 
-        return {
-            ...stock,
-            s1: r.totalScore,
-            s2: r.slopeVal,
-            s3: r.indRank,
-            s4: r.daysAbove,
-            s5: r.smaDist,
-            s6: r.triggerDate,
-            s7: r.stateActive
-        };
-    });
 
-    controllerState.strategyItems.stage3topping = enriched;
-    console.log("DEBUG Cockpit strategyItems (enriched):", controllerState.strategyItems);
+    // ------------------------------------------------------
+    // 3c) StrategyItems mit Reader-Daten anreichern
+    // ------------------------------------------------------
+    try {
+        const baseItems = controllerState.strategyItems["stage3topping"] || [];   // FIX
 
-} catch (err) {
-    console.warn("Stage3 Reader Merge Error:", err);
-}
+        const enriched = baseItems.map(stock => {
+            const r = stage3ReaderData.find(x => x.ticker === stock.ticker);
+            if (!r) return stock;
+
+            return {
+                ...stock,
+
+                // RAW-Werte
+                stateActive: r.stateActive,
+                daysAbove: r.daysAbove,
+                slopeVal: r.slopeVal,
+                indRank: r.indRank,
+                smaDist: r.smaDist,
+                triggerDate: r.triggerDate,
+                totalScore: r.totalScore,
+
+                // SCORE-Werte (Dashboard erwartet diese!)
+                score_stateActive: r.score_stateActive ?? 0,
+                score_age:         r.score_age ?? 0,
+                score_slope:       r.score_slope ?? 0,
+                score_indRank:     r.score_indRank ?? 0,
+                score_smaDist:     r.score_smaDist ?? 0
+            };
+
+        });
+
+        controllerState.strategyItems["stage3topping"] = enriched;   // FIX
+
+        console.log("DEBUG Cockpit strategyItems (enriched):", controllerState.strategyItems);
+
+    } catch (err) {
+        console.warn("Stage3 Reader Merge Error:", err);
+    }
 
 
     // 4) Volume Extract
@@ -279,8 +297,9 @@ function handleFilterSignals(payload) {
 async function loadStrategyStocks(strategyName) {
     const res = await fetch(`/api/strategy/${strategyName}`);
     const json = await res.json();
-    return json.data;
+    return json.signals || [];
 }
+
 
 // ------------------------------------------------------
 //  Strategy Merge (nur Cockpit)

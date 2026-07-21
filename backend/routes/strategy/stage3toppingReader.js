@@ -1,108 +1,110 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { sql, config } = require('../../db/connection');
+
+const { yahooPool } = require("../../db/connection");
 
 // ------------------------------------------------------
-// Stage3 READER – liefert die Signale an Cockpit & Dashboard
+// Stage3 Topping Reader – liefert RAW + SCORE wie Writer
 // ------------------------------------------------------
-router.get('/stage3topping', async (req, res) => {
+router.get("/stage3topping", async (req, res) => {
     try {
-        await sql.connect(config);
+        console.log("Stage3-Topping Reader gestartet");
 
-        // 1) Neueste Stage3‑Signale laden
-        const result = await sql.query(`
-            SELECT 
-                [ticker],
-                [s1_total_score]     AS totalScore,
-                [s1_state_active]    AS stateActive,
-                [s1_trigger_date]    AS triggerDate,
-                [s1_days_above]      AS daysAbove,
-                [s1_slope_val]       AS slopeVal,
-                [s1_ind_rank]        AS indRank,
-                [s1_sma_dist]        AS smaDist,
-                [s1_details_json]    AS detailsJson,
-                [date]
-            FROM [yahoo].[dbo].[strategies]
+        const lastDateResult = await yahooPool.request().query(`
+            SELECT MAX([date]) AS lastDate
+            FROM yahoo.dbo.strategies
             WHERE strategy_name = 'S1_SHORT_S3T'
-              AND [date] = (
-                    SELECT MAX([date]) 
-                    FROM [yahoo].[dbo].[strategies]
-                    WHERE strategy_name = 'S1_SHORT_S3T'
-              )
-            ORDER BY [s1_total_score] DESC
         `);
 
-        const rows = result.recordset;
+        const lastDateRaw = lastDateResult.recordset[0].lastDate;
+        if (!lastDateRaw) {
+            return res.json({ success: true, lastDate: null, signals: [] });
+        }
 
-        // 2) Dashboard‑kompatibles Format erzeugen
-        const mapped = rows.map((r, idx) => {
+        const lastDate = new Date(lastDateRaw);
+        const lastDateStr = lastDate.toISOString().split("T")[0];
 
-            // Score-Berechnung wie im Writer
-            const s1 = r.stateActive ? 40 : 0;
+        const signalsResult = await yahooPool.request().query(`
+            SELECT 
+                ticker,
+                s1_total_score,
+                s1_state_active,
+                s1_trigger_date,
+                s1_days_above,
+                s1_slope_val,
+                s1_ind_rank,
+                s1_sma_dist
+            FROM yahoo.dbo.strategies
+            WHERE [date] = '${lastDateStr}'
+              AND strategy_name = 'S1_SHORT_S3T'
+            ORDER BY s1_total_score DESC
+        `);
 
+        const mapped = signalsResult.recordset.map(r => {
+
+            const stateActive = r.s1_state_active;
+            const triggerDate = r.s1_trigger_date;
+            const daysAbove   = r.s1_days_above;
+            const slopeVal    = r.s1_slope_val;   // Writer: latest.sma200
+            const indRank     = r.s1_ind_rank;
+            const smaDist     = r.s1_sma_dist;    // Writer: 0
+
+            // S1
+            const s1 = stateActive ? 40 : 0;
+
+            // S2
             let s2 = 0;
-            if (r.stateActive && r.triggerDate) {
-                const diffDays = Math.floor(
-                    (new Date(r.date) - new Date(r.triggerDate)) / 86400000
-                );
+            if (stateActive && triggerDate) {
+                const diffDays = daysAbove ?? 0;
                 s2 = Math.max(0, 20 - (diffDays * 2));
             }
 
-            const smaSlopePercent = r.slopeVal ?? 0;
+            // S3
+            const smaSlopePercent = slopeVal ?? 0;
             const s3 = Math.max(0, 30 * (1 - Math.pow(smaSlopePercent / 5, 2)));
 
-            const s4 = r.indRank <= 15 ? 0 : Math.min(25, (r.indRank / 200) * 25);
+            // S4
+            const s4 = indRank <= 15 ? 0 : Math.min(25, (indRank / 200) * 25);
 
-            const s5 = Math.max(0, 10 - Math.abs(r.smaDist ?? 0));
+            // S5
+            const s5 = Math.max(0, 10 - Math.abs(smaDist ?? 0));
 
             const totalScore = parseFloat((s1 + s2 + s3 + s4 + s5).toFixed(2));
 
             return {
                 ticker: r.ticker,
 
-                strategyRank: idx + 1,
-                strategyValue: totalScore,
-
-                // S1–S7 = die echten Scores
-                s1,
-                s2,
-                s3,
-                s4,
-                s5,
-                s6: r.triggerDate,
-                s7: r.stateActive,
-
-                // Rohwerte
+                // RAW
+                stateActive,
+                triggerDate,
+                daysAbove,
+                slopeVal,
+                indRank,
+                smaDist,
                 totalScore,
-                slopeVal: r.slopeVal,
-                indRank: r.indRank,
-                daysAbove: r.daysAbove,
-                smaDist: r.smaDist,
-                triggerDate: r.triggerDate,
-                stateActive: r.stateActive,
 
-                // Teil-Scores für Tooltip
+                // SCORE
                 score_stateActive: s1,
-                score_age: s2,
-                score_slope: s3,
-                score_indRank: s4,
-                score_smaDist: s5,
+                score_age:         s2,
+                score_slope:       s3,
+                score_indRank:     s4,
+                score_smaDist:     s5,
 
-                details: r.detailsJson ? JSON.parse(r.detailsJson) : null,
-                date: r.date
+                // StrategyValue
+                strategyValue: totalScore
             };
         });
 
-        // 3) Response senden
         res.json({
-            count: mapped.length,
-            data: mapped
+            success: true,
+            lastDate,
+            signals: mapped
         });
 
     } catch (err) {
-        console.error("Stage3 Reader Fehler:", err.message);
-        res.status(500).json({ error: err.message });
+        console.error("Stage3-Topping Reader Fehler:", err.message);
+        res.status(500).json({ success: false, error: err.message });
     }
-}); // ← WICHTIG: Route schließen
+});
 
 module.exports = router;

@@ -330,37 +330,55 @@ const etfsPath = path.join(__dirname, "../../json/rs_etfs.json"); // 🟢 NEU!
             countAtLastDate: etfsCount
         });
 
+
 // ------------------------------------------------------
-// 🟢 NEU: marketScores Datenbank direkt prüfen
+// 🟢 marketScores: 4 Typen + 5. Zeile für Sparksignals
 // ------------------------------------------------------
+
 const msQuery = `
+    -- 1. Die 4 klassischen Typen (nach ihrem eigenen jüngsten Datum)
     SELECT 
-        m.type, 
-        m.anl_datum as lastDate, 
+        m.type AS category, 
+        m.anl_datum AS lastDate, 
         (SELECT COUNT(*) 
-         FROM trading.dbo.marketScores sub 
+         FROM dbo.marketScores sub 
          WHERE sub.type = m.type 
          AND CAST(sub.anl_datum AS DATE) = CAST(m.anl_datum AS DATE)
-        ) as countAtLastDate
-    FROM trading.dbo.marketScores m
+        ) AS countAtLastDate
+    FROM dbo.marketScores m
     WHERE m.anl_datum = (
         SELECT MAX(anl_datum) 
-        FROM trading.dbo.marketScores 
+        FROM dbo.marketScores 
         WHERE type = m.type
     )
     GROUP BY m.type, m.anl_datum
+
+    UNION ALL
+
+    -- 2. Die 5. Zeile: Nur Einträge mit Signal exakt vom jüngsten Signal-Datum
+    SELECT 
+        'sparkSignals' AS category,
+        (SELECT MAX(anl_datum) FROM dbo.marketScores WHERE signal_type IS NOT NULL) AS lastDate,
+        (SELECT COUNT(*) 
+         FROM dbo.marketScores sub 
+         WHERE sub.signal_type IS NOT NULL 
+         AND CAST(sub.anl_datum AS DATE) = CAST((SELECT MAX(anl_datum) FROM dbo.marketScores WHERE signal_type IS NOT NULL) AS DATE)
+        ) AS countAtLastDate
 `;
 
 const msResult = await tradingPool.request().query(msQuery);
 
 for (const row of msResult.recordset) {
+    const isSpark = row.category === 'sparkSignals';
+    const label = isSpark ? 'marketScores (sparkSignals)' : `marketScores (${row.category})`;
+
     trading.tables.push({
-        table: `marketScores (${row.type})`,
+        table: label,
         ok: true,
         message: "OK",
         lastDate: row.lastDate,
-        lastDateStr: row.lastDate.toISOString().slice(0, 19).replace("T", " "),
-        totalCount: row.countAtLastDate, // Wir zeigen hier den aktuellen Stand
+        lastDateStr: row.lastDate ? row.lastDate.toISOString().slice(0, 19).replace("T", " ") : "–",
+        totalCount: row.countAtLastDate,
         countAtLastDate: row.countAtLastDate
     });
 }
@@ -393,6 +411,61 @@ for (const { table, display } of yahooTables) {
         continue;
     }
 
+    // ⭐ Sonderfall: Strategies → NICHT getTableStatsGeneric verwenden!
+// ⭐ Sonderfall: Strategies → Jede Strategie separat ausgeben (mit Korrektur auf letztes Datum)
+    if (table === "strategies") {
+
+        const strategyNames = [
+            
+            "S1_SHORT_S3T",
+            "InsideDay52W"
+        ];
+
+        for (const name of strategyNames) {
+            // 1. Letztes Datum und Gesamtzahl für diese Strategie ermitteln
+            const qMeta = await yahooPool.request().query(`
+                SELECT 
+                    COUNT(*) AS totalCount,
+                    MAX([date]) AS lastDate,
+                    CONVERT(varchar(19), MAX([date]), 120) AS lastDateStr
+                FROM strategies
+                WHERE strategy_name = '${name}'
+            `);
+
+            const row = qMeta.recordset[0];
+            const hasData = row.totalCount > 0;
+            let countAtLastDate = 0;
+
+            // 2. Wenn Daten vorhanden sind, die Anzahl für genau diesen letzten Datumstag ermitteln
+            if (hasData && row.lastDate) {
+                const reqCount = yahooPool.request();
+                reqCount.input("lastDate", sql.Date, row.lastDate);
+
+                const qCount = await reqCount.query(`
+                    SELECT COUNT(*) AS c
+                    FROM strategies
+                    WHERE strategy_name = '${name}'
+                      AND CAST([date] AS DATE) = CAST(@lastDate AS DATE)
+                `);
+                countAtLastDate = qCount.recordset[0].c;
+            }
+
+            yahoo.tables.push({
+                table: `Strategy: ${name}`,
+                ok: hasData,
+                message: hasData ? "OK" : "LEER/PLATZHALTER",
+                lastDate: row.lastDate,
+                lastDateStr: row.lastDateStr ?? "–",
+                totalCount: row.totalCount,
+                countAtLastDate: countAtLastDate // 🟢 Hier jetzt korrekt nur die Einträge des letzten Datums
+            });
+        }
+
+        continue;   // ⭐ verhindert den Standard-Generic-Block für strategies
+    }
+    
+
+    // ⭐ Standard: Zeitreihen-Tabellen
     const stats = await getTableStatsGeneric(yahooPool, table);
 
     yahoo.tables.push({

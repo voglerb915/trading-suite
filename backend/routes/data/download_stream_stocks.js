@@ -26,14 +26,13 @@ router.get("/stream-daily", async (req, res) => {
 
     send("progress", { current: 0, total: 0, ticker: null });
 
-    // Status Start (stabil, überschreibt duration NICHT)
+    // Status Start
     let status = readStatusFile();
     status.downloads = status.downloads || {};
     status.downloads.DailyHistory = status.downloads.DailyHistory || {};
 
     status.downloads.DailyHistory.ok = true;
     status.downloads.DailyHistory.lastRun = new Date().toISOString();
-    // ❗ duration NICHT setzen – Endblock macht das
 
     writeStatusFile(status);
 
@@ -81,6 +80,10 @@ router.get("/stream-daily", async (req, res) => {
 
                     if (!timestamps) return;
 
+                    // 52W Werte aus Yahoo
+                    const yahooHigh52w = meta.fiftyTwoWeekHigh || null;
+                    const yahooLow52w = meta.fiftyTwoWeekLow || null;
+
                     // Bulk Insert
                     const reqBulk = yahooPool.request();
                     let sqlValues = [];
@@ -97,7 +100,11 @@ router.get("/stream-daily", async (req, res) => {
                         reqBulk.input(`lo${j}`, sql.Decimal(18, 4), quote.low[j]);
                         reqBulk.input(`vol${j}`, sql.BigInt, quote.volume[j] || 0);
 
-                        sqlValues.push(`(@ticker, @dat${j}, @cls${j}, @opn${j}, @hi${j}, @lo${j}, @vol${j}, @name, GETDATE())`);
+                        // 52W Werte pro Tag (Yahoo liefert nur aktuelle Werte → wir übernehmen sie)
+                        reqBulk.input(`h52${j}`, sql.Decimal(18, 4), yahooHigh52w);
+                        reqBulk.input(`l52${j}`, sql.Decimal(18, 4), yahooLow52w);
+
+                        sqlValues.push(`(@ticker, @dat${j}, @cls${j}, @opn${j}, @hi${j}, @lo${j}, @vol${j}, @name, @h52${j}, @l52${j}, GETDATE())`);
                     }
 
                     if (sqlValues.length > 0) {
@@ -105,9 +112,10 @@ router.get("/stream-daily", async (req, res) => {
                         reqBulk.input("name", sql.NVarChar, meta.longName || symbol);
 
                         await reqBulk.query(`
-                            INSERT INTO DailyHistory (ticker, [date], [close], [open], high, low, volume, name, created_at)
-                            SELECT v.t, v.d, v.c, v.o, v.h, v.l, v.vol, v.n, v.cr
-                            FROM (VALUES ${sqlValues.join(",")}) AS v(t, d, c, o, h, l, vol, n, cr)
+                            INSERT INTO DailyHistory 
+                            (ticker, [date], [close], [open], high, low, volume, name, high52w, low52w, created_at)
+                            SELECT v.t, v.d, v.c, v.o, v.h, v.l, v.vol, v.n, v.h52, v.l52, v.cr
+                            FROM (VALUES ${sqlValues.join(",")}) AS v(t, d, c, o, h, l, vol, n, h52, l52, cr)
                             WHERE NOT EXISTS (
                                 SELECT 1 FROM DailyHistory h 
                                 WHERE h.ticker = v.t AND h.[date] = v.d
@@ -132,25 +140,18 @@ router.get("/stream-daily", async (req, res) => {
         const endTime = Date.now();
         const duration = Math.round((endTime - startTime) / 1000);
 
-        // Status-Datei NEU einlesen
         const statusEnd = readStatusFile();
-
-        // Sicherstellen, dass der Block existiert
         statusEnd.downloads = statusEnd.downloads || {};
         statusEnd.downloads.DailyHistory = statusEnd.downloads.DailyHistory || {};
 
-        // Dauer + Metadaten setzen
         statusEnd.downloads.DailyHistory.ok = true;
         statusEnd.downloads.DailyHistory.lastRun = new Date().toISOString();
         statusEnd.downloads.DailyHistory.duration = `${duration}s`;
         statusEnd.downloads.DailyHistory.info = "Erfolgreich";
 
-        // Speichern
         writeStatusFile(statusEnd);
 
         res.end();
-
-
 
     } catch (err) {
         console.error("GLOBALER FEHLER:", err.message);

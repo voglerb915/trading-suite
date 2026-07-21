@@ -4139,3 +4139,70 @@
 [2026-07-19T12:53:27.283Z] [COCKPIT-METRICS] [INFO] Erfolgreich 195 Zeilen für Cockpit geladen.
 [2026-07-19T13:00:16.903Z] [COCKPIT-METRICS] [INFO] Erfolgreich 195 Zeilen für Cockpit geladen.
 [2026-07-19T13:03:25.047Z] [COCKPIT-METRICS] [INFO] Erfolgreich 195 Zeilen für Cockpit geladen.
+[2026-07-20T10:16:18.950Z] [COCKPIT-METRICS] [INFO] Erfolgreich 195 Zeilen für Cockpit geladen.
+[2026-07-20T18:31:18.290Z] [S2_LOGIC] [INFO] Scan erfolgreich. Signale für 2026-07-17 verarbeitet.
+[2026-07-20T18:40:08.938Z] [S2_LOGIC] [INFO] Scan erfolgreich. Signale für 2026-07-17 verarbeitet.
+[2026-07-20T20:02:57.537Z] [S2_LOGIC] [INFO] Scan erfolgreich. Signale für 2026-07-20 verarbeitet.
+[2026-07-20T22:35:58.666Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Connection is closed.
+[2026-07-20T22:36:54.515Z] [COCKPIT-METRICS] [INFO] Erfolgreich 195 Zeilen für Cockpit geladen.
+[2026-07-20T22:43:27.792Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-07-20T22:43:52.558Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-07-20T23:05:13.862Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-07-20T23:05:56.338Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-07-20T23:07:16.282Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-20T23:16:39.768Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T09:30:01.200Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T09:31:05.785Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: Failed to connect to 127.0.0.1:1433 in 15000ms
+[2026-07-21T09:39:03.764Z] [COCKPIT-METRICS] [INFO] Erfolgreich 160 Zeilen für Cockpit geladen.
+[2026-07-21T09:42:56.449Z] [COCKPIT-METRICS] [INFO] Erfolgreich 160 Zeilen für Cockpit geladen.
+[2026-07-21T09:45:11.802Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T09:59:05.750Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T10:17:32.279Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T10:28:24.752Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T10:28:59.970Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T10:32:49.833Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
+[2026-07-21T10:48:58.493Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T10:52:46.065Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T11:02:28.553Z] [COCKPIT-METRICS] [ERROR] SQL Fehler: UNKNOWN: unknown error, write
+[2026-07-21T11:09:38.107Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T11:29:18.135Z] [COCKPIT-METRICS] [INFO] Erfolgreich 160 Zeilen für Cockpit geladen.
+[2026-07-21T11:30:10.445Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T11:34:02.734Z] [COCKPIT-METRICS] [INFO] Erfolgreich 160 Zeilen für Cockpit geladen.
+[2026-07-21T11:39:00.411Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T11:40:17.451Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T11:47:00.114Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T11:51:05.945Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T11:53:59.814Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T11:58:55.379Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T12:09:47.537Z] [COCKPIT-METRICS] [INFO] Erfolgreich 160 Zeilen für Cockpit geladen.
+[2026-07-21T12:11:30.920Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T16:12:49.287Z] [S2_LOGIC] [INFO] Scan erfolgreich. Signale für 2026-07-20 verarbeitet.
+[2026-07-21T17:01:37.096Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T17:07:25.540Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T17:42:03.708Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T17:46:00.551Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T17:50:02.211Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T19:20:07.736Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T19:27:17.835Z] [COCKPIT-METRICS] [INFO] Erfolgreich 103 Zeilen für Cockpit geladen.
+[2026-07-21T21:59:17.016Z] [COCKPIT-METRICS] [INFO] Erfolgreich 160 Zeilen für Cockpit geladen.
+[2026-07-21T21:59:30.786Z] [COCKPIT-METRICS] [INFO] Erfolgreich 248 Zeilen für Cockpit geladen.
+[2026-07-21T22:02:16.520Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-07-21T22:02:59.211Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-07-21T22:11:55.929Z] [COCKPIT-METRICS] [INFO] Erfolgreich 248 Zeilen für Cockpit geladen.
+[2026-07-21T22:12:56.242Z] [SERVER] [ERROR] POST /api/data/metrics/run → logger is not defined
+[2026-07-21T22:16:16.934Z] [COCKPIT-METRICS] [INFO] Erfolgreich 248 Zeilen für Cockpit geladen.
+[2026-07-21T22:24:38.505Z] [COCKPIT-METRICS] [INFO] Erfolgreich 160 Zeilen für Cockpit geladen.
+[2026-07-21T22:24:58.435Z] [COCKPIT-METRICS] [INFO] Erfolgreich 235 Zeilen für Cockpit geladen.
+[2026-07-21T22:28:06.528Z] [COCKPIT-METRICS] [INFO] Erfolgreich 160 Zeilen für Cockpit geladen.
+[2026-07-21T22:28:26.013Z] [COCKPIT-METRICS] [INFO] Erfolgreich 235 Zeilen für Cockpit geladen.
+[2026-07-21T22:32:42.272Z] [COCKPIT-METRICS] [INFO] Erfolgreich 160 Zeilen für Cockpit geladen.
+[2026-07-21T22:33:16.135Z] [COCKPIT-METRICS] [INFO] Erfolgreich 160 Zeilen für Cockpit geladen.
+[2026-07-21T22:34:40.760Z] [COCKPIT-METRICS] [INFO] Erfolgreich 160 Zeilen für Cockpit geladen.
+[2026-07-21T22:35:01.007Z] [COCKPIT-METRICS] [INFO] Erfolgreich 235 Zeilen für Cockpit geladen.
+[2026-07-21T22:44:29.441Z] [COCKPIT-METRICS] [INFO] Erfolgreich 160 Zeilen für Cockpit geladen.
+[2026-07-21T22:44:51.669Z] [COCKPIT-METRICS] [INFO] Erfolgreich 235 Zeilen für Cockpit geladen.
+[2026-07-21T22:55:32.754Z] [COCKPIT-METRICS] [INFO] Erfolgreich 235 Zeilen für Cockpit geladen.
+[2026-07-21T23:02:51.555Z] [COCKPIT-METRICS] [INFO] Erfolgreich 235 Zeilen für Cockpit geladen.
+[2026-07-21T23:16:21.641Z] [SIGNAL] [INFO] Starte High-Performance Engine (Update-Signals)...
+[2026-07-21T23:17:18.709Z] [SIGNAL] [INFO] Engine abgeschlossen.
+[2026-07-21T23:20:12.438Z] [COCKPIT-METRICS] [INFO] Erfolgreich 231 Zeilen für Cockpit geladen.
