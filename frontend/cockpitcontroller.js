@@ -76,15 +76,15 @@ async function controllerInit() {
     controllerState.sparkSignals = sparkSignalsData;
 
 
+// ------------------------------------------------------
+    // 3) Strategy-Daten laden (Stage 3 & InsideDay52w)
     // ------------------------------------------------------
-    // 3) Strategy-Daten laden (Dashboard erwartet stage3topping)
-    // ------------------------------------------------------
-    const strategyNames = ["stage3topping"];   // FIX
+    const strategyNames = ["stage3topping", "insideday52w"];
 
     const strategyItemsMap = {};
     for (const name of strategyNames) {
         try {
-            const items = await loadStrategyStocks(name);   // FIX
+            const items = await loadStrategyStocks(name);
             strategyItemsMap[name] = items;
         } catch (err) {
             console.warn("Strategy Load Error:", name, err);
@@ -97,31 +97,46 @@ async function controllerInit() {
 
 
     // ------------------------------------------------------
-    // 3b) Stage3-Reader-Daten holen
+    // 3a) Reader-Daten holen (Endpoints abfragen)
     // ------------------------------------------------------
     let stage3ReaderData = [];
     try {
-        const res = await fetch("/api/strategy/stage3topping");   // FIX
+        const res = await fetch("/api/strategy/stage3topping");
         const json = await res.json();
-        stage3ReaderData = json.signals || [];   // FIX
+        stage3ReaderData = json.signals || [];
+        console.log("COCKPIT → STAGE3 READER LENGTH:", stage3ReaderData.length);
     } catch (err) {
         console.warn("Stage3 Reader Fetch Error:", err);
     }
 
+    let insideDayReaderData = [];
+    try {
+        const res = await fetch("/api/strategy/insideday52w");
+        const json = await res.json();
+        insideDayReaderData = json.data || json.signals || [];
+        console.log("COCKPIT → INSIDEDAY READER LENGTH:", insideDayReaderData.length);
+    } catch (err) {
+        console.warn("InsideDay Reader Fetch Error:", err);
+    }
+
 
     // ------------------------------------------------------
-    // 3c) StrategyItems mit Reader-Daten anreichern
+    // 3b) StrategyItems mit Reader-Daten & Basisdaten anreichern (Stage 3)
     // ------------------------------------------------------
     try {
-        const baseItems = controllerState.strategyItems["stage3topping"] || [];   // FIX
+        const baseItems = controllerState.strategyItems["stage3topping"] || [];
 
         const enriched = baseItems.map(stock => {
+            const base = 
+                controllerState.baseStocks.find(s => s.ticker === stock.ticker) ||
+                controllerState.etfs.find(e => e.ticker === stock.ticker) ||
+                {};
             const r = stage3ReaderData.find(x => x.ticker === stock.ticker);
-            if (!r) return stock;
+            if (!r) return { ...base, ...stock };
 
             return {
+                ...base,
                 ...stock,
-
                 // RAW-Werte
                 stateActive: r.stateActive,
                 daysAbove: r.daysAbove,
@@ -131,24 +146,71 @@ async function controllerInit() {
                 triggerDate: r.triggerDate,
                 totalScore: r.totalScore,
 
-                // SCORE-Werte (Dashboard erwartet diese!)
+                // SCORE-Werte
                 score_stateActive: r.score_stateActive ?? 0,
-                score_age:         r.score_age ?? 0,
-                score_slope:       r.score_slope ?? 0,
-                score_indRank:     r.score_indRank ?? 0,
-                score_smaDist:     r.score_smaDist ?? 0
-            };
+                score_age: r.score_age ?? 0,
+                score_slope: r.score_slope ?? 0,
+                score_indRank: r.score_indRank ?? 0,
+                score_smaDist: r.score_smaDist ?? 0,
 
+                sector: base.sector || stock.sector || "—",
+                industry: base.industry || stock.industry || "—"
+            };
         });
 
-        controllerState.strategyItems["stage3topping"] = enriched;   // FIX
-
+        controllerState.strategyItems["stage3topping"] = enriched;
         console.log("DEBUG Cockpit strategyItems (enriched):", controllerState.strategyItems);
 
     } catch (err) {
         console.warn("Stage3 Reader Merge Error:", err);
     }
 
+
+// ------------------------------------------------------
+    // 3c) StrategyItems mit Reader-Daten & Basisdaten anreichern (InsideDay52w)
+    // ------------------------------------------------------
+    try {
+        // Nutze die Reader-Daten als Basis, falls loadStrategyStocks nichts lieferte
+        const baseItems = controllerState.strategyItems["insideday52w"].length > 0 
+            ? controllerState.strategyItems["insideday52w"] 
+            : insideDayReaderData;
+
+        const enriched = baseItems.map(stock => {
+            const base = 
+                controllerState.baseStocks.find(s => s.ticker === stock.ticker) ||
+                controllerState.etfs.find(e => e.ticker === stock.ticker) ||
+                {};
+            const r = insideDayReaderData.find(x => x.ticker === stock.ticker);
+            if (!r) return { ...base, ...stock };
+
+             return {
+                    ...base,
+                    ...stock,
+                    // InsideDay52w DB-Felder gemappt
+                    tightness: r.s2_tightness,
+                    volRatio: r.s2_vol_ratio,
+                    isGreenInt: r.s2_is_green_int,
+                    highVortag: r.s2_high_vortag,
+                    lowVortag: r.s2_low_vortag,
+                    setupStatus: r.s2_setup_status,
+                    anchorHigh: r.s2_anchor_high,
+                    anchorLow: r.s2_anchor_low,
+
+                    // Renderer Top-Wert
+                    strategyValue: r.s2_tightness,
+                    value: r.s2_tightness,
+
+                    sector: base.sector || stock.sector || "—",
+                    industry: base.industry || stock.industry || "—"
+                };
+        });
+
+        controllerState.strategyItems["insideday52w"] = enriched;
+        console.log("DEBUG Cockpit InsideDay52w (enriched):", controllerState.strategyItems["insideday52w"]);
+
+    } catch (err) {
+        console.warn("InsideDay Reader Merge Error:", err);
+    }
 
     // 4) Volume Extract
     controllerState.volumeExtract = computeVolumeExtract(stocks);

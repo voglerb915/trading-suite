@@ -88,8 +88,12 @@ app.use("/api/system/cockpit", require("./routes/system/cockpitStatusRoutes"));
 app.use("/api/system", require("./routes/system/systemStatusRoutes"));
 app.use("/api/system", require("./routes/system/checkSparkStatus")); // <--- HIER EINBINDEN
 
+
 // JOURNAL
-app.use("/api/journal", require("./routes/journal/journal"));
+app.use("/api/journal", require("./routes/journal/journalDummy")); //- dummy unterhalb um frontend fehler abzufangen
+/* app.get('/api/journal/executed', (req, res) => {
+    res.json({ success: true, data: [] });
+}); */
 
 // ---------------------------------------------
 // 3. STATIC FRONTEND SERVING

@@ -153,6 +153,9 @@ window.addEventListener("message", (event) => {
 case "INIT":
     
     console.log("INIT empfangen:", msg.payload);
+    console.log("DASHBOARD INIT → STOCKS ORIGINAL LENGTH:", dashboardState.stocksOriginal.length);
+console.log("DASHBOARD INIT → STRATEGY ITEMS LENGTH:", dashboardState.strategyItems?.stage3topping?.length);
+
   
 
     // Basisdaten
@@ -214,6 +217,9 @@ if (fn) {
 
 case "COCKPIT_DATA": {
     console.log("Dashboard: COCKPIT_DATA empfangen:", msg.payload);
+    console.log("DASHBOARD COCKPIT_DATA → STOCKS ORIGINAL LENGTH:", dashboardState.stocksOriginal.length);
+console.log("DASHBOARD COCKPIT_DATA → STRATEGY ITEMS LENGTH:", dashboardState.strategyItems?.stage3topping?.length);
+
 
     dashboardState.stocksOriginal = msg.payload.stocks || [];
     dashboardState.stocks         = dashboardState.stocksOriginal;

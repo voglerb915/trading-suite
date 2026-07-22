@@ -416,8 +416,7 @@ for (const { table, display } of yahooTables) {
     if (table === "strategies") {
 
         const strategyNames = [
-            
-            "S1_SHORT_S3T",
+            "S1_STAGE3_TOPPING",
             "InsideDay52W"
         ];
 

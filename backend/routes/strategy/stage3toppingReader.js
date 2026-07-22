@@ -13,7 +13,7 @@ router.get("/stage3topping", async (req, res) => {
         const lastDateResult = await yahooPool.request().query(`
             SELECT MAX([date]) AS lastDate
             FROM yahoo.dbo.strategies
-            WHERE strategy_name = 'S1_SHORT_S3T'
+            WHERE strategy_name = 'S1_STAGE3_TOPPING'
         `);
 
         const lastDateRaw = lastDateResult.recordset[0].lastDate;
@@ -36,7 +36,7 @@ router.get("/stage3topping", async (req, res) => {
                 s1_sma_dist
             FROM yahoo.dbo.strategies
             WHERE [date] = '${lastDateStr}'
-              AND strategy_name = 'S1_SHORT_S3T'
+              AND strategy_name = 'S1_STAGE3_TOPPING'
             ORDER BY s1_total_score DESC
         `);
 

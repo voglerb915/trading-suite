@@ -109,16 +109,25 @@ const visible = [...sortedStocks];
 
 const html = visible.map((item, idx) => {
 
-    // ⭐⭐⭐ FIX: Strategy-Daten mergen ⭐⭐⭐
+    // ⭐⭐⭐ FIX: Strategy-Daten mergen (für Stage 3 & InsideDay52w) ⭐⭐⭐
     let mergedItem = item;
 
     if (dashboardState.strategy === "stage3topping") {
         const stratArr = dashboardState.strategyItems?.stage3topping || [];
         const stratData = stratArr.find(s => s.ticker === item.ticker);
-
         if (stratData) {
             mergedItem = { ...item, ...stratData };
         }
+    } else if (dashboardState.strategy === "insideday52w") {
+        const stratArr = dashboardState.strategyItems?.insideday52w || [];
+        const stratData = stratArr.find(s => s.ticker === item.ticker);
+        if (stratData) {
+            mergedItem = { ...item, ...stratData };
+        }
+    }
+    // <-- HIER EINBAUEN
+    if (mergedItem.ticker === "AAPL" || idx === 0) {
+        console.log("DEBUG mergedItem:", mergedItem);
     }
     // ⭐⭐⭐ Ende FIX ⭐⭐⭐
 
@@ -148,12 +157,15 @@ const html = visible.map((item, idx) => {
     // ⭐ FIX: rawTop definieren
     let rawTop = null;
 
-    // Top Value – je nach Strategie den richtigen Wert wählen
+   // Top Value – je nach Strategie den richtigen Wert wählen
     switch (state.strategy) {
         case "high52w":
-        case "insideday52w":
         case "nearhigh52":
             rawTop = mergedItem.strategyValue ?? mergedItem.value ?? null;
+            break;
+
+        case "insideday52w":
+            rawTop = mergedItem.strategyValue ?? mergedItem.tightness ?? mergedItem.value ?? null;
             break;
 
         case "stage3topping":
@@ -182,32 +194,7 @@ const html = visible.map((item, idx) => {
         topValue = "—";
     }
 
-
-
-    const showTooltip = dashboardState.strategy === "stage3topping";
-
-const fmt = v => (typeof v === "number" ? v.toFixed(2) : "0.00");
-
-// Labels auf exakt 14 Zeichen bringen (Padding)
-const pad = label => label.padEnd(14, " ");
-
-const tooltipText = `
-SCORE               RAW
------------------------------------------
-${pad("S1 StateAct")}: ${fmt(mergedItem.score_stateActive)}   |   ${mergedItem.stateActive}
-${pad("S2 Age")}:       ${fmt(mergedItem.score_age)}           |   ${mergedItem.daysAbove}
-${pad("S3 Slope")}:     ${fmt(mergedItem.score_slope)}         |   ${mergedItem.slopeVal}
-${pad("S4 IndRank")}:   ${fmt(mergedItem.score_indRank)}       |   ${mergedItem.indRank}
-${pad("S5 SMA Dist")}:  ${fmt(mergedItem.score_smaDist)}       |   ${mergedItem.smaDist}
-
------------------------------------------
-Total Score:        ${fmt(mergedItem.totalScore)}
-`.trim();
-
-
-    const tooltipIcon = showTooltip
-        ? `<span style="margin-right:8px; cursor:help;" title="${tooltipText}">📊</span>`
-        : "";
+    const fmt = v => (typeof v === "number" ? v.toFixed(2) : (v ?? "—"));
 
     return `
         <li class="stock-item ${sectorClass} ${isSelected ? 'highlight-ticker' : ''}"
@@ -247,7 +234,7 @@ Total Score:        ${fmt(mergedItem.totalScore)}
                         text-align: right;
                     ">
 
-                        <!-- Tooltip nur bei stage3topping -->
+                        <!-- Tooltip für stage3topping -->
                         ${dashboardState.strategy === "stage3topping" ? `
                             <span class="score-tooltip-trigger" style="margin-right:8px; cursor:help;">
                                 📊
@@ -283,6 +270,33 @@ Total Score:        ${fmt(mergedItem.totalScore)}
                                     </div>
                                 </div>
                             </span>
+                        ` : dashboardState.strategy === "insideday52w" ? `
+                        <!-- Tooltip für insideday52w im gleichen Look -->
+                            <span class="score-tooltip-trigger" style="margin-right:8px; cursor:help;">
+                                📊
+                                <div class="score-tooltip">
+                                    <div class="score-row">
+                                        <span class="score-label">Tightness</span>
+                                        <span class="score-value">${fmt(mergedItem.tightness)}</span>
+                                    </div>
+                                    <div class="score-row">
+                                        <span class="score-label">VMA 20</span>
+                                        <span class="score-value">${fmt(mergedItem.vma_20)}</span>
+                                    </div>
+                                    <div class="score-row">
+                                        <span class="score-label">Setup Status</span>
+                                        <span class="score-value">${mergedItem.setupStatus ?? "—"}</span>
+                                    </div>
+                                    <div class="score-row">
+                                        <span class="score-label">Anchor High</span>
+                                        <span class="score-value">${fmt(mergedItem.anchorHigh)}</span>
+                                    </div>
+                                    <div class="score-row">
+                                        <span class="score-label">Anchor Low</span>
+                                        <span class="score-value">${fmt(mergedItem.anchorLow)}</span>
+                                    </div>
+                                </div>
+                            </span>
                         ` : `
                             <span></span>
                         `}
@@ -297,12 +311,10 @@ Total Score:        ${fmt(mergedItem.totalScore)}
 
                 </div>
 
-
             </div>
         </li>
     `;
 
 }).join('');
-
     listUl.innerHTML = html;
 }
