@@ -150,7 +150,9 @@ router.get("/write-stage3-topping", async (req, res) => {
                 currentDaysAbove,
                 indRank,
                 price: latest.price,
-                totalScore
+                totalScore,
+                smaDistVal: latest.sma200, // oder deine korrekte Berechnung dafür
+                detailsJson: JSON.stringify({ s5_score: s5, sma200: latest.sma200, indRank }) // Beispiel für Details
             };
         });
 
@@ -204,8 +206,8 @@ router.get("/write-stage3-topping", async (req, res) => {
                         ${item.currentDaysAbove},
                         ${item.latest.sma200},
                         ${item.indRank},
-                        0,
-                        '{}'
+                        ${item.smaDistVal},
+                        '${item.detailsJson}'
                     )
                 `);
             }
